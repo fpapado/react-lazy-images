@@ -1,0 +1,39 @@
+{
+  "name": "react-lazy-images",
+  "description": "React utilities for lazy image loading in React",
+  "version": "0.0.1",
+  "main": "lib/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fpapado/react-lazy-images.git"
+  },
+  "keywords": [
+    "react",
+    "lazy",
+    "image",
+    "intersection",
+    "viewport"
+  ],
+  "author": "Fotis Papadogeorgopoulos",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/fpapado/react-lazy-images/issues"
+  },
+  "homepage": "https://github.com/fpapado/react-lazy-images#readme",
+  "scripts": {
+    "storybook": "start-storybook -p 8080",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {
+    "@storybook/addon-actions": "^3.3.15",
+    "@storybook/addon-options": "^3.3.15",
+    "@storybook/react": "^3.3.15",
+    "prettier": "^1.11.1",
+    "react": "^16.2.0",
+    "react-dom": "^16.2.0",
+    "tachyons": "^4.9.1"
+  },
+  "dependencies": {
+    "react-intersection-observer": "^3.0.3"
+  }
+}
