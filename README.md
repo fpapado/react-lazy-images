@@ -1,4 +1,4 @@
-> React utilities for lazy image loading in React
+> Components and utilities for lazy image loading in React
 
 # React Lazy Images
 
