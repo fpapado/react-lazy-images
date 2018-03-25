@@ -184,7 +184,7 @@ A variety of usage examples and recipes is provided in the form of storybook.
 [You can browse the documentation online](https://fpapado.github.io/react-lazy-images) or look at `stories/`.
 
 ## Feedback
-I have some specific questions that I would like input on. If you want to go exploring, or have used the library and had gripes with it, then see `FEEDBACK.md` and let's have a discussion!
+I have some specific questions that I would like input on. If you want to go exploring, or have used the library and had gripes with it, then see [`FEEDBACK.md`](./FEEDBACK.md) and let's have a discussion!
 
 ## Contributing
 I would love to have contributions on this! Are there more patterns that we can expose and simplify? Is something not clear? See `CONTRIBUTING.md` for details.
