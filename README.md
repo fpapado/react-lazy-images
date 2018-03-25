@@ -196,6 +196,8 @@ MIT License © Fotis Papadogeorgpoulos
 (And inspiration)
 
 [react-intersection-observer library](https://github.com/thebuilder/react-intersection-observer)
+This is the library backing `LazyImage` and the like.
+Further thanks for demonstrating Storybook as documentation.
 
 [Paul Lewis' implementation of lazy image loading](https://github.com/GoogleChromeLabs/sample-media-pwa/blob/master/src/client/scripts/helpers/lazy-load-images.js)
 
