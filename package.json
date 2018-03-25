@@ -13,6 +13,7 @@
     "bundle-dev": "microbundle watch --jsx React.createElement",
     "size": "gzip-size dist/react-lazy-images.js && bundlesize",
     "storybook": "start-storybook -p 8080",
+    "storybook-static": "build-storybook -c .storybook -o .out",
     "deploy-storybook": "npm run build && storybook-to-ghpages",
     "test": "npm run build",
     "prepare": "npm t",

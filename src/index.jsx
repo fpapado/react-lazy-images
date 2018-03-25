@@ -28,6 +28,7 @@ const loadImage = src =>
 // TODO: loadEagerly
 // TODO: example of abstraction with further HoC
 // TODO: customisable Observer props, defaultProps
+// TODO: pass ({lazyClass}) to actual/placeholder and note why it is important
 export class LazyImage extends React.Component {
   constructor(props) {
     super(props);
@@ -50,28 +51,56 @@ export class LazyImage extends React.Component {
         .then(this.onLoadSuccess)
         .catch(this.onLoadError);
     }
-  };
+  }
 
   onLoadSuccess() {
     this.setState({imageState: 'LoadSuccess'});
-  };
+  }
 
   onLoadError() {
     this.setState({imageState: 'LoadError'});
-  };
+  }
 
+  // WIP: noscript fallback; could place it on top of the placeholder
+  // and tell the user to figure out whether they want to hide it,
+  // e.g. with <noscript><style>.LazyImage { display: none }</style></noscript>
   render() {
     return (
-      <Observer
-        rootMargin="50px 0px"
-        threshold={0.01}
-        onChange={this.onInView}
-        triggerOnce
-      >
-        {this.state.imageState === 'LoadSuccess'
-          ? this.props.actual
-          : this.props.placeholder}
-      </Observer>
+      <React.Fragment>
+        <Observer
+          rootMargin="50px 0px"
+          threshold={0.01}
+          onChange={this.onInView}
+          triggerOnce
+        >
+          {this.state.imageState === 'LoadSuccess'
+            ? this.props.actual
+            : this.props.placeholder}
+        </Observer>
+
+        {/* Display this if JS is disabled */}
+        <Fallback
+          strategy={this.props.fallbackStrategy || 'Off'}
+          src={this.props.src}
+          actual={this.props.actual}
+          placeholder={this.props.placeholder}
+        />
+      </React.Fragment>
     );
   }
 }
+
+const Fallback = ({strategy, src, actual, placeholder}) => {
+  // Render prop, custom fallback
+  // TODO: naive, make explicit instead with fallback=... prop
+  if (typeof strategy === 'function') {
+    return <noscript>{strategy({src, actual, placeholder})}</noscript>;
+  }
+  // Predefined Strategies
+  if (strategy === 'NoScriptActual') {
+    return <noscript>{actual}</noscript>;
+  }
+  if (strategy === 'Off') {
+    return null;
+  }
+};

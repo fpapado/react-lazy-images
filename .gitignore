@@ -12,3 +12,4 @@ npm-debug.log*
 .vscode/
 *.log
 .rpt2_cache/
+.out/

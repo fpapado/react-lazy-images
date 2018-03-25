@@ -176,6 +176,80 @@ While the implementation is simple, the patterns in your app will not necessaril
 Think about the cases where it is beneficial to do this, and apply it with intent. Examples might be hero images, the first X elements in a list and so on.
 [Some of these use cases are provided as examples](#examples).
 
+### Fallback without Javascript
+If Javascript is disabled altogether by the user, then they will be stuck with the placeholder (and any images loaded eagerly).
+This is probably undesirable.
+
+There are a few strategies for fallbacks.
+Most of them are variations on a `<noscript>` tag with the `actual` img and hiding the placeholder if JS is disabled.
+Here is what it looks like rendered:
+
+```jsx
+// In the <head>
+// Style applied only when JS is disabled
+<noscript>
+  // Hide the LazyImage (since the actual one will be displayed in its place)
+  <style>
+    .LazyImage {
+      display: none;
+    }
+  </style>
+</noscript>
+
+// In your component (as rendered)
+// Placeholder since JS has not run; will be hidden with the style above.
+// img tags that are hidden are not loaded, yay!
+<img src="placeholderImgSrc class="LazyImage"/>
+<noscript>
+  <img src="actualImgSrc" />  // Render the actual as usual
+</noscript>
+```
+
+QUESTION: should this be on by default?
+This strategy is available with the `fallbackStrategy="NoScriptActual"` prop:
+```jsx
+<LazyImage
+  fallbackStrategy="NoScriptActual"
+  src="https://www.fillmurray.com/g/600/400"
+  placeholder={
+    <img src="https://www.fillmurray.com/g/60/40" className="w-100" />
+  }
+  actual={
+    <img src="https://www.fillmurray.com/g/600/400" className="w-100" />
+  }
+/>
+
+:warning:
+You have to provide the styling to hide `.LazyImage`, as shown above.
+Otherwise, this won't work and you will show the placeholder in addition to the fallback!
+:warning:
+
+The `fallbackStrategy` enum is reserved for other strategies with cross-cutting presentational concerns.
+Current values are:
+- `NoScriptActual`
+- `Off`
+
+#### DIY Fallback
+If you want to customise the fallback, then you can pass a function to fallbackStrategy.
+It uses the render prop pattern, and gives you access to all the information it has available.
+For example, this is the equivalent to `NoScriptActual`:
+
+```jsx
+// A function in fallbackStrategy be rendered inside the <noscript> tag
+<LazyImage
+  fallbackStrategy={({src, actual, placeholder}) => {actual} }
+  src="https://www.fillmurray.com/g/600/400"
+  placeholder={
+    <img src="https://www.fillmurray.com/g/60/40" className="w-100" />
+  }
+  actual={
+    <img src="https://www.fillmurray.com/g/600/400" className="w-100" />
+  }
+/>
+```
+This may or may not be good enough.
+Please open an issue to discuss your needs if that is the case :)
+
 ### Polyfill
 Strategies for polyfilling IntersectionObserver
 :construction: Work in progress :construction:
