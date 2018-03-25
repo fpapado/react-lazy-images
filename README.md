@@ -13,6 +13,7 @@ Features:
 - Easy to understand source code. You should be able to fork and do your thing if desired.
 
 What it does not do by itself:
+- Polyfill `IntersectionObserver`. Adding polyfills is something you should do consciously at the application level, especially if they might incur download and performance costs. See [Polyfilling IntersectionObserver](#Polyfilling IntersectionObserver) for different strategies.
 - Dictate the kind of placeholders. There are many ways to do that; you can use a simple box with a background color (I hear gray is popular), or a blurred image, or anything you'd like. You are in control of the element that gets rendered.
 - Animate the transitions. Again, you are in control of the containers, so it is possible to implement those upon consumption.
 - Any kind of intrinsic placeholders. Those are better served by another library/styles/the consumer.
@@ -38,14 +39,15 @@ This is synchronous by nature and can have performance implications. This was th
 
 ## Pieces
 ### Simple use case
-`LazyImage` is the basic solution. Other components build on top of this. At its core, it is tiny, and you could implement this:
+`LazyImageBasic` is, well, the basic solution. Other components build on a similar interface. At its core, it is tiny, and you could implement this:
 
 ```js
 
 ```
 
 At the moment, it uses [react-intersection-observer]() under the hood.
-There are a few more pieces to it, such as warning about fallbacks and supporting Server-Side rendering.
+There are a few more pieces to it, such as warning about fallbacks and supporting eager loading/rendering.
+It is provided more as a reference, for example if you want to implement something similar, or to investigate whether lazy loading images can fit in your application.
 [Check it out]()
 
 ### Customising what is displayed
@@ -64,7 +66,7 @@ A common optimisation to the loading strategy is to preload the image before swa
 In other words, once the image is in view, you can kick off a request to load the image, and only swap it once loaded. 
 This prevents swapping a half-loaded image (i.e. one that is still scanning top-to-bottom), and allows the transition to be smoother.
 
-The interface is similar to LazyImage:
+The interface is similar to `LazyImageBasic`:
 ```
 TODO: show render prop
 src ...
@@ -84,7 +86,7 @@ As you can imagine, this is a pretty straightforward thing to implement; we just
 And while the implementation is simple, the patterns in your app will not necessarily be so. Think about when you  do this (e.gg. above the fold, otherwise you risk removing the benefits!).
 
 ## Polyfilling IntersectionObserver
-...
+:construction: Work in progress :construction:
 
 ## Feedback?
 I have some specific questions that I would like input on. If you want to go exploring, or have used the library and had gripes with it, then see `FEEDBACK.md` and let's have a discussion!
