@@ -9,26 +9,15 @@ export const LazyImageBasic = ({placeholder, actual, loadEagerly}) => (
   </Observer>
 );
 
-// Promise constructor for (pre)loading an image
-// TODO: this seems like the conventional way of doing it, and yet we are not
-// using the img element per se. Should we use an explicit fetch(), perhaps?
-const loadImage = src =>
-  new Promise((resolve, reject) => {
-    const image = new Image();
-    image.src = src;
-    image.onload = resolve;
-    image.onerror = reject;
-  });
-
 // type ImageState = 'NotAsked' | 'Loading' | 'LoadSuccess' | 'LoadError';
 
 // LazyImage component that preloads the image before swapping in
-// TODO: handle states
-// TODO: componentWillUnmount
+// TODO: cancel loading on componentWillUnmount
 // TODO: loadEagerly
-// TODO: example of abstraction with further HoC
 // TODO: customisable Observer props, defaultProps
+// TODO: example of abstraction with further HoC
 // TODO: pass ({lazyClass}) to actual/placeholder and note why it is important
+// TODO: handle different states/provide hooks
 export class LazyImage extends React.Component {
   constructor(props) {
     super(props);
@@ -65,6 +54,7 @@ export class LazyImage extends React.Component {
   // and tell the user to figure out whether they want to hide it,
   // e.g. with <noscript><style>.LazyImage { display: none }</style></noscript>
   render() {
+    const {src, actual, placeholder, fallbackStrategy} = this.props;
     return (
       <React.Fragment>
         <Observer
@@ -73,22 +63,33 @@ export class LazyImage extends React.Component {
           onChange={this.onInView}
           triggerOnce
         >
-          {this.state.imageState === 'LoadSuccess'
-            ? this.props.actual
-            : this.props.placeholder}
+          {this.state.imageState === 'LoadSuccess' ? actual : placeholder}
         </Observer>
 
         {/* Display this if JS is disabled */}
         <Fallback
-          strategy={this.props.fallbackStrategy || 'Off'}
-          src={this.props.src}
-          actual={this.props.actual}
-          placeholder={this.props.placeholder}
+          strategy={fallbackStrategy || 'Off'}
+          src={src}
+          actual={actual}
+          placeholder={placeholder}
         />
       </React.Fragment>
     );
   }
 }
+
+// Utilities
+
+// Promise constructor for (pre)loading an image
+// IDEA: this seems like the conventional way of doing it, and yet we are not
+// using the img element per se. Should we use an explicit fetch(), perhaps?
+const loadImage = src =>
+  new Promise((resolve, reject) => {
+    const image = new Image();
+    image.src = src;
+    image.onload = resolve;
+    image.onerror = reject;
+  });
 
 const Fallback = ({strategy, src, actual, placeholder}) => {
   // Render prop, custom fallback
