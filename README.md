@@ -1,5 +1,9 @@
 > Components and utilities for lazy image loading in React
 
+:construction: Work in progress :construction:
+
+[This documentation is here to document the goals](http://tom.preston-werner.com/2010/08/23/readme-driven-development.html)
+
 # React Lazy Images
 
 Features:
@@ -89,6 +93,8 @@ I have some specific questions that I would like input on. If you want to go exp
 I would love to have contributions on this! Are there more patterns that we can expose and simplify? Is something not clear? See `CONTRIBUTING.md` for details.
 
 ## Credits and Thanks
-react-intersection-observer library
-Paul Lewis' implementation of lazy image loading
-How Medium does...
+[react-intersection-observer library](https://github.com/thebuilder/react-intersection-observer)
+
+[Paul Lewis' implementation of lazy image loading](https://github.com/GoogleChromeLabs/sample-media-pwa/blob/master/src/client/scripts/helpers/lazy-load-images.js)
+
+[How Medium does lazy image loading](https://jmperezperez.com/medium-image-progressive-loading-placeholder/)
