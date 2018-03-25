@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {storiesOf} from '@storybook/react';
 import {action} from '@storybook/addon-actions';
-import {LazyImage} from '../src/index';
+import {LazyImage, LazyPreloadImage} from '../src/index';
 
 const Container = ({children}) => (
   <div className="pa3">
@@ -15,6 +15,7 @@ const Container = ({children}) => (
   </div>
 );
 
+// Basic show placeholder/show actual image component
 storiesOf('LazyImage', module)
   .add('Basic use', () => (
     <Container>
@@ -71,3 +72,28 @@ storiesOf('LazyImage', module)
       ))}
     </Container>
   ));
+
+// Component that preloads the image and only swaps once ready
+storiesOf('LazyImagePreload', module)
+  .add('Basic use', () => (
+    <Container>
+      <LazyPreloadImage
+        src="https://www.fillmurray.com/g/600/400"
+        placeholder={
+          <img src="https://www.fillmurray.com/g/60/40" className="w-100" />
+        }
+        actual={
+          <img src="https://www.fillmurray.com/g/600/400" className="w-100" />
+        }
+      />
+      <LazyPreloadImage
+        src="https://www.fillmurray.com/g/300/200"
+        placeholder={
+          <img src="https://www.fillmurray.com/g/30/20" className="w-100" />
+        }
+        actual={
+          <img src="https://www.fillmurray.com/g/300/200" className="w-100" />
+        }
+      />
+    </Container>
+  ))
