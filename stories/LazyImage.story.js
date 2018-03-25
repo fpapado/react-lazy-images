@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {storiesOf} from '@storybook/react';
 import {action} from '@storybook/addon-actions';
-import {LazyImage, LazyPreloadImage} from '../src/index';
+import {LazyImageBasic, LazyImage} from '../src/index';
 
 const Container = ({children}) => (
   <div className="pa3">
@@ -15,11 +15,11 @@ const Container = ({children}) => (
   </div>
 );
 
-// Basic show placeholder/show actual image component
-storiesOf('LazyImage', module)
+// Basic component to show placeholder/show actual image component
+storiesOf('LazyImageBasic', module)
   .add('Basic use', () => (
     <Container>
-      <LazyImage
+      <LazyImageBasic
         placeholder={
           <img src="https://www.fillmurray.com/g/60/40" className="w-100" />
         }
@@ -33,7 +33,7 @@ storiesOf('LazyImage', module)
   // Useful if you want to load the actual content without waiting for Javascript.
   .add('Eager loading (Server-Side Rendering)', () => (
     <Container>
-      <LazyImage
+      <LazyImageBasic
         loadEagerly
         placeholder={
           <img src="https://www.fillmurray.com/g/60/40" className="w-100" />
@@ -53,7 +53,7 @@ storiesOf('LazyImage', module)
         ['second', '60/40', '600/400'],
         ['third', '90/60', '900/600']
       ].map(([key, placeholder, actual], i) => (
-        <LazyImage
+        <LazyImageBasic
           loadEagerly={i === 0}
           key={key}
           placeholder={
@@ -74,10 +74,10 @@ storiesOf('LazyImage', module)
   ));
 
 // Component that preloads the image and only swaps once ready
-storiesOf('LazyImagePreload', module)
+storiesOf('LazyImage', module)
   .add('Basic use', () => (
     <Container>
-      <LazyPreloadImage
+      <LazyImage
         src="https://www.fillmurray.com/g/600/400"
         placeholder={
           <img src="https://www.fillmurray.com/g/60/40" className="w-100" />
@@ -86,7 +86,7 @@ storiesOf('LazyImagePreload', module)
           <img src="https://www.fillmurray.com/g/600/400" className="w-100" />
         }
       />
-      <LazyPreloadImage
+      <LazyImage
         src="https://www.fillmurray.com/g/300/200"
         placeholder={
           <img src="https://www.fillmurray.com/g/30/20" className="w-100" />

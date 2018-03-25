@@ -3,7 +3,7 @@ import Observer from 'react-intersection-observer';
 
 // Most basic implementation
 // TODO: customisable Observer props, defaultProps
-export const LazyImage = ({placeholder, actual, loadEagerly}) => (
+export const LazyImageBasic = ({placeholder, actual, loadEagerly}) => (
   <Observer rootMargin="50px 0px" threshold={0.01} triggerOnce>
     {inView => (loadEagerly || inView ? actual : placeholder)}
   </Observer>
@@ -28,8 +28,7 @@ const loadImage = src =>
 // TODO: loadEagerly
 // TODO: example of abstraction with further HoC
 // TODO: customisable Observer props, defaultProps
-// TODO: rename to LazyImage
-export class LazyPreloadImage extends React.Component {
+export class LazyImage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {imageState: 'NotAsked'};
