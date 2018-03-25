@@ -13,6 +13,7 @@
 -   [Features](#features)
 -   [Install](#install)
 -   [Motivation](#motivation)
+-   [Usage](#usage)
 -   [Examples](#examples)
 -   [Feedback](#feedback)
 -   [Contributing](#contributing)
@@ -81,7 +82,7 @@ This is synchronous by nature and can have performance implications.
 This was the motivation for browsers providing [IntersectionObserver]().
 Using this API is not specific to React; it just seems like a good fit for this task nowadays.
 
-## Pieces
+## Usage
 ### `LazyImageBasic`
 `LazyImageBasic` is, well, a basic solution. Other components build on a similar interface.
 At its core, it is tiny and simple to implement:
@@ -218,6 +219,7 @@ This strategy is available with the `fallbackStrategy="NoScriptActual"` prop:
     <img src="https://www.fillmurray.com/g/600/400" className="w-100" />
   }
 />
+```
 
 :warning:
 You have to provide the styling to hide `.LazyImage`, as shown above.
