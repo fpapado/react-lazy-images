@@ -2,6 +2,7 @@
 > Components and utilities for lazy image loading in React.
 
 [![npm](https://img.shields.io/npm/v/react-lazy-images.svg)](https://www.npmjs.com/package/react-lazy-images)
+[![gzip size](http://img.badgesize.io/https://unpkg.com/react-lazy-images/dist/react-lazy-images.js?compression=gzip)](https://unpkg.com/react-lazy-images/dist/react-lazy-images.js)
 
 :construction: Work in progress :construction:
 
