@@ -20,16 +20,17 @@
 
 ## Features:
 - Composable pieces that range from the simple use case, to preloading images and more
-- Modern, performant, implementation, using [IntersectionObserver]() and providing fallbacks Server-side rendering support
+- Modern, performant implementation, using [IntersectionObserver]() and providing fallback strategies
+- Eager loading / Server-side rendering support
 - Easy to understand source code. You should be able to fork and do your thing if desired.
 
 What it does not do by itself:
-- Polyfill `IntersectionObserver`. Adding polyfills is something you should do consciously at the application level, especially if they might incur download and performance costs. See [Polyfilling IntersectionObserver](#Polyfilling IntersectionObserver) for different strategies.
-- Dictate the kind of placeholders. There are many ways to do that; you can use a simple box with a background color (I hear gray is popular), or a blurred image, or anything you'd like. You are in control of the element that gets rendered.
+- Polyfill `IntersectionObserver`. Adding polyfills is something you should do consciously at the application level, especially if they might incur download and performance costs. See [Polyfilling IntersectionObserver](#polyfill) for different strategies.
+- Dictate the kind of placeholders. There are many ways to do that; you can use a simple box with a background color (I hear gray is popular), a blurred image, some gradient or anything you'd like. You are in control of the element that gets rendered.
 - Animate the transitions. Again, you are in control of the containers, so it is possible to implement those at the consumer.
 - Any kind of intrinsic ratios. Those are better served by another library/styles composed with this one.
 
-Basically, this library focuses on loading the images once in view and supporting patterns around that. The actual components are yours to decide!
+In other words, this library focuses on loading the images once in view and supporting loading patterns around that. The actual components are yours to decide!
 
 ## Install
 This package is distributed via [npm](https://www.npmjs.com/get-npm).
@@ -43,7 +44,7 @@ $ yarn add react-lazy-images
 Then import according to your modules model and bundler, such as [Rollup](https://rollupjs.org/guide/en) and [Webpack](https://webpack.js.org/):
 
 ```js
-// ES6 Modules
+// ES Modules
 // For all possible functions to import look at the documentation
 import { LazyImage } from 'react-lazy-images';
 
@@ -58,7 +59,7 @@ A [UMD](https://github.com/umdjs/umd) version is also available on [unpkg](https
 ```
 
 ## Motivation
-Browsers preload images; as soon as they see an `<img>` tag with a valid `src`, they kick off the request for the image (they even do this before the HTML has been parsed).
+Browsers preload images; as soon as they encounter an `<img>` tag with a valid `src`, they kick off the request for the image (they even do this before the HTML has been parsed).
 Even in cases where a certain image is not in the viewport, it will be requested.
 This can have adverse effects for users, especially on mobile or metered connections.
 
@@ -81,7 +82,7 @@ Using this API is not specific to React; it just seems like a good fit for this 
 
 ## Pieces
 ### `LazyImageBasic`
-`LazyImageBasic` is, well, the basic solution. Other components build on a similar interface.
+`LazyImageBasic` is, well, a basic solution. Other components build on a similar interface.
 At its core, it is tiny and simple to implement:
 
 ```jsx
@@ -92,9 +93,9 @@ const LazyImageBasic = ({placeholder, actual}) => (
 );
 ```
 
+It is provided more as a reference, for example if you want to implement something similar, or to investigate whether lazy loading images can fit in your application.
 At the moment, it uses [react-intersection-observer](https://github.com/thebuilder/react-intersection-observer) under the hood, to provide the view monitoring functionality.
 There are a few more pieces to it, such as warning about fallbacks and supporting eager loading/rendering.
-It is provided more as a reference, for example if you want to implement something similar, or to investigate whether lazy loading images can fit in your application.
 [Check out the source for LazyImage]('./src/index.js').
 
 ### Customising what is displayed
@@ -174,7 +175,8 @@ While the implementation is simple, the patterns in your app will not necessaril
 Think about the cases where it is beneficial to do this, and apply it with intent. Examples might be hero images, the first X elements in a list and so on.
 [Some of these use cases are provided as examples](#examples).
 
-### Polyfilling IntersectionObserver
+### Polyfill
+Strategies for polyfilling IntersectionObserver
 :construction: Work in progress :construction:
 
 ## Examples
