@@ -1,7 +1,7 @@
 {
   "name": "react-lazy-images",
   "description": "React utilities for lazy image loading",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "source": "src/index.jsx",
   "module": "dist/react-lazy-images.es.js",
   "main": "dist/react-lazy-images.js",
@@ -13,7 +13,7 @@
     "bundle-dev": "microbundle watch --jsx React.createElement",
     "size": "gzip-size dist/react-lazy-images.js && bundlesize",
     "storybook": "start-storybook -p 8080",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "echo \"Warning: no test specified\" && exit 0",
     "prepare": "npm t",
     "release": "npm t && git commit -am $npm_package_version && git tag $npm_package_version && git push && git push --tags && npm publish"
   },
