@@ -2,7 +2,8 @@ import * as React from 'react';
 import {storiesOf} from '@storybook/react';
 import {action} from '@storybook/addon-actions';
 import {withInfo} from '@storybook/addon-info';
-import {LazyImageBasic, LazyImage} from '../dist/react-lazy-images.es.js';
+// Not ideal, but I'd rather have the correct display names
+import {LazyImageBasic, LazyImage} from '../src/index.js';
 
 const Container = ({children}) => (
   <div className="pa3">
