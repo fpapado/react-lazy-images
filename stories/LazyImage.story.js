@@ -3,7 +3,7 @@ import {storiesOf} from '@storybook/react';
 import {action} from '@storybook/addon-actions';
 import {withInfo} from '@storybook/addon-info';
 // Not ideal, but I'd rather have the correct display names
-import {LazyImageBasic, LazyImage} from '../src/index.js';
+import {LazyImageBasic, LazyImage} from '../src/index.jsx';
 
 const Container = ({children}) => (
   <div className="pa3">
