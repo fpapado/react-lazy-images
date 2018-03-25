@@ -10,3 +10,5 @@ npm-debug.log*
 .env.*
 *.swp
 .vscode/
+*.log
+.rpt2_cache/

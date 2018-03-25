@@ -1,12 +1,12 @@
 import React from 'react';
 import {configure} from '@storybook/react';
 import {setOptions} from '@storybook/addon-options';
-import pack from '../package.json';
 import 'tachyons';
 
 setOptions({
-  name: pack.name,
-  url: pack.repository
+  name: 'React Lazy Images',
+  url: 'https://github.com/fpapado/react-lazy-images',
+  addonPanelInRight: true
 });
 
 const req = require.context('../stories', true, /story\.js$/)

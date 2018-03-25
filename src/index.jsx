@@ -32,10 +32,17 @@ export class LazyImage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {imageState: 'NotAsked'};
+
+    // Bind methods
+    // This would be nicer with arrow functions and class properties,
+    // but holding off until they are settled.
+    this.onInView = this.onInView.bind(this);
+    this.onLoadSuccess = this.onLoadSuccess.bind(this);
+    this.onLoadError = this.onLoadError.bind(this);
   }
 
   // Updates
-  onInView = (inView) => {
+  onInView(inView) {
     if (inView) {
       // Kick off request for Image and attach listeners for response
       this.setState({imageState: 'Loading'});
@@ -45,11 +52,11 @@ export class LazyImage extends React.Component {
     }
   };
 
-  onLoadSuccess = () => {
+  onLoadSuccess() {
     this.setState({imageState: 'LoadSuccess'});
   };
 
-  onLoadError = () => {
+  onLoadError() {
     this.setState({imageState: 'LoadError'});
   };
 
@@ -58,7 +65,7 @@ export class LazyImage extends React.Component {
       <Observer
         rootMargin="50px 0px"
         threshold={0.01}
-        onChange={inView => this.onInView(inView)}
+        onChange={this.onInView}
         triggerOnce
       >
         {this.state.imageState === 'LoadSuccess'
