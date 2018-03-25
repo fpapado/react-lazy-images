@@ -30,7 +30,30 @@ What it does not do by itself:
 Basically, this library focuses on loading the images once in view and supporting patterns around that. The actual components are yours to decide!
 
 ## Install
-...
+This package is distributed via [npm](https://www.npmjs.com/get-npm).
+
+```shell
+$ npm install --save react-lazy-images
+# or
+$ yarn add react-lazy-images
+```
+
+Then import according to your modules model and bundler, such as [Rollup](https://rollupjs.org/guide/en) and [Webpack](https://webpack.js.org/):
+
+```js
+// ES6 Modules
+// For all possible functions to import look at the documentation
+import { LazyImage } from 'react-lazy-images';
+
+/// CommonJS modules
+const {LazyImage} = require('react-lazy-images');
+```
+
+A [UMD](https://github.com/umdjs/umd) version is also available on [unpkg](https://unpkg.com/):
+```html
+<script src="https://unpkg.com/react-lazy-images/dist/react-lazy-images.umd.js"></script>
+
+```
 
 ## Motivation
 Browsers preload images; as soon as they see an `<img>` tag with a valid `src`, they kick off the request for the image (they even do this before the HTML has been parsed).
@@ -46,7 +69,7 @@ In the past, this has meant "hiding" the actual `src` in a `data-src` attribute,
 On initialisation, a script would query for these classes and attributes, keep track of visibily, and swap `data-src` with an actual `src`, kicking off the browser request process.
 It could even elect to preload the Image, and only swap once loaded.
 
-With React, all this implicit state management is made simpler, since you do not have to store loading information in the DOM and pick it back up again.
+With React, all this implicit state management is made simpler, since you do not have to stash loading information in the DOM and pick it back up again.
 This can potentially mean a nicer, more composable codebase, and it was one of the main design goals for this library.
 
 The way to do this visibility tracking has for the most part been listening for events such as scroll.
@@ -56,26 +79,51 @@ Using this API is not specific to React; it just seems like a good fit for this 
 
 ## Pieces
 ### `LazyImageBasic`
-`LazyImageBasic` is, well, the basic solution. Other components build on a similar interface. At its core, it is tiny, and you could implement this:
+`LazyImageBasic` is, well, the basic solution. Other components build on a similar interface.
+At its core, it is tiny and simple to implement:
 
-```js
-
+```jsx
+const LazyImageBasic = ({placeholder, actual}) => (
+  <Observer rootMargin="50px 0px" threshold={0.01} triggerOnce>
+    {inView => (inView ? actual : placeholder)}
+  </Observer>
+);
 ```
 
-At the moment, it uses [react-intersection-observer]() under the hood.
+At the moment, it uses [react-intersection-observer](https://github.com/thebuilder/react-intersection-observer) under the hood, to provide the view monitoring functionality.
 There are a few more pieces to it, such as warning about fallbacks and supporting eager loading/rendering.
 It is provided more as a reference, for example if you want to implement something similar, or to investigate whether lazy loading images can fit in your application.
-[Check it out]()
+[Check out the source for LazyImage]('./src/index.js').
 
 ### Customising what is displayed
 The render prop pattern is used throughout.
-The LazyImage component handles the behaviour of informing the consumer when the image is in view, but leaves the actual rendering up to the consumer. Thus, whether you want to display a simple `<img>`, your own `<Image>`, or even wrapped elements, it is simple to do so:
+The LazyImage component handles the behaviour of tracking when the image is in view, but leaves the actual rendering up to the consumer. Thus, whether you want to display a simple `<img>`, your own `<Image>`, or even wrapped elements, it is simple to do so:
 
-```
-TODO: show render prop
-src
-actual
-placeholder (show two different ones)
+```jsx
+<LazyImageBasic
+  // This is rendered first
+  placeholder={
+    <img src="https://www.fillmurray.com/g/60/40" className="w-100" />
+  }
+  // This is rendered once in view
+  actual={
+    <img src="https://www.fillmurray.com/g/600/400" className="w-100" />
+  }
+/>
+
+// Perhaps you want a container?
+<LazyImageBasic
+  placeholder={
+    <div className="LazyImage-Placeholder">
+      <img src="https://www.fillmurray.com/g/60/40" className="w-100" />
+    </div>
+  }
+  actual={
+    <div className="LazyImage-Actual">
+      <img src="https://www.fillmurray.com/g/600/400" className="w-100" />
+    </div>
+  }
+/>
 ```
 
 ### `LazyImage`
@@ -84,34 +132,52 @@ In other words, once the image is in view, you can kick off a request to load th
 This prevents swapping a half-loaded image (i.e. one that is still scanning top-to-bottom), and allows the transition to be smoother.
 
 The interface is similar to `LazyImageBasic`:
-```
-TODO: show render prop
-src ...
-actual: (src) => ...
-placeholder (show two different ones)
+```jsx
+// Note that the actual src is also provided separately, 
+// so that the image can be requested before rendering
+<LazyImage
+  src="https://www.fillmurray.com/g/600/400"
+  placeholder={
+    <img src="https://www.fillmurray.com/g/60/40" className="w-100" />
+  }
+  actual={
+    <img src="https://www.fillmurray.com/g/600/400" className="w-100" />
+  }
+/>
 ```
 
 ### Eager loading / Server-Side Rendering (SSR)
 **What does SSR even mean in a lazy images context?**
 
-If you recall the basic premise, then you will know that we "hide" the src and display a placeholder.
+If you recall the basic premise, then you will know that we "hide" the intended image and display a placeholder.
 For the actual image request to kick off, Javascript has to have loaded, and detected that the image is in the viewport.
 In cases where you are server-side rendering, there can be a non-neglible amount of time until Javascript is available (i.e. it has to download, parse, execute).
 For those cases, it would be beneficial if we can mark images to render with the intended/final src by default, so that the browser can start requesting them as soon as it gets the HTML.
 
-This is a pretty straightforward thing to implement; we just short-circuit the process by using a `loadEagerly` prop.
+This is a pretty straightforward thing to implement; we just short-circuit the process by using a `loadEagerly` prop:
+```jsx
+<LazyImage
+  loadEagerly
+  src="https://www.fillmurray.com/g/600/400"
+  placeholder={
+    <img src="https://www.fillmurray.com/g/60/40" className="w-100" />
+  }
+  actual={
+    <img src="https://www.fillmurray.com/g/600/400" className="w-100" />
+  }
+/>
+```
 
 While the implementation is simple, the patterns in your app will not necessarily be so.
 Think about the cases where it is beneficial to do this, and apply it with intent. Examples might be hero images, the first X elements in a list and so on.
-[Some of these cases are provided as examples](#examples)
+[Some of these use cases are provided as examples](#examples).
 
-## Polyfilling IntersectionObserver
+### Polyfilling IntersectionObserver
 :construction: Work in progress :construction:
 
 ## Examples
-:construction: Work in progress :construction:
 A variety of usage examples and recipes is provided in the form of storybook.
-[You can browse the documentation online]() or look at `stories/`.
+[You can browse the documentation online](https://fpapado.github.io/react-lazy-images) or look at `stories/`.
 
 ## Feedback
 I have some specific questions that I would like input on. If you want to go exploring, or have used the library and had gripes with it, then see `FEEDBACK.md` and let's have a discussion!
