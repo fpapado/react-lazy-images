@@ -35,7 +35,7 @@ export class LazyImage extends React.Component {
   }
 
   // Updates
-  onInView = inView => {
+  onInView = (inView) => {
     if (inView) {
       // Kick off request for Image and attach listeners for response
       this.setState({imageState: 'Loading'});

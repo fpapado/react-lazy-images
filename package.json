@@ -1,12 +1,30 @@
 {
   "name": "react-lazy-images",
-  "description": "React utilities for lazy image loading in React",
+  "description": "React utilities for lazy image loading",
   "version": "0.0.1",
-  "main": "lib/index.js",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/fpapado/react-lazy-images.git"
+  "source": "src/index.js",
+  "module": "dist/react-lazy-images.es.js",
+  "main": "dist/react-lazy-images.js",
+  "umd:main": "dist/react-lazy-images.umd.js",
+  "scripts": {
+    "build": "npm-run-all bundle size",
+    "bundle": "microbundle",
+    "size": "dist/react-lazy-images.js | gzip-size && bundlesize",
+    "storybook": "start-storybook -p 8080",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepare": "npm t",
+    "release": "npm t && git commit -am $npm_package_version && git tag $npm_package_version && git push && git push --tags && npm publish"
   },
+  "bundlesize": [
+    {
+      "path": "dist/react-lazy-images.js",
+      "maxSize": "3kb"
+    }
+  ],
+  "files": [
+    "src",
+    "dist"
+  ],
   "keywords": [
     "react",
     "lazy",
@@ -14,20 +32,26 @@
     "intersection",
     "viewport"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fpapado/react-lazy-images.git"
+  },
   "author": "Fotis Papadogeorgopoulos",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/fpapado/react-lazy-images/issues"
   },
   "homepage": "https://github.com/fpapado/react-lazy-images#readme",
-  "scripts": {
-    "storybook": "start-storybook -p 8080",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "devDependencies": {
     "@storybook/addon-actions": "^3.3.15",
     "@storybook/addon-options": "^3.3.15",
+    "@storybook/addons": "^3.3.15",
     "@storybook/react": "^3.3.15",
+    "babel-core": "^6.26.0",
+    "bundlesize": "^0.17.0",
+    "gzip-size": "^4.1.0",
+    "microbundle": "^0.4.4",
+    "npm-run-all": "^4.1.2",
     "prettier": "^1.11.1",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
