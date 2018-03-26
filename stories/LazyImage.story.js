@@ -112,8 +112,7 @@ storiesOf('LazyImage', module)
         />
       </Container>
     ))
-  );
-/* WIP
+  )
   // Always load an image (aka "eagerly"; how the browser does it already.
   // Useful if you want to load the actual content without waiting for Javascript.
   .add(
@@ -122,14 +121,20 @@ storiesOf('LazyImage', module)
       'Always load an image (i.e. eagerly; how the browser does it already). Useful if you want to load the actual content without waiting for Javascript. You should consider where you need this pattern. See the relevant section in README.md for more.'
     )(() => (
       <Container>
-        <LazyImageBasic
+        <LazyImage
           loadEagerly
-          placeholder={
-            <img src="https://www.fillmurray.com/g/60/40" className="w-100" />
-          }
-          actual={
-            <img src="https://www.fillmurray.com/g/600/400" className="w-100" />
-          }
+          placeholder={({cls}) => (
+            <img
+              src="https://www.fillmurray.com/g/60/40"
+              className={`${cls} w-100`}
+            />
+          )}
+          actual={({cls}) => (
+            <img
+              src="https://www.fillmurray.com/g/600/400"
+              className={`${cls} w-100`}
+            />
+          )}
         />
       </Container>
     ))
@@ -147,24 +152,26 @@ storiesOf('LazyImage', module)
           ['second', '60/40', '600/400'],
           ['third', '90/60', '900/600']
         ].map(([key, placeholder, actual], i) => (
-          <LazyImageBasic
+          <LazyImage
             loadEagerly={i === 0}
             key={key}
+            src={`https://www.fillmurray.com/g/${actual}`}
             placeholder={
-              <img
-                src={`https://www.fillmurray.com/g/${placeholder}`}
-                className="w-100"
-              />
+              ({cls}) =>
+                <img
+                  src={`https://www.fillmurray.com/g/${placeholder}`}
+                  className={`${cls} w-100`}
+                />
             }
             actual={
-              <img
-                src={`https://www.fillmurray.com/g/${actual}`}
-                className="w-100"
-              />
+              ({cls}) =>
+                <img
+                  src={`https://www.fillmurray.com/g/${actual}`}
+                  className={`${cls} w-100`}
+                />
             }
           />
         ))}
       </Container>
     ))
   );
-*/

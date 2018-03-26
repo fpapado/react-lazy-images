@@ -13,6 +13,7 @@ interface RenderPropArgs {
 
 export interface LazyImageProps extends _LazyImageProps {
   fallback?: Fallback;
+  loadEagerly?: boolean;
   observerProps?: any; // TODO: fix this by using IntersectionObserverProps
 }
 
@@ -37,6 +38,8 @@ export class LazyImage extends React.Component<LazyImageProps, LazyImageState> {
     this.onInView = this.onInView.bind(this);
     this.onLoadSuccess = this.onLoadSuccess.bind(this);
     this.onLoadError = this.onLoadError.bind(this);
+    this.renderEager = this.renderEager.bind(this);
+    this.renderLazy = this.renderLazy.bind(this);
   }
 
   // Updates
@@ -59,7 +62,19 @@ export class LazyImage extends React.Component<LazyImageProps, LazyImageState> {
   }
 
   render() {
-    const {src, actual, placeholder, fallback, observerProps} = this.props;
+    if (this.props.loadEagerly) return this.renderEager(this.props);
+    return this.renderLazy(this.props);
+  }
+
+  renderEager({actual}: LazyImageProps) {
+    return (
+      <React.Fragment>
+        {actual({cls: 'LazyImage LazyImage-Actual'})}
+      </React.Fragment>
+    );
+  }
+
+  renderLazy({src, actual, placeholder, fallback, observerProps}: LazyImageProps) {
     return (
       <React.Fragment>
         <Observer
