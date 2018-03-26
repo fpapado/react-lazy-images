@@ -2,7 +2,7 @@
   "name": "react-lazy-images",
   "description": "React utilities for lazy image loading",
   "version": "0.1.2",
-  "source": "src/index.jsx",
+  "source": "src/index.tsx",
   "module": "dist/react-lazy-images.es.js",
   "main": "dist/react-lazy-images.js",
   "umd:main": "dist/react-lazy-images.umd.js",
