@@ -2,8 +2,7 @@ import * as React from 'react';
 import {storiesOf} from '@storybook/react';
 import {action} from '@storybook/addon-actions';
 import {withInfo} from '@storybook/addon-info';
-// Not ideal to use the src directly, but I'd rather have the correct display names
-import {LazyImageBasic, LazyImage} from '../src/index.jsx';
+import {LazyImage} from '../dist/react-lazy-images.es.js';
 
 const Container = ({children}) => (
   <div className="pa3 near-black bg-washed-yellow">
