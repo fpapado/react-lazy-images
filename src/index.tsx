@@ -3,19 +3,20 @@ import Observer from 'react-intersection-observer';
 
 interface _LazyImageProps {
   src: string;
-  placeholder: () => React.ReactElement<{}>;
-  actual: () => React.ReactElement<{}>;
+  placeholder: (RenderPropArgs) => React.ReactElement<{}>;
+  actual: (RenderPropArgs) => React.ReactElement<{}>;
+}
+
+interface RenderPropArgs {
+  cls: string;
 }
 
 export interface LazyImageProps extends _LazyImageProps {
-  fallbackStrategy?: FallbackStrategy;
+  fallback?: Fallback;
   observerProps?: any; // TODO: fix this by using IntersectionObserverProps
 }
 
-type FallbackStrategy =
-  | 'Off'
-  | 'NoScriptActual'
-  | ((_LazyImageProps) => React.ReactElement<{}>);
+type Fallback = ((_LazyImageProps) => React.ReactElement<{}>);
 
 interface LazyImageState {
   inView: boolean;
@@ -25,12 +26,6 @@ interface LazyImageState {
 type ImageState = 'NotAsked' | 'Loading' | 'LoadSuccess' | 'LoadError';
 
 // LazyImage component that preloads the image before swapping in
-// TODO: cancel loading on componentWillUnmount
-// TODO: loadEagerly
-// TODO: customisable Observer props, defaultProps
-// TODO: example of abstraction with further HoC
-// TODO: pass ({lazyClass}) to actual/placeholder and note why it is important
-// TODO: handle different states/provide hooks
 export class LazyImage extends React.Component<LazyImageProps, LazyImageState> {
   constructor(props) {
     super(props);
@@ -63,17 +58,8 @@ export class LazyImage extends React.Component<LazyImageProps, LazyImageState> {
     this.setState({imageState: 'LoadError'});
   }
 
-  // WIP: noscript fallback; could place it on top of the placeholder
-  // and tell the user to figure out whether they want to hide it,
-  // e.g. with <noscript><style>.LazyImage { display: none }</style></noscript>
   render() {
-    const {
-      src,
-      actual,
-      placeholder,
-      fallbackStrategy,
-      observerProps
-    } = this.props;
+    const {src, actual, placeholder, fallback, observerProps} = this.props;
     return (
       <React.Fragment>
         <Observer
@@ -83,16 +69,15 @@ export class LazyImage extends React.Component<LazyImageProps, LazyImageState> {
           onChange={this.onInView}
           triggerOnce
         >
-          {this.state.imageState === 'LoadSuccess' ? actual : placeholder}
+          {this.state.imageState === 'LoadSuccess'
+            ? actual({cls: 'LazyImage LazyImage-Actual'})
+            : placeholder({cls: 'LazyImage LazyImage-Placeholder'})}
         </Observer>
 
         {/* Display this if JS is disabled */}
-        <Fallback
-          strategy={fallbackStrategy || 'Off'}
-          src={src}
-          actual={actual}
-          placeholder={placeholder}
-        />
+        {fallback && (
+          <noscript>{fallback({src, actual, placeholder})}</noscript>
+        )}
       </React.Fragment>
     );
   }
@@ -101,7 +86,7 @@ export class LazyImage extends React.Component<LazyImageProps, LazyImageState> {
 // Utilities
 
 // Promise constructor for (pre)loading an image
-// IDEA: this seems like the conventional way of doing it, and yet we are not
+// NOTE: this seems like the conventional way of doing it, and yet we are not
 // using the img element per se. Should we use an explicit fetch(), perhaps?
 const loadImage = src =>
   new Promise((resolve, reject) => {
@@ -111,18 +96,8 @@ const loadImage = src =>
     image.onerror = reject;
   });
 
-// TODO: could actually export this!
-const Fallback = ({strategy, src, actual, placeholder}) => {
-  // Render prop, custom fallback
-  // TODO: naive, make explicit instead with fallback=... prop
-  if (typeof strategy === 'function') {
-    return <noscript>{strategy({src, actual, placeholder})}</noscript>;
-  }
-  // Predefined Strategies
-  if (strategy === 'NoScriptActual') {
-    return <noscript>{actual}</noscript>;
-  }
-  if (strategy === 'Off') {
-    return null;
-  }
-};
+// Fallbacks
+// Just use the intended image as the fallback
+export const renderDefaultFallback: Fallback = ({actual}) => (
+  <React.Fragment>{actual}</React.Fragment>
+);

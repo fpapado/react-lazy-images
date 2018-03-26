@@ -87,7 +87,7 @@ Using this API is not specific to React; it just seems like a good fit for this 
 ### Quick Start
 If you want to just dive in, do this:
 ```jsx
-import {LazyImage, NoScriptFallback} from 'react-lazy-images';
+import {LazyImage, renderDefaultFallback} from 'react-lazy-images';
 
 <LazyImage
   src="https://www.fillmurray.com/g/600/400"
@@ -99,7 +99,7 @@ import {LazyImage, NoScriptFallback} from 'react-lazy-images';
     ({cls}) =>
       <img src="https://www.fillmurray.com/g/600/400" className={cls} />
   }
-  fallback={({actual}) => <NoScriptFallback {actual}>}
+  fallback={renderDefaultFallback}
 />
 ```
 
@@ -232,10 +232,10 @@ Here is what it looks like rendered:
 
 You can define strategies with the `fallback` prop.
 
-#### `NoScriptFallback`
-The strategy above is provided as the `<NoScriptFallback>` export, to ease its use.
+#### `renderDefaultFallback`
+The strategy above (using the `actual` image as the fallback) is provided as the `renderDefaultFallback` export, to ease its use.
 ```jsx
-import {LazyImage, NoScriptFallback} from 'react-lazy-images';
+import {LazyImage, renderDefaultFallback} from 'react-lazy-images';
 
 <LazyImage
   src="https://www.fillmurray.com/g/600/400"
@@ -247,23 +247,23 @@ import {LazyImage, NoScriptFallback} from 'react-lazy-images';
     ({cls}) =>
       <img src="https://www.fillmurray.com/g/600/400" className={cls} />
   }
-  fallback={({actual}) => <NoScriptFallback {actual}>}
+  fallback={renderDefaultFallback}
 />
 ```
 
 :warning:
-You have to provide the styling to hide `.LazyImage`, as shown above.
+You have to provide the `<noscript>` styling to hide `.LazyImage`, as shown above.
 Otherwise, this won't work and you will show the placeholder in addition to the fallback!
 :warning:
 
 
 #### DIY Fallback
 If you want to customise the fallback, then you can pass your own render function to `fallback`.
+*That prop will be rendered inside the `<noscript>` tag*.
 It once again is the render prop pattern, and gives you access to all the information it has available.
-For example, here is how you can implement `NoScriptFallback`:
+For example, here is how you can implement `renderDefaultFallback`:
 
 ```jsx
-// A function in fallback will be rendered inside the <noscript> tag
 <LazyImage
   fallback={({src, actual, placeholder}) => {actual} }
   src="https://www.fillmurray.com/g/600/400"
