@@ -17,7 +17,7 @@ export interface LazyImageProps extends _LazyImageProps {
   observerProps?: any; // TODO: fix this by using IntersectionObserverProps
 }
 
-type Fallback = ((_LazyImageProps) => React.ReactElement<{}>);
+type Fallback = ((p: _LazyImageProps) => React.ReactElement<{}>);
 
 interface LazyImageState {
   inView: boolean;
