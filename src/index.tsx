@@ -76,7 +76,13 @@ export class LazyImage extends React.Component<LazyImageProps, LazyImageState> {
 
         {/* Display this if JS is disabled */}
         {fallback && (
-          <noscript>{fallback({src, actual, placeholder})}</noscript>
+          <noscript>
+            {fallback({
+              src,
+              actual: actual({cls: 'LazyImage-Fallback'}),
+              placeholder: placeholder({cls: 'LazyImage-Fallback'})
+            })}
+          </noscript>
         )}
       </React.Fragment>
     );
