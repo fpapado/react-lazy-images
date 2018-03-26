@@ -98,7 +98,7 @@ const LazyImageBasic = ({placeholder, actual}) => (
 It is provided more as a reference, for example if you want to implement something similar, or to investigate whether lazy loading images can fit in your application.
 At the moment, it uses [react-intersection-observer](https://github.com/thebuilder/react-intersection-observer) under the hood, to provide the view monitoring functionality.
 There are a few more pieces to it, such as warning about fallbacks and supporting eager loading/rendering.
-[Check out the source for LazyImage]('./src/index.js').
+[Check out the source for LazyImage](./src/index.js).
 
 ### Customising what is displayed
 The render prop pattern is used throughout.
@@ -188,8 +188,8 @@ Here is what it looks like rendered:
 ```jsx
 // In the <head>
 // Style applied only when JS is disabled
+// Hide the LazyImage (since the actual one will be displayed in its place)
 <noscript>
-  // Hide the LazyImage (since the actual one will be displayed in its place)
   <style>
     .LazyImage {
       display: none;
@@ -200,13 +200,14 @@ Here is what it looks like rendered:
 // In your component (as rendered)
 // Placeholder since JS has not run; will be hidden with the style above.
 // img tags that are hidden are not loaded, yay!
-<img src="placeholderImgSrc class="LazyImage"/>
+<img src="placeholderImgSrc" class="LazyImage"/>
 <noscript>
   <img src="actualImgSrc" />  // Render the actual as usual
 </noscript>
 ```
 
 QUESTION: should this be on by default?
+
 This strategy is available with the `fallbackStrategy="NoScriptActual"` prop:
 ```jsx
 <LazyImage
@@ -232,9 +233,9 @@ Current values are:
 - `Off`
 
 #### DIY Fallback
-If you want to customise the fallback, then you can pass a function to fallbackStrategy.
+If you want to customise the fallback, then you can pass a function to `fallbackStrategy`.
 It uses the render prop pattern, and gives you access to all the information it has available.
-For example, this is the equivalent to `NoScriptActual`:
+For example, here is how you can implement `NoScriptActual`:
 
 ```jsx
 // A function in fallbackStrategy be rendered inside the <noscript> tag
@@ -253,8 +254,9 @@ This may or may not be good enough.
 Please open an issue to discuss your needs if that is the case :)
 
 ### Polyfill
-Strategies for polyfilling IntersectionObserver
 :construction: Work in progress :construction:
+
+Strategies for polyfilling IntersectionObserver
 
 ## Examples
 A variety of usage examples and recipes is provided in the form of storybook.
@@ -264,6 +266,8 @@ A variety of usage examples and recipes is provided in the form of storybook.
 I have some specific questions that I would like input on. If you want to go exploring, or have used the library and had gripes with it, then see [`FEEDBACK.md`](./FEEDBACK.md) and let's have a discussion!
 
 ## Contributing
+:construction: Work in progress :construction:
+
 I would love to have contributions on this! Are there more patterns that we can expose and simplify? Is something not clear? See `CONTRIBUTING.md` for details.
 
 ## License
