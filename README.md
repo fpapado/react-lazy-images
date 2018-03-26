@@ -15,6 +15,7 @@
 -   [Motivation](#motivation)
 -   [Usage](#usage)
 -   [Examples](#examples)
+-   [API](#api)
 -   [Feedback](#feedback)
 -   [Contributing](#contributing)
 -   [License](#license)
@@ -83,70 +84,93 @@ This was the motivation for browsers providing [IntersectionObserver]().
 Using this API is not specific to React; it just seems like a good fit for this task nowadays.
 
 ## Usage
-### `LazyImageBasic`
-`LazyImageBasic` is, well, a basic solution. Other components build on a similar interface.
-At its core, it is tiny and simple to implement:
-
+### Quick Start
+If you want to just dive in, do this:
 ```jsx
-const LazyImageBasic = ({placeholder, actual}) => (
-  <Observer rootMargin="50px 0px" threshold={0.01} triggerOnce>
-    {inView => (inView ? actual : placeholder)}
-  </Observer>
-);
+import {LazyImage, NoScriptFallback} from 'react-lazy-images';
+
+<LazyImage
+  src="https://www.fillmurray.com/g/600/400"
+  placeholder={
+    ({cls}) =>
+      <img src="https://www.fillmurray.com/g/60/40" className={cls} />
+  }
+  actual={
+    ({cls}) =>
+      <img src="https://www.fillmurray.com/g/600/400" className={cls} />
+  }
+  fallback={({actual}) => <NoScriptFallback {actual}>}
+/>
 ```
 
-It is provided more as a reference, for example if you want to implement something similar, or to investigate whether lazy loading images can fit in your application.
-At the moment, it uses [react-intersection-observer](https://github.com/thebuilder/react-intersection-observer) under the hood, to provide the view monitoring functionality.
-There are a few more pieces to it, such as warning about fallbacks and supporting eager loading/rendering.
-[Check out the source for LazyImage](./src/index.js).
+Additionally, make sure you understand [how to polyfill IntersectionObserver](#polyfill) and [strategies for when JS is not available](#fallback).
+Those are imperative if you want to provide a good user experience.
+
+From then on:
+- If you want to learn more about the API and the problem space, read the rest of this section.
+- If you want to list the props, see the [API reference]
 
 ### Customising what is displayed
-The render prop pattern is used throughout.
-The LazyImage component handles the behaviour of tracking when the image is in view, but leaves the actual rendering up to the consumer. Thus, whether you want to display a simple `<img>`, your own `<Image>`, or even wrapped elements, it is simple to do so:
+The render prop pattern is used throughout in `LazyImage`.
+The `LazyImage` component **handles the behaviour of tracking when the image is in view, but leaves the actual rendering up to the consumer**.
+Thus, whether you want to display a simple `<img>`, your own `<Image>`, or even wrapped elements, it is simple to do so:
 
 ```jsx
-<LazyImageBasic
+<LazyImage
+  src={https://www.fillmurray.com/g/600/400}
   // This is rendered first
   placeholder={
-    <img src="https://www.fillmurray.com/g/60/40" className="w-100" />
+    ({cls}) =>
+      <img src="https://www.fillmurray.com/g/60/40" className={cls} />
   }
   // This is rendered once in view
   actual={
-    <img src="https://www.fillmurray.com/g/600/400" className="w-100" />
+    ({cls}) =>
+      <img src="https://www.fillmurray.com/g/600/400" className={cls} />
   }
 />
 
 // Perhaps you want a container?
-<LazyImageBasic
+<LazyImage
   placeholder={
-    <div className="LazyImage-Placeholder">
-      <img src="https://www.fillmurray.com/g/60/40" className="w-100" />
-    </div>
+    ({cls}) =>
+      <div className={`LazyImage-Placeholder ${cls}`}">
+        <img src="https://www.fillmurray.com/g/60/40"/>
+      </div>
   }
   actual={
-    <div className="LazyImage-Actual">
-      <img src="https://www.fillmurray.com/g/600/400" className="w-100" />
-    </div>
+    ({cls}) =>
+      <div className={`LazyImage-Actual ${cls}`}>
+        <img src="https://www.fillmurray.com/g/600/400" className={cls} />
+      </div>
   }
 />
 ```
 
-### `LazyImage`
-A common optimisation to the loading strategy is to preload the image before swapping it for the placeholder.
-In other words, once the image is in view, you can kick off a request to load the image, and only swap it once loaded. 
-This prevents swapping a half-loaded image (i.e. one that is still scanning top-to-bottom), and allows the transition to be smoother.
+These props are there to instruct the component what to render in those places, and they take some useful information (in this case, a className) from the LazyImage.
 
-The interface is similar to `LazyImageBasic`:
+### Load before swap
+A common optimisation to the loading strategy is to preload the image before swapping it for the placeholder.
+In other words, once the image is in view, you can kick off a request to load the image, and only show it once fully loaded.
+This avoids presenting a half-loaded image (i.e. one that is still scanning top-to-bottom), and makes the transition smoother.
+
+This behaviour is provided by default:
 ```jsx
-// Note that the actual src is also provided separately, 
+// Note that the actual src is also provided separately,
 // so that the image can be requested before rendering
 <LazyImage
   src="https://www.fillmurray.com/g/600/400"
   placeholder={
-    <img src="https://www.fillmurray.com/g/60/40" className="w-100" />
+    ({cls}) =>
+      <div className={`LazyImage-Placeholder ${cls}`}">
+        <img src="https://www.fillmurray.com/g/60/40"/>
+      </div>
   }
   actual={
-    <img src="https://www.fillmurray.com/g/600/400" className="w-100" />
+    ({cls}) =>
+      <div className={`LazyImage-Actual ${cls}`}>
+        <img src="https://www.fillmurray.com/g/600/400" className={cls} />
+      </div>
   }
 />
 ```
@@ -197,7 +221,7 @@ Here is what it looks like rendered:
   </style>
 </noscript>
 
-// In your component (as rendered)
+// Your component (as rendered)
 // Placeholder since JS has not run; will be hidden with the style above.
 // img tags that are hidden are not loaded, yay!
 <img src="placeholderImgSrc" class="LazyImage"/>
@@ -206,19 +230,24 @@ Here is what it looks like rendered:
 </noscript>
 ```
 
-QUESTION: should this be on by default?
+You can define strategies with the `fallback` prop.
 
-This strategy is available with the `fallbackStrategy="NoScriptActual"` prop:
+#### `NoScriptFallback`
+The strategy above is provided as the `<NoScriptFallback>` export, to ease its use.
 ```jsx
+import {LazyImage, NoScriptFallback} from 'react-lazy-images';
+
 <LazyImage
-  fallbackStrategy="NoScriptActual"
   src="https://www.fillmurray.com/g/600/400"
   placeholder={
-    <img src="https://www.fillmurray.com/g/60/40" className="w-100" />
+    ({cls}) =>
+      <img src="https://www.fillmurray.com/g/60/40" className={cls} />
   }
   actual={
-    <img src="https://www.fillmurray.com/g/600/400" className="w-100" />
+    ({cls}) =>
+      <img src="https://www.fillmurray.com/g/600/400" className={cls} />
   }
+  fallback={({actual}) => <NoScriptFallback {actual}>}
 />
 ```
 
@@ -227,27 +256,18 @@ You have to provide the styling to hide `.LazyImage`, as shown above.
 Otherwise, this won't work and you will show the placeholder in addition to the fallback!
 :warning:
 
-The `fallbackStrategy` enum is reserved for other strategies with cross-cutting presentational concerns.
-Current values are:
-- `NoScriptActual`
-- `Off`
 
 #### DIY Fallback
-If you want to customise the fallback, then you can pass a function to `fallbackStrategy`.
-It uses the render prop pattern, and gives you access to all the information it has available.
-For example, here is how you can implement `NoScriptActual`:
+If you want to customise the fallback, then you can pass your own render function to `fallback`.
+It once again is the render prop pattern, and gives you access to all the information it has available.
+For example, here is how you can implement `NoScriptFallback`:
 
 ```jsx
-// A function in fallbackStrategy be rendered inside the <noscript> tag
+// A function in fallback will be rendered inside the <noscript> tag
 <LazyImage
-  fallbackStrategy={({src, actual, placeholder}) => {actual} }
+  fallback={({src, actual, placeholder}) => {actual} }
   src="https://www.fillmurray.com/g/600/400"
-  placeholder={
-    <img src="https://www.fillmurray.com/g/60/40" className="w-100" />
-  }
-  actual={
-    <img src="https://www.fillmurray.com/g/600/400" className="w-100" />
-  }
+  // etc.
 />
 ```
 This may or may not be good enough.
@@ -264,6 +284,9 @@ Strategies for polyfilling IntersectionObserver
 A variety of usage examples and recipes is provided in the form of storybook.
 [You can browse the documentation online](https://fpapado.github.io/react-lazy-images) or look at `stories/`.
 
+## API
+:construction: Work in progress :construction:
+
 ## Feedback
 I have some specific questions that I would like input on. If you want to go exploring, or have used the library and had gripes with it, then see [`FEEDBACK.md`](./FEEDBACK.md) and let's have a discussion!
 
@@ -279,7 +302,7 @@ MIT License © Fotis Papadogeorgpoulos
 (And inspiration)
 
 [react-intersection-observer library](https://github.com/thebuilder/react-intersection-observer)
-This is the library backing `LazyImage` and the like.
+This is the library backing `LazyImage`.
 Further thanks for demonstrating Storybook as documentation.
 
 [Paul Lewis' implementation of lazy image loading](https://github.com/GoogleChromeLabs/sample-media-pwa/blob/master/src/client/scripts/helpers/lazy-load-images.js)
