@@ -22,7 +22,7 @@
 
 ## Features:
 - Composable pieces that range from the simple use case, to preloading images and more
-- Modern, performant implementation, using [IntersectionObserver]() and providing fallback strategies
+- Modern, performant implementation, using [IntersectionObserver](https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API) and providing fallback strategies
 - Eager loading / Server-side rendering support
 - Easy to understand source code. You should be able to fork and do your thing if desired.
 
@@ -255,6 +255,8 @@ Please open an issue to discuss your needs if that is the case :)
 
 ### Polyfill
 :construction: Work in progress :construction:
+
+[Usage data for IntersectionObserver](https://caniuse.com/#search=intersectionobserver)
 
 Strategies for polyfilling IntersectionObserver
 
