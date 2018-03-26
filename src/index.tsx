@@ -126,11 +126,3 @@ const Fallback = ({strategy, src, actual, placeholder}) => {
     return null;
   }
 };
-
-// Most basic implementation
-// TODO: customisable Observer props, defaultProps
-export const LazyImageBasic = ({placeholder, actual, loadEagerly}) => (
-  <Observer rootMargin="50px 0px" threshold={0.01} triggerOnce>
-    {inView => (loadEagerly || inView ? actual : placeholder)}
-  </Observer>
-);
