@@ -61,58 +61,6 @@ storiesOf('LazyImage', module)
       </Container>
     ))
   )
-  .add(
-    'With default fallback strategy',
-    withInfo(
-      'Basic fallback strategy of showing the actual img in the noscript tag. Do not forget to hide the placeholder with CSS! See the README for more information'
-    )(() => (
-      <Container>
-        <LazyImage
-          fallback={renderDefaultFallback}
-          src="https://www.fillmurray.com/g/600/400"
-          placeholder={({cls}) => (
-            <img
-              src="https://www.fillmurray.com/g/60/40"
-              className={`${cls} w-100`}
-            />
-          )}
-          actual={({cls}) => (
-            <img
-              src="https://www.fillmurray.com/g/600/400"
-              className={`${cls} w-100`}
-            />
-          )}
-        />
-      </Container>
-    ))
-  )
-  .add(
-    'With custom fallback',
-    withInfo(
-      'Custom fallback strategy. Uses the typical render prop pattern and renders inside a <noscript> after the placeholder.'
-    )(() => (
-      <Container>
-        <LazyImage
-          fallback={({src, actual, placeholder}) => (
-            <div className="OhNoJSisOff">{actual}</div>
-          )}
-          src="https://www.fillmurray.com/g/600/400"
-          placeholder={({cls}) => (
-            <img
-              src="https://www.fillmurray.com/g/60/40"
-              className={`${cls} w-100`}
-            />
-          )}
-          actual={({cls}) => (
-            <img
-              src="https://www.fillmurray.com/g/600/400"
-              className={`${cls} w-100`}
-            />
-          )}
-        />
-      </Container>
-    ))
-  )
   // Always load an image (aka "eagerly"; how the browser does it already.
   // Useful if you want to load the actual content without waiting for Javascript.
   .add(

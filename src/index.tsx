@@ -12,12 +12,9 @@ interface RenderPropArgs {
 }
 
 export interface LazyImageProps extends _LazyImageProps {
-  fallback?: Fallback;
   loadEagerly?: boolean;
   observerProps?: any; // TODO: fix this by using IntersectionObserverProps
 }
-
-type Fallback = ((p: _LazyImageProps) => React.ReactElement<{}>);
 
 interface LazyImageState {
   inView: boolean;
@@ -74,7 +71,7 @@ export class LazyImage extends React.Component<LazyImageProps, LazyImageState> {
     );
   }
 
-  renderLazy({src, actual, placeholder, fallback, observerProps}: LazyImageProps) {
+  renderLazy({src, actual, placeholder, observerProps}: LazyImageProps) {
     return (
       <React.Fragment>
         <Observer
@@ -88,17 +85,6 @@ export class LazyImage extends React.Component<LazyImageProps, LazyImageState> {
             ? actual({cls: 'LazyImage LazyImage-Actual'})
             : placeholder({cls: 'LazyImage LazyImage-Placeholder'})}
         </Observer>
-
-        {/* Display this if JS is disabled */}
-        {fallback && (
-          <noscript>
-            {fallback({
-              src,
-              actual: actual({cls: 'LazyImage-Fallback'}),
-              placeholder: placeholder({cls: 'LazyImage-Fallback'})
-            })}
-          </noscript>
-        )}
       </React.Fragment>
     );
   }
@@ -116,9 +102,3 @@ const loadImage = src =>
     image.onload = resolve;
     image.onerror = reject;
   });
-
-// Fallbacks
-// Just use the intended image as the fallback
-export const renderDefaultFallback: Fallback = ({actual}) => (
-  <React.Fragment>{actual}</React.Fragment>
-);

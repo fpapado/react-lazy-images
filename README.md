@@ -104,7 +104,6 @@ import {LazyImage, renderDefaultFallback} from 'react-lazy-images';
 ```
 
 Additionally, make sure you understand [how to polyfill IntersectionObserver](#polyfill) and [strategies for when JS is not available](#fallback).
-Those are imperative if you want to provide a good user experience.
 
 From then on:
 - If you want to learn more about the API and the problem space, read the rest of this section.
@@ -223,53 +222,43 @@ Here is what it looks like rendered:
 
 // Your component (as rendered)
 // Placeholder since JS has not run; will be hidden with the style above.
-// img tags that are hidden are not loaded, yay!
 <img src="placeholderImgSrc" class="LazyImage"/>
+
+// img tags that are hidden are not loaded, yay!
 <noscript>
   <img src="actualImgSrc" />  // Render the actual as usual
 </noscript>
 ```
 
-You can define strategies with the `fallback` prop.
+Until v0.3.0, this library had a fallback API, in the form of a `fallback` render prop.
+This has been disabled due to issues with `<noscript>` in react causing the fallback to always load.
 
-#### `renderDefaultFallback`
-The strategy above (using the `actual` image as the fallback) is provided as the `renderDefaultFallback` export, to ease its use.
-```jsx
-import {LazyImage, renderDefaultFallback} from 'react-lazy-images';
+(See https://github.com/facebook/react/issues/11423 for more details)
 
-<LazyImage
-  src="https://www.fillmurray.com/g/600/400"
-  placeholder={
-    ({cls}) =>
-      <img src="https://www.fillmurray.com/g/60/40" className={cls} />
-  }
-  actual={
-    ({cls}) =>
-      <img src="https://www.fillmurray.com/g/600/400" className={cls} />
-  }
-  fallback={renderDefaultFallback}
-/>
-```
+Current solutions involve either using `dangerouslySetInnerHTML`, which is not safe, or `ReactDOMServer.renderToStaticMarkup`.
+I thought it would be irresponsible to hide the fact that `dangerouslySetInnerHTML` is used from the user, so that excludes the first option.
+I also think that using the server method, albeit safe, would be messy with some bundling configurations (which would keep the entirety of `react-dom/server`).
 
-:warning:
-You have to provide the `<noscript>` styling to hide `.LazyImage`, as shown above.
-Otherwise, this won't work and you will show the placeholder in addition to the fallback!
-:warning:
+Silver lining:
 
-
-#### DIY Fallback
-If you want to customise the fallback, then you can pass your own render function to `fallback`.
-*That prop will be rendered inside the `<noscript>` tag*.
-It once again is the render prop pattern, and gives you access to all the information it has available.
-For example, here is how you can implement `renderDefaultFallback`:
+There is generally no case where `<noscript>` will be rendered by client-side react, which means that, if you are in charge of server-rendering and
+you trust your bundling setup, then you can have this fallback!
+Look at [`src/fallbackUtils.tsx`](./src/fallbackUtils.tsx) for a function that can work.
+You would probably do something like this:
 
 ```jsx
 <LazyImage
-  fallback={({src, actual, placeholder}) => {actual} }
-  src="https://www.fillmurray.com/g/600/400"
-  // etc.
+  src="actualImgSrc"
+  placeholder={//the usual}
+  actual={//the usual}
 />
+<Fallback>
+  <img src="actualImgSrc" />
+</Fallback>
 ```
+
+Don't forget to also hide the `.LazyImage` as shown above.
+
 This may or may not be good enough.
 Please open an issue to discuss your needs if that is the case :)
 
