@@ -25,19 +25,20 @@
 -   [Thanks](#thanks)
 
 ## Features:
-- Composable pieces that range from the simple use case, to preloading images and more
-- Modern, performant implementation, using [IntersectionObserver](https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API) and providing fallback strategies
-- Eager loading / Server-side rendering support
-- Easy to understand source code. You should be able to fork and do your thing if desired
-- Ample documentation to help you understand the problem, in addition to the solutions
+- Composable pieces that range from the simple use case, to preloading images and more.
+- Full presentational control on the caller
+- Modern, performant implementation, using [IntersectionObserver](https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API) and providing fallback strategies.
+- [Eager loading / Server-side rendering support](#eager-loading--server-side-rendering-ssr).
+- Easy to understand source code. You should be able to fork and do your thing if desired.
+- Ample documentation to help you understand the problem, in addition to the solutions.
 
 What it does not do by itself:
-- Polyfill `IntersectionObserver`. Adding polyfills is something you should do consciously at the application level, especially if they might incur download and performance costs. See [Polyfilling IntersectionObserver](#polyfill) for different strategies.
-- Dictate the kind of placeholders. There are many ways to do that; you can use a simple box with a background color (I hear gray is popular), a blurred image, some gradient or anything you'd like. You are in control of the element that gets rendered.
-- Animate the transitions. Again, you are in control of the containers, so it is possible to implement those at the consumer.
-- Any kind of intrinsic ratios. Those are better served by another library/styles composed with this one.
+- Polyfill `IntersectionObserver`. Adding polyfills is something you should do consciously at the application level, especially if they might incur download and performance costs. See [Polyfilling IntersectionObserver](#polyfill-intersectionobserver) for different strategies.
+- Dictate the kind of placeholders displayed. There are many ways to do it; you can use a simple box with a background color (I hear gray is popular), a blurred image, some gradient, or anything you'd like. You are in control of the element that gets rendered.
+- Animate transitions between placeholder and source. Again, you are in control of the containers, so it is possible to implement those at the consumer.
 
-In other words, this library focuses on loading the images once in view and supporting loading patterns around that. The actual components are yours to decide!
+In other words, this library focuses on loading the images once in view and supporting loading patterns around that.
+The actual components are yours to decide!
 
 ## Install
 This package is distributed via [npm](https://www.npmjs.com/get-npm).
@@ -84,7 +85,7 @@ This can potentially mean a nicer, more composable codebase, and it was one of t
 
 The way to do this visibility tracking has for the most part been listening for events such as scroll.
 This is synchronous by nature and can have performance implications.
-This was the motivation for browsers providing [IntersectionObserver]().
+This was the motivation for browsers providing [IntersectionObserver](https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API).
 Using this API is not specific to React; it just seems like a good fit for this task nowadays.
 
 ## Usage
@@ -108,7 +109,7 @@ import {LazyImage, renderDefaultFallback} from 'react-lazy-images';
 
 [You can play around with this library on Codesandbox](https://codesandbox.io/s/jnn9wjkj1w).
 
-Additionally, make sure you understand [how to polyfill IntersectionObserver](#polyfill) and [strategies for when JS is not available](#fallback).
+Additionally, make sure you understand [how to polyfill IntersectionObserver](#polyfill-intersectionobserver) and [strategies for when JS is not available](#fallback-without-javascript).
 
 From then on:
 - If you want to learn more about the API and the problem space, read the rest of this section.
@@ -267,7 +268,7 @@ Don't forget to also hide the `.LazyImage` as shown above.
 This may or may not be good enough.
 Please open an issue to discuss your needs if that is the case :)
 
-### Polyfill
+### Polyfill IntersectionObserver
 :construction: Work in progress :construction:
 
 [Usage data for IntersectionObserver](https://caniuse.com/#search=intersectionobserver)
