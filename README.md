@@ -3,6 +3,9 @@
 
 [![npm](https://img.shields.io/npm/v/react-lazy-images.svg)](https://www.npmjs.com/package/react-lazy-images)
 [![gzip size](http://img.badgesize.io/https://unpkg.com/react-lazy-images/dist/react-lazy-images.js?compression=gzip)](https://unpkg.com/react-lazy-images/dist/react-lazy-images.js)
+<a href="https://codesandbox.io/s/jnn9wjkj1w">
+  <img src="https://codesandbox.io/static/img/play-codesandbox.svg" height="20px"/>
+</a>
 
 :construction: Work in progress :construction:
 
@@ -15,7 +18,7 @@
 -   [Motivation](#motivation)
 -   [Usage](#usage)
 -   [Examples](#examples)
--   [API](#api)
+-   [API Reference](#api-reference)
 -   [Feedback](#feedback)
 -   [Contributing](#contributing)
 -   [License](#license)
@@ -25,7 +28,8 @@
 - Composable pieces that range from the simple use case, to preloading images and more
 - Modern, performant implementation, using [IntersectionObserver](https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API) and providing fallback strategies
 - Eager loading / Server-side rendering support
-- Easy to understand source code. You should be able to fork and do your thing if desired.
+- Easy to understand source code. You should be able to fork and do your thing if desired
+- Ample documentation to help you understand the problem, in addition to the solutions
 
 What it does not do by itself:
 - Polyfill `IntersectionObserver`. Adding polyfills is something you should do consciously at the application level, especially if they might incur download and performance costs. See [Polyfilling IntersectionObserver](#polyfill) for different strategies.
@@ -99,15 +103,16 @@ import {LazyImage, renderDefaultFallback} from 'react-lazy-images';
     ({cls}) =>
       <img src="https://www.fillmurray.com/g/600/400" className={cls} />
   }
-  fallback={renderDefaultFallback}
 />
 ```
+
+[You can play around with this library on Codesandbox](https://codesandbox.io/s/jnn9wjkj1w).
 
 Additionally, make sure you understand [how to polyfill IntersectionObserver](#polyfill) and [strategies for when JS is not available](#fallback).
 
 From then on:
 - If you want to learn more about the API and the problem space, read the rest of this section.
-- If you want to list the props, see the [API reference]
+- If you want to list the props, see the [API reference](#api-reference)
 
 ### Customising what is displayed
 The render prop pattern is used throughout in `LazyImage`.
@@ -273,7 +278,7 @@ Strategies for polyfilling IntersectionObserver
 A variety of usage examples and recipes is provided in the form of storybook.
 [You can browse the documentation online](https://fpapado.github.io/react-lazy-images) or look at `stories/`.
 
-## API
+## API Reference
 :construction: Work in progress :construction:
 
 ## Feedback
