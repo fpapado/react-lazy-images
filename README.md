@@ -3,6 +3,8 @@
 
 [![npm](https://img.shields.io/npm/v/react-lazy-images.svg)](https://www.npmjs.com/package/react-lazy-images)
 [![gzip size](http://img.badgesize.io/https://unpkg.com/react-lazy-images/dist/react-lazy-images.js?compression=gzip)](https://unpkg.com/react-lazy-images/dist/react-lazy-images.js)
+[![npm downloads](https://img.shields.io/npm/dm/react-lazy-images.svg)](https://www.npmjs.com/package/react-lazy-images)
+
 <a href="https://codesandbox.io/s/jnn9wjkj1w">
   <img src="https://codesandbox.io/static/img/play-codesandbox.svg" height="20px"/>
 </a>
