@@ -104,22 +104,55 @@ storiesOf('LazyImage', module)
             loadEagerly={i === 0}
             key={key}
             src={`https://www.fillmurray.com/g/${actual}`}
-            placeholder={
-              ({cls}) =>
-                <img
-                  src={`https://www.fillmurray.com/g/${placeholder}`}
-                  className={`${cls} w-100`}
-                />
-            }
-            actual={
-              ({cls}) =>
-                <img
-                  src={`https://www.fillmurray.com/g/${actual}`}
-                  className={`${cls} w-100`}
-                />
-            }
+            placeholder={({cls}) => (
+              <img
+                src={`https://www.fillmurray.com/g/${placeholder}`}
+                className={`${cls} w-100`}
+              />
+            )}
+            actual={({cls}) => (
+              <img
+                src={`https://www.fillmurray.com/g/${actual}`}
+                className={`${cls} w-100`}
+              />
+            )}
           />
         ))}
+      </Container>
+    ))
+  )
+  .add(
+    'Horizontal scroll',
+    withInfo(
+      'Should work with horizontal scrolling out of the box!'
+    )(() => (
+      <Container>
+        <div className="flex flex-row mw6 overflow-x-auto">
+          {[
+            ['first', '30/20', '300/200'],
+            ['second', '60/40', '600/400'],
+            ['third', '90/60', '900/600']
+          ].map(([key, placeholder, actual], i) => (
+            <div key={key} className="w5 pa3 mr3 ba bw1 b--near-black flex-shrink-0">
+              <LazyImage
+                key={key}
+                src={`https://www.fillmurray.com/g/${actual}`}
+                placeholder={({cls}) => (
+                  <img
+                    src={`https://www.fillmurray.com/g/${placeholder}`}
+                    className={`${cls} w-100`}
+                  />
+                )}
+                actual={({cls}) => (
+                  <img
+                    src={`https://www.fillmurray.com/g/${actual}`}
+                    className={`${cls} w-100`}
+                  />
+                )}
+              />
+            </div>
+          ))}
+        </div>
       </Container>
     ))
   );
