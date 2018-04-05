@@ -1,4 +1,5 @@
 # React Lazy Images
+
 > Components and utilities for lazy image loading in React.
 
 [![npm](https://img.shields.io/npm/v/react-lazy-images.svg)](https://www.npmjs.com/package/react-lazy-images)
@@ -6,7 +7,7 @@
 [![npm downloads](https://img.shields.io/npm/dm/react-lazy-images.svg)](https://www.npmjs.com/package/react-lazy-images)
 [![dependencies](https://david-dm.org/fpapado/react-lazy-images.svg)](https://david-dm.org/fpapado/react-lazy-images)
 <a href="https://codesandbox.io/s/jnn9wjkj1w">
-  <img src="https://codesandbox.io/static/img/play-codesandbox.svg" height="20px"/>
+<img src="https://codesandbox.io/static/img/play-codesandbox.svg" height="20px"/>
 </a>
 
 :construction: Work in progress :construction:
@@ -15,35 +16,38 @@
 
 ## Table of Contents
 
--   [Features](#features)
--   [Install](#install)
--   [Motivation](#motivation)
--   [Usage](#usage)
--   [Examples](#examples)
--   [API Reference](#api-reference)
--   [Feedback](#feedback)
--   [Contributing](#contributing)
--   [License](#license)
--   [Thanks](#thanks)
+* [Features](#features)
+* [Install](#install)
+* [Motivation](#motivation)
+* [Usage](#usage)
+* [Examples](#examples)
+* [API Reference](#api-reference)
+* [Feedback](#feedback)
+* [Contributing](#contributing)
+* [Thanks](#thanks-and-inspiration)
+* [License](#license)
 
 ## Features:
-- Composable pieces that range from the simple use case, to preloading images and more.
-- Full presentational control on the caller
-- Modern, performant implementation, using [IntersectionObserver](https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API) and providing fallback strategies.
-- [Eager loading / Server-side rendering support](#eager-loading--server-side-rendering-ssr).
-- Works with horizontal scrolling, supports background images.
-- Easy to understand source code. You should be able to fork and do your thing if desired.
-- Ample documentation to help you understand the problem, in addition to the solutions.
+
+* Composable pieces that range from the simple use case, to preloading images and more.
+* Full presentational control on the caller
+* Modern, performant implementation, using [IntersectionObserver](https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API) and providing fallback strategies.
+* [Eager loading / Server-side rendering support](#eager-loading--server-side-rendering-ssr).
+* Works with horizontal scrolling, supports background images.
+* Easy to understand source code. You should be able to fork and do your thing if desired.
+* Ample documentation to help you understand the problem, in addition to the solutions.
 
 What it does not do by itself:
-- Polyfill `IntersectionObserver`. Adding polyfills is something you should do consciously at the application level, especially if they might incur download and performance costs. See [Polyfilling IntersectionObserver](#polyfill-intersectionobserver) for different strategies.
-- Dictate the kind of placeholders displayed. There are many ways to do it; you can use a simple box with a background color (I hear gray is popular), a blurred image, some gradient, or anything you'd like. You are in control of the element that gets rendered.
-- Animate transitions between placeholder and source. Again, you are in control of the containers, so it is possible to implement those at the consumer.
+
+* Polyfill `IntersectionObserver`. Adding polyfills is something you should do consciously at the application level, especially if they might incur download and performance costs. See [Polyfilling IntersectionObserver](#polyfill-intersectionobserver) for different strategies.
+* Dictate the kind of placeholders displayed. There are many ways to do it; you can use a simple box with a background color (I hear gray is popular), a blurred image, some gradient, or anything you'd like. You are in control of the element that gets rendered.
+* Animate transitions between placeholder and source. Again, you are in control of the containers, so it is possible to implement those at the consumer.
 
 In other words, this library focuses on loading the images once in view and supporting loading patterns around that.
 The actual components are yours to decide!
 
 ## Install
+
 This package is distributed via [npm](https://www.npmjs.com/get-npm).
 
 ```shell
@@ -57,27 +61,29 @@ Then import according to your modules model and bundler, such as [Rollup](https:
 ```js
 // ES Modules
 // For all possible functions to import look at the documentation
-import { LazyImage } from 'react-lazy-images';
+import {LazyImage} from 'react-lazy-images';
 
 /// CommonJS modules
 const {LazyImage} = require('react-lazy-images');
 ```
 
 A [UMD](https://github.com/umdjs/umd) version is also available on [unpkg](https://unpkg.com/):
+
 ```html
 <script src="https://unpkg.com/react-lazy-images/dist/react-lazy-images.umd.js"></script>
-
 ```
 
 ## Motivation
+
 Browsers preload images; as soon as they encounter an `<img>` tag with a valid `src`, they kick off the request for the image (they even do this before the HTML has been parsed).
 Even in cases where a certain image is not in the viewport, it will be requested.
 This can have adverse effects for users, especially on mobile or metered connections.
 
 This brings us to the basic premise of any Lazy Image Loading library:
-- Have a way to observe the visibility of the DOM elements
-- Prevent the browser from loading images directly
-- Once an image is in view, instruct the browser to load it and place it in the element
+
+* Have a way to observe the visibility of the DOM elements
+* Prevent the browser from loading images directly
+* Once an image is in view, instruct the browser to load it and place it in the element
 
 In the past, this has meant "hiding" the actual `src` in a `data-src` attribute, and using classes to indicate state, e.g. `.isLazyLoaded .lazyLoad`.
 On initialisation, a script would query for these classes and attributes, keep track of visibily, and swap `data-src` with an actual `src`, kicking off the browser request process.
@@ -93,22 +99,23 @@ This was the motivation for browsers providing [IntersectionObserver](https://de
 Using this API is not specific to React; it just seems like a good fit for this task nowadays.
 
 ## Usage
+
 ### Quick Start
+
 If you want to just dive in, do this:
+
 ```jsx
 import {LazyImage, renderDefaultFallback} from 'react-lazy-images';
 
 <LazyImage
   src="https://www.fillmurray.com/g/600/400"
-  placeholder={
-    ({cls}) =>
-      <img src="https://www.fillmurray.com/g/60/40" className={cls} />
-  }
-  actual={
-    ({cls}) =>
-      <img src="https://www.fillmurray.com/g/600/400" className={cls} />
-  }
-/>
+  placeholder={({cls}) => (
+    <img src="https://www.fillmurray.com/g/60/40" className={cls} />
+  )}
+  actual={({cls}) => (
+    <img src="https://www.fillmurray.com/g/600/400" className={cls} />
+  )}
+/>;
 ```
 
 [You can play around with this library on Codesandbox](https://codesandbox.io/s/jnn9wjkj1w).
@@ -116,10 +123,12 @@ import {LazyImage, renderDefaultFallback} from 'react-lazy-images';
 Additionally, make sure you understand [how to polyfill IntersectionObserver](#polyfill-intersectionobserver) and [strategies for when JS is not available](#fallback-without-javascript).
 
 From then on:
-- If you want to learn more about the API and the problem space, read the rest of this section.
-- If you want to list the props, see the [API reference](#api-reference)
+
+* If you want to learn more about the API and the problem space, read the rest of this section.
+* If you want to list the props, see the [API reference](#api-reference)
 
 ### Customising what is displayed
+
 The render prop pattern is used throughout in `LazyImage`.
 The `LazyImage` component **handles the behaviour of tracking when the image is in view, but leaves the actual rendering up to the consumer**.
 Thus, whether you want to display a simple `<img>`, your own `<Image>`, or even wrapped elements, it is simple to do so:
@@ -159,11 +168,13 @@ Thus, whether you want to display a simple `<img>`, your own `<Image>`, or even 
 These props are there to instruct the component what to render in those places, and they take some useful information (in this case, a className) from the LazyImage.
 
 ### Load before swap
+
 A common optimisation to the loading strategy is to preload the image before swapping it for the placeholder.
 In other words, once the image is in view, you can kick off a request to load the image, and only show it once fully loaded.
 This avoids presenting a half-loaded image (i.e. one that is still scanning top-to-bottom), and makes the transition smoother.
 
 This behaviour is provided by default:
+
 ```jsx
 // Note that the actual src is also provided separately,
 // so that the image can be requested before rendering
@@ -185,6 +196,7 @@ This behaviour is provided by default:
 ```
 
 ### Eager loading / Server-Side Rendering (SSR)
+
 **What does SSR even mean in a lazy images context?**
 
 If you recall the basic premise, then you will know that we "hide" the intended image and display a placeholder.
@@ -193,6 +205,7 @@ In cases where you are server-side rendering, there can be a non-neglible amount
 For those cases, it would be beneficial if we can mark images to render with the intended/final src by default, so that the browser can start requesting them as soon as it gets the HTML.
 
 This is a pretty straightforward thing to implement; we short-circuit the process by using a `loadEagerly` prop:
+
 ```jsx
 <LazyImage
   loadEagerly
@@ -200,9 +213,7 @@ This is a pretty straightforward thing to implement; we short-circuit the proces
   placeholder={
     <img src="https://www.fillmurray.com/g/60/40" className="w-100" />
   }
-  actual={
-    <img src="https://www.fillmurray.com/g/600/400" className="w-100" />
-  }
+  actual={<img src="https://www.fillmurray.com/g/600/400" className="w-100" />}
 />
 ```
 
@@ -211,6 +222,7 @@ Think about the cases where it is beneficial to do this, and apply it with inten
 [Some of these use cases are provided as examples](#examples).
 
 ### Fallback without Javascript
+
 If Javascript is disabled altogether by the user, then they will be stuck with the placeholder (and any images loaded eagerly).
 This is probably undesirable.
 
@@ -273,6 +285,7 @@ This may or may not be good enough.
 Please open an issue to discuss your needs if that is the case :)
 
 ### Polyfill IntersectionObserver
+
 :construction: Work in progress :construction:
 
 [Usage data for IntersectionObserver](https://caniuse.com/#search=intersectionobserver)
@@ -280,25 +293,35 @@ Please open an issue to discuss your needs if that is the case :)
 Strategies for polyfilling IntersectionObserver
 
 ## Examples
+
 A variety of usage examples and recipes is provided in the form of storybook.
 [You can browse the documentation online](https://fpapado.github.io/react-lazy-images) or look at `stories/`.
 
 ## API Reference
-:construction: Work in progress :construction:
+
+**`<LazyImage />`** accepts the following props:
+
+| Name              | Type                 | Default | Required | Description                                                                  |
+| ----------------- | -------------------- | ------- | -------- | ---------------------------------------------------------------------------- |
+| **src**           | String               |         | true     | The source of the image to load                                              |
+| **placeholder**   | Function             |         | false    | Placeholder component to display while image has not loaded                  |
+| **actual**        | Function             |         | false    | The component to display once image has loaded                               |
+| **loadEagerly**   | Boolean              | false   | false    | Whether to skip checking for viewport and always show the 'actual' component |
+| **observerProps** | Object/ObserverProps | N/A     | false    | Subset of props for the IntersectionObserver                                 |
+
+[You can consult Typescript types in the code](./src/index.tsx) as a more exact definition.
 
 ## Feedback
+
 I have some specific questions that I would like input on. If you want to go exploring, or have used the library and had gripes with it, then see [`FEEDBACK.md`](./FEEDBACK.md) and let's have a discussion!
 
 ## Contributing
+
 :construction: Work in progress :construction:
 
 I would love to have contributions on this! Are there more patterns that we can expose and simplify? Is something not clear? See `CONTRIBUTING.md` for details.
 
-## License
-MIT License © Fotis Papadogeorgopoulos
-
-## Thanks
-(And inspiration)
+## Thanks and Inspiration
 
 Jeremy Wagner's writing on [Lazy Loading Images and Video](https://developers.google.com/web/fundamentals/performance/lazy-loading-guidance/images-and-video/) is a good reference for the problem and solutions space.
 
@@ -309,3 +332,8 @@ Further thanks for demonstrating Storybook as documentation.
 [Paul Lewis' implementation of lazy image loading](https://github.com/GoogleChromeLabs/sample-media-pwa/blob/master/src/client/scripts/helpers/lazy-load-images.js)
 
 [How Medium does lazy image loading](https://jmperezperez.com/medium-image-progressive-loading-placeholder/)
+
+## License
+
+MIT License © Fotis Papadogeorgopoulos
+

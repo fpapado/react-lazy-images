@@ -1,19 +1,31 @@
 import React from 'react';
 import Observer from 'react-intersection-observer';
 
-interface _LazyImageProps {
-  src: string;
-  placeholder: (RenderPropArgs) => React.ReactElement<{}>;
-  actual: (RenderPropArgs) => React.ReactElement<{}>;
-}
-
+/**
+ * Values that the render props take
+ */
 interface RenderPropArgs {
   cls: string;
 }
 
+/**
+ * Valid props for LazyImage
+ */
 export interface LazyImageProps extends _LazyImageProps {
+  /** The source of the image to load */
+  src: string;
+  /** Placeholder component to display while image has not loaded */
+  placeholder: (RenderPropArgs) => React.ReactElement<{}>;
+  /** The component to display once image has loaded */
+  actual: (RenderPropArgs) => React.ReactElement<{}>;
+  /** Whether to skip checking for viewport and always show the 'actual' component
+   * @see https://github.com/fpapado/react-lazy-images/#eager-loading--server-side-rendering-ssr
+   */
   loadEagerly?: boolean;
-  observerProps?: any; // TODO: fix this by using IntersectionObserverProps
+  /** Subset of props for the IntersectionObserver
+   * @see https://github.com/thebuilder/react-intersection-observer#props
+   */
+  observerProps?: any; // TODO: fix this by using IntersectionObserverProps, limit to RootMargin etc.
 }
 
 interface LazyImageState {
@@ -23,7 +35,10 @@ interface LazyImageState {
 
 type ImageState = 'NotAsked' | 'Loading' | 'LoadSuccess' | 'LoadError';
 
-// LazyImage component that preloads the image before swapping in
+/**
+ * Component that preloads the image once it is in the viewport,
+ * and then swaps it in.
+ */
 export class LazyImage extends React.Component<LazyImageProps, LazyImageState> {
   constructor(props) {
     super(props);
@@ -39,7 +54,7 @@ export class LazyImage extends React.Component<LazyImageProps, LazyImageState> {
     this.renderLazy = this.renderLazy.bind(this);
   }
 
-  // Updates
+  // Update functions
   onInView(inView) {
     if (inView) {
       // Kick off request for Image and attach listeners for response
@@ -58,6 +73,7 @@ export class LazyImage extends React.Component<LazyImageProps, LazyImageState> {
     this.setState({imageState: 'LoadError'});
   }
 
+  // Render functions
   render() {
     if (this.props.loadEagerly) return this.renderEager(this.props);
     return this.renderLazy(this.props);
@@ -92,9 +108,10 @@ export class LazyImage extends React.Component<LazyImageProps, LazyImageState> {
 
 // Utilities
 
-// Promise constructor for (pre)loading an image
-// NOTE: this seems like the conventional way of doing it, and yet we are not
-// using the img element per se. Should we use an explicit fetch(), perhaps?
+/* NOTE: this seems like the conventional way of doing it, and yet we are not
+   using the img element per se. Should we use an explicit fetch(), perhaps?
+ */
+/** Promise constructor for loading an image */
 const loadImage = src =>
   new Promise((resolve, reject) => {
     const image = new Image();
