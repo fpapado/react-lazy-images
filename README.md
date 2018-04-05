@@ -10,10 +10,6 @@
 <img src="https://codesandbox.io/static/img/play-codesandbox.svg" height="20px"/>
 </a>
 
-:construction: Work in progress :construction:
-
-[This documentation is here to document the goals](http://tom.preston-werner.com/2010/08/23/readme-driven-development.html)
-
 ## Table of Contents
 
 * [Features](#features)
@@ -27,19 +23,20 @@
 * [Thanks](#thanks-and-inspiration)
 * [License](#license)
 
-## Features:
+## Features
 
-* Composable pieces that range from the simple use case, to preloading images and more.
-* Full presentational control on the caller
-* Modern, performant implementation, using [IntersectionObserver](https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API) and providing fallback strategies.
+* Composable pieces, preloading images and handling failures.
+* Full presentational control for the caller (render props).
+* Modern, performant implementation, using [IntersectionObserver](https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API) and providing [polyfill information](#polyfill-intersection-observer).
 * [Eager loading / Server-side rendering support](#eager-loading--server-side-rendering-ssr).
 * Works with horizontal scrolling, supports background images.
+* [Fallbacks for SEO / when Javascript is disabled](#fallback-without-javascript).
 * Easy to understand source code. You should be able to fork and do your thing if desired.
 * Ample documentation to help you understand the problem, in addition to the solutions.
 
 What it does not do by itself:
 
-* Polyfill `IntersectionObserver`. Adding polyfills is something you should do consciously at the application level, especially if they might incur download and performance costs. See [Polyfilling IntersectionObserver](#polyfill-intersectionobserver) for different strategies.
+* Polyfill `IntersectionObserver`. Adding polyfills is something you should do consciously at the application level. See [Polyfilling IntersectionObserver](#polyfill-intersectionobserver) for how to do this.
 * Dictate the kind of placeholders displayed. There are many ways to do it; you can use a simple box with a background color (I hear gray is popular), a blurred image, some gradient, or anything you'd like. You are in control of the element that gets rendered.
 * Animate transitions between placeholder and source. Again, you are in control of the containers, so it is possible to implement those at the consumer.
 
@@ -218,7 +215,7 @@ This is a pretty straightforward thing to implement; we short-circuit the proces
 ```
 
 While the implementation is simple, the patterns in your app will not necessarily be so.
-Think about the cases where it is beneficial to do this, and apply it with intent. Examples might be hero images, the first X elements in a list and so on.
+Think about the cases where it is beneficial to do this, and apply it with intent. Examples might be eager-loading hero images, the first few elements in a list and so on.
 [Some of these use cases are provided as examples](#examples).
 
 ### Fallback without Javascript
@@ -285,12 +282,30 @@ This may or may not be good enough.
 Please open an issue to discuss your needs if that is the case :)
 
 ### Polyfill IntersectionObserver
+IntersectionObserver is generally well-supported, but it is still important to polyfill it!
+[You can consult the usage data for IntersectionObserver here.](https://caniuse.com/#search=intersectionobserver)
 
-:construction: Work in progress :construction:
+The polyfill itself is pretty small, [on the order of 6k min, 2k gzipped](https://bundlephobia.com/result?p=intersection-observer@0.5.0).
 
-[Usage data for IntersectionObserver](https://caniuse.com/#search=intersectionobserver)
+[The polyfill is available through npm](http://npmjs.com/package/intersection-observer):
 
-Strategies for polyfilling IntersectionObserver
+```shell
+npm install --save intersection-observer
+```
+
+And import it at your app's entry point:
+```js
+import 'intersection-observer';
+```
+
+[Polyfill.io is an alternative method of distributing the polyfill](polyfill.io) if you wish.
+
+
+#### About the polyfill
+*It is generally a good idea to know what you are adding to your codebase*
+
+The polyfill behaviour is to [fall back to the older strategy](https://github.com/w3c/IntersectionObserver/tree/master/polyfill); "debounced scroll listener and calculate bounding rectangle", as mentioned above.
+It will not be as performant as the native IntersectionObserver, but likely no worse than most implementations of the older strategy.
 
 ## Examples
 
@@ -317,19 +332,16 @@ I have some specific questions that I would like input on. If you want to go exp
 
 ## Contributing
 
-:construction: Work in progress :construction:
-
 I would love to have contributions on this! Are there more patterns that we can expose and simplify? Is something not clear? See `CONTRIBUTING.md` for details.
 
 ## Thanks and Inspiration
 
 Jeremy Wagner's writing on [Lazy Loading Images and Video](https://developers.google.com/web/fundamentals/performance/lazy-loading-guidance/images-and-video/) is a good reference for the problem and solutions space.
 
-[react-intersection-observer library](https://github.com/thebuilder/react-intersection-observer)
-This is the library backing `LazyImage`.
-Further thanks for demonstrating Storybook as documentation.
+The library backing this one, [react-intersection-observer library](https://github.com/thebuilder/react-intersection-observer).
+Further thanks for demonstrating Storybook as documentation for lazy-loading.
 
-[Paul Lewis' implementation of lazy image loading](https://github.com/GoogleChromeLabs/sample-media-pwa/blob/master/src/client/scripts/helpers/lazy-load-images.js)
+[Paul Lewis' implementation of lazy image loading](https://github.com/GoogleChromeLabs/sample-media-pwa/blob/master/src/client/scripts/helpers/lazy-load-images.js) has the concept of pre-loading images before swapping.
 
 [How Medium does lazy image loading](https://jmperezperez.com/medium-image-progressive-loading-placeholder/)
 
