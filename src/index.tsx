@@ -1,5 +1,6 @@
 import React from 'react';
 import Observer from 'react-intersection-observer';
+import {Fallback} from './fallbackUtils';
 
 /**
  * Values that the render props take
@@ -28,12 +29,12 @@ export interface LazyImageProps {
   observerProps?: any; // TODO: fix this by using IntersectionObserverProps, limit to RootMargin etc.
 }
 
-interface LazyImageState {
+export interface LazyImageState {
   inView: boolean;
   imageState: ImageState;
 }
 
-type ImageState = 'NotAsked' | 'Loading' | 'LoadSuccess' | 'LoadError';
+export type ImageState = 'NotAsked' | 'Loading' | 'LoadSuccess' | 'LoadError';
 
 /**
  * Component that preloads the image once it is in the viewport,
