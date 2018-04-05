@@ -123,9 +123,7 @@ storiesOf('LazyImage', module)
   )
   .add(
     'Horizontal scroll',
-    withInfo(
-      'Should work with horizontal scrolling out of the box!'
-    )(() => (
+    withInfo('Horizontal scrolling should work out of the box.')(() => (
       <Container>
         <div className="flex flex-row mw6 overflow-x-auto">
           {[
@@ -133,7 +131,10 @@ storiesOf('LazyImage', module)
             ['second', '60/40', '600/400'],
             ['third', '90/60', '900/600']
           ].map(([key, placeholder, actual], i) => (
-            <div key={key} className="w5 pa3 mr3 ba bw1 b--near-black flex-shrink-0">
+            <div
+              key={key}
+              className="w5 pa3 mr3 ba bw1 b--near-black flex-shrink-0"
+            >
               <LazyImage
                 key={key}
                 src={`https://www.fillmurray.com/g/${actual}`}
@@ -155,4 +156,33 @@ storiesOf('LazyImage', module)
         </div>
       </Container>
     ))
+  )
+  .add(
+    'Background image',
+    withInfo(
+      'You are in control of what gets rendered, so you can just do this.'
+    )(() => {
+      const BgImage = ({cls, bgSrc}) => (
+        <div className={`${cls} w5 h5 contain bg-center`} style={{backgroundImage: `url(${bgSrc})`}} />
+      );
+      return (
+        <Container>
+          <LazyImage
+            src="https://www.fillmurray.com/g/500/700"
+            placeholder={({cls}) => (
+              <BgImage
+                bgSrc="https://www.fillmurray.com/g/50/70"
+                cls={cls}
+              />
+            )}
+            actual={({cls}) => (
+              <BgImage
+                bgSrc="https://www.fillmurray.com/g/500/700"
+                cls={cls}
+              />
+            )}
+          />
+        </Container>
+      );
+    })
   );
