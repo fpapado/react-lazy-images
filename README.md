@@ -86,7 +86,8 @@ With React, all this implicit state management is made simpler, since you do not
 This can potentially mean a nicer, more composable codebase, and it was one of the main design goals for this library.
 
 The way to do this visibility tracking has for the most part been listening for events such as scroll.
-This is synchronous by nature and can have performance implications.
+This is synchronous by nature and [can have performance implications](https://developers.google.com/web/fundamentals/performance/lazy-loading-guidance/images-and-video/#lazy_loading_images).
+It also involves calling `getBoundingClientRect()` to calculate the interesection of the image with the viewport; this function causes relayout.
 This was the motivation for browsers providing [IntersectionObserver](https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API).
 Using this API is not specific to React; it just seems like a good fit for this task nowadays.
 

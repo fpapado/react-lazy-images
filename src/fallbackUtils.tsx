@@ -1,4 +1,5 @@
 import ReactDOMServer from 'react-dom/server';
+import React from 'react';
 
 {/* Display this if JS is disabled
   * WARN: See https://github.com/facebook/react/issues/11423 for why
