@@ -11,7 +11,7 @@ interface RenderPropArgs {
 /**
  * Valid props for LazyImage
  */
-export interface LazyImageProps extends _LazyImageProps {
+export interface LazyImageProps {
   /** The source of the image to load */
   src: string;
   /** Placeholder component to display while image has not loaded */
