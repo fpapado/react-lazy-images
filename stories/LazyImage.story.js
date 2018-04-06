@@ -87,6 +87,61 @@ storiesOf('LazyImage', module)
       </Container>
     ))
   )
+  // Loading state as render prop
+  .add(
+    'Loading state',
+    withInfo('Loading')(() => (
+      <Container>
+        <div className="bg-light-silver h5 w-100">
+          <LazyImage
+            src="https://www.fillmurray.com/g/3000/2000"
+            placeholder={({cls}) => <div className={cls} />}
+            actual={({cls}) => (
+              <img
+                src="https://www.fillmurray.com/g/3000/2000"
+                className={cls}
+              />
+            )}
+            loading={({cls}) => (
+              <div className={cls}>
+                <p className="pa3 f5 lh-copy near-white">Loading...</p>
+              </div>
+            )}
+          />
+        </div>
+      </Container>
+    ))
+  )
+  // Loading and Error states as render props
+  .add(
+    'Loading and Error states',
+    withInfo('Loading and Error states are exposed as render props')(() => (
+      <Container>
+        <div className="bg-light-silver h5 w-100">
+          <LazyImage
+            src="https://www.fillmurray.com/notanimage"
+            placeholder={({cls}) => <div className={cls} />}
+            actual={({cls}) => (
+              <img
+                src="https://www.fillmurray.com/notanimage"
+                className={cls}
+              />
+            )}
+            loading={({cls}) => (
+              <div className={cls}>
+                <p className="pa3 f5 lh-copy near-white">Loading...</p>
+              </div>
+            )}
+            error={({cls}) => (
+              <div className={`bg-light-red h-100 w-100 ${cls}`}>
+                <p>There was an error fetching this image :(</p>
+              </div>
+            )}
+          />
+        </div>
+      </Container>
+    ))
+  )
   // This isn't even specific to this library; just demonstrating how you might
   // eagerly load content above the fold, and defer the rest
   .add(
@@ -163,23 +218,20 @@ storiesOf('LazyImage', module)
       'You are in control of what gets rendered, so you can just do this.'
     )(() => {
       const BgImage = ({cls, bgSrc}) => (
-        <div className={`${cls} w5 h5 contain bg-center`} style={{backgroundImage: `url(${bgSrc})`}} />
+        <div
+          className={`${cls} w5 h5 contain bg-center`}
+          style={{backgroundImage: `url(${bgSrc})`}}
+        />
       );
       return (
         <Container>
           <LazyImage
             src="https://www.fillmurray.com/g/500/700"
             placeholder={({cls}) => (
-              <BgImage
-                bgSrc="https://www.fillmurray.com/g/50/70"
-                cls={cls}
-              />
+              <BgImage bgSrc="https://www.fillmurray.com/g/50/70" cls={cls} />
             )}
             actual={({cls}) => (
-              <BgImage
-                bgSrc="https://www.fillmurray.com/g/500/700"
-                cls={cls}
-              />
+              <BgImage bgSrc="https://www.fillmurray.com/g/500/700" cls={cls} />
             )}
           />
         </Container>

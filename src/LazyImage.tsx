@@ -14,10 +14,14 @@ interface RenderPropArgs {
 export interface LazyImageProps {
   /** The source of the image to load */
   src: string;
-  /** Placeholder component to display while image has not loaded */
+  /** The component to display while image has not loaded */
   placeholder: (RenderPropArgs) => React.ReactElement<{}>;
   /** The component to display once image has loaded */
   actual: (RenderPropArgs) => React.ReactElement<{}>;
+  /** The component to display once image has loaded */
+  loading: (RenderPropArgs) => React.ReactElement<{}>;
+  /** The component to display once image has loaded */
+  error: (RenderPropArgs) => React.ReactElement<{}>;
   /** Whether to skip checking for viewport and always show the 'actual' component
    * @see https://github.com/fpapado/react-lazy-images/#eager-loading--server-side-rendering-ssr
    */
@@ -52,13 +56,15 @@ export class LazyImage extends React.Component<LazyImageProps, LazyImageState> {
     this.onLoadError = this.onLoadError.bind(this);
     this.renderEager = this.renderEager.bind(this);
     this.renderLazy = this.renderLazy.bind(this);
+    this.renderState = this.renderState.bind(this);
   }
 
   // Update functions
   onInView(inView) {
     if (inView) {
       // Kick off request for Image and attach listeners for response
-      this.setState({imageState: 'Loading'});
+      this.setState((state, props) => ({...state, imageState: 'Loading'}));
+
       loadImage(this.props.src)
         .then(this.onLoadSuccess)
         .catch(this.onLoadError);
@@ -66,17 +72,17 @@ export class LazyImage extends React.Component<LazyImageProps, LazyImageState> {
   }
 
   onLoadSuccess() {
-    this.setState({imageState: 'LoadSuccess'});
+    this.setState((state, props) => ({...state, imageState: 'LoadSuccess'}));
   }
 
   onLoadError() {
-    this.setState({imageState: 'LoadError'});
+    this.setState((state, props) => ({...state, imageState: 'LoadError'}));
   }
 
   // Render functions
   render() {
     if (this.props.loadEagerly) return this.renderEager(this.props);
-    return this.renderLazy(this.props);
+    return this.renderLazy(this.state, this.props);
   }
 
   renderEager({actual}: LazyImageProps) {
@@ -87,7 +93,7 @@ export class LazyImage extends React.Component<LazyImageProps, LazyImageState> {
     );
   }
 
-  renderLazy({src, actual, placeholder, observerProps}: LazyImageProps) {
+  renderLazy(state, {observerProps, ...rest}: LazyImageProps) {
     return (
       <React.Fragment>
         <Observer
@@ -97,12 +103,37 @@ export class LazyImage extends React.Component<LazyImageProps, LazyImageState> {
           onChange={this.onInView}
           triggerOnce
         >
-          {this.state.imageState === 'LoadSuccess'
-            ? actual({cls: 'LazyImage LazyImage-Actual'})
-            : placeholder({cls: 'LazyImage LazyImage-Placeholder'})}
+          {this.renderState(state.imageState, rest)}
         </Observer>
       </React.Fragment>
     );
+  }
+
+  /** Render the appropriate component based on state */
+  renderState(
+    imageState: ImageState,
+    {actual, placeholder, loading, error}: LazyImageProps
+  ) {
+    switch (imageState) {
+      case 'NotAsked':
+        return placeholder({cls: 'LazyImage LazyImage-Placeholder'});
+
+      case 'Loading':
+        // Only render loading if specified, otherwise placeholder
+        return !!loading
+          ? console.log('loading') ||
+              loading({cls: 'LazyImage LazyImage-Loading'})
+          : placeholder({cls: 'LazyImage LazyImage-Placeholder'});
+
+      case 'LoadSuccess':
+        return actual({cls: 'LazyImage LazyImage-Placeholder'});
+
+      case 'LoadError':
+        // Only render error if specified, otherwise actual
+        return !!error
+          ? error({cls: 'LazyImage LazyImage-Error'})
+          : actual({cls: 'LazyImage LazyImage-Placeholder'});
+    }
   }
 }
 

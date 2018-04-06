@@ -58,10 +58,10 @@ Then import according to your modules model and bundler, such as [Rollup](https:
 ```js
 // ES Modules
 // For all possible functions to import look at the documentation
-import {LazyImage} from 'react-lazy-images';
+import { LazyImage } from "react-lazy-images";
 
 /// CommonJS modules
-const {LazyImage} = require('react-lazy-images');
+const { LazyImage } = require("react-lazy-images");
 ```
 
 A [UMD](https://github.com/umdjs/umd) version is also available on [unpkg](https://unpkg.com/):
@@ -102,14 +102,14 @@ Using this API is not specific to React; it just seems like a good fit for this 
 If you want to just dive in, do this:
 
 ```jsx
-import {LazyImage, renderDefaultFallback} from 'react-lazy-images';
+import { LazyImage } from "react-lazy-images";
 
 <LazyImage
   src="https://www.fillmurray.com/g/600/400"
-  placeholder={({cls}) => (
+  placeholder={({ cls }) => (
     <img src="https://www.fillmurray.com/g/60/40" className={cls} />
   )}
-  actual={({cls}) => (
+  actual={({ cls }) => (
     <img src="https://www.fillmurray.com/g/600/400" className={cls} />
   )}
 />;
@@ -190,6 +190,32 @@ This behaviour is provided by default:
       </div>
   }
 />
+```
+
+### Loading and Error states
+
+You can choose what to display on Loading and Error using the render props `loading` and `error`:
+
+```jsx
+<div className="bg-light-silver h5 w-100">
+  <LazyImage
+    src="https://www.fillmurray.com/notanimage"
+    placeholder={({ cls }) => <div className={cls} />}
+    actual={({ cls }) => (
+      <img src="https://www.fillmurray.com/notanimage" className={cls} />
+    )}
+    loading={({ cls }) => (
+      <div className={cls}>
+        <p className="pa3 f5 lh-copy near-white">Loading...</p>
+      </div>
+    )}
+    error={({ cls }) => (
+      <div className={`bg-light-red h-100 w-100 ${cls}`}>
+        <p>There was an error fetching this image :(</p>
+      </div>
+    )}
+  />
+</div>
 ```
 
 ### Eager loading / Server-Side Rendering (SSR)
@@ -282,6 +308,7 @@ This may or may not be good enough.
 Please open an issue to discuss your needs if that is the case :)
 
 ### Polyfill IntersectionObserver
+
 IntersectionObserver is generally well-supported, but it is still important to polyfill it!
 [You can consult the usage data for IntersectionObserver here.](https://caniuse.com/#search=intersectionobserver)
 
@@ -294,15 +321,16 @@ npm install --save intersection-observer
 ```
 
 And import it at your app's entry point:
+
 ```js
-import 'intersection-observer';
+import "intersection-observer";
 ```
 
 [Polyfill.io is an alternative method of distributing the polyfill](polyfill.io) if you wish.
 
-
 #### About the polyfill
-*It is generally a good idea to know what you are adding to your codebase*
+
+_It is generally a good idea to know what you are adding to your codebase_
 
 The polyfill behaviour is to [fall back to the older strategy](https://github.com/w3c/IntersectionObserver/tree/master/polyfill); "debounced scroll listener and calculate bounding rectangle", as mentioned above.
 It will not be as performant as the native IntersectionObserver, but likely no worse than most implementations of the older strategy.
@@ -319,8 +347,10 @@ A variety of usage examples and recipes is provided in the form of storybook.
 | Name              | Type                 | Default | Required | Description                                                                  |
 | ----------------- | -------------------- | ------- | -------- | ---------------------------------------------------------------------------- |
 | **src**           | String               |         | true     | The source of the image to load                                              |
-| **placeholder**   | Function             |         | false    | Placeholder component to display while image has not loaded                  |
-| **actual**        | Function             |         | false    | The component to display once image has loaded                               |
+| **placeholder**   | Function             |         | true     | Placeholder component to display while image has not loaded                  |
+| **actual**        | Function             |         | true     | The component to display once image has loaded                               |
+| **loading**       | Function             |         | false    | The component to display while the image is loading                          |
+| **error**         | Function             |         | false    | The component to display if the image loading has failed                     |
 | **loadEagerly**   | Boolean              | false   | false    | Whether to skip checking for viewport and always show the 'actual' component |
 | **observerProps** | Object/ObserverProps | N/A     | false    | Subset of props for the IntersectionObserver                                 |
 
@@ -348,4 +378,3 @@ Further thanks for demonstrating Storybook as documentation for lazy-loading.
 ## License
 
 MIT License © Fotis Papadogeorgopoulos
-
