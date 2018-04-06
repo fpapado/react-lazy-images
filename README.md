@@ -324,7 +324,7 @@ A variety of usage examples and recipes is provided in the form of storybook.
 | **loadEagerly**   | Boolean              | false   | false    | Whether to skip checking for viewport and always show the 'actual' component |
 | **observerProps** | Object/ObserverProps | N/A     | false    | Subset of props for the IntersectionObserver                                 |
 
-[You can consult Typescript types in the code](./src/index.tsx) as a more exact definition.
+[You can consult Typescript types in the code](./src/LazyImage.tsx) as a more exact definition.
 
 ## Feedback
 
