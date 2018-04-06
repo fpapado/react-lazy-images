@@ -121,8 +121,7 @@ export class LazyImage extends React.Component<LazyImageProps, LazyImageState> {
       case 'Loading':
         // Only render loading if specified, otherwise placeholder
         return !!loading
-          ? console.log('loading') ||
-              loading({cls: 'LazyImage LazyImage-Loading'})
+          ? loading({cls: 'LazyImage LazyImage-Loading'})
           : placeholder({cls: 'LazyImage LazyImage-Placeholder'});
 
       case 'LoadSuccess':
