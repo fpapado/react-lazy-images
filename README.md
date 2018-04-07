@@ -344,15 +344,15 @@ A variety of usage examples and recipes is provided in the form of storybook.
 
 **`<LazyImage />`** accepts the following props:
 
-| Name              | Type                 | Default | Required | Description                                                                  |
-| ----------------- | -------------------- | ------- | -------- | ---------------------------------------------------------------------------- |
-| **src**           | String               |         | true     | The source of the image to load                                              |
-| **placeholder**   | Function             |         | true     | Placeholder component to display while image has not loaded                  |
-| **actual**        | Function             |         | true     | The component to display once image has loaded                               |
-| **loading**       | Function             |         | false    | The component to display while the image is loading                          |
-| **error**         | Function             |         | false    | The component to display if the image loading has failed                     |
-| **loadEagerly**   | Boolean              | false   | false    | Whether to skip checking for viewport and always show the 'actual' component |
-| **observerProps** | Object/ObserverProps | N/A     | false    | Subset of props for the IntersectionObserver                                 |
+| Name              | Type                                    | Default                                   | Required | Description                                                                  |
+| ----------------- | --------------------------------------- | ----------------------------------------- | -------- | ---------------------------------------------------------------------------- |
+| **src**           | String                                  |                                           | true     | The source of the image to load                                              |
+| **placeholder**   | Function                                |                                           | true     | Placeholder component to display while image has not loaded                  |
+| **actual**        | Function                                |                                           | true     | The component to display once image has loaded                               |
+| **loading**       | Function                                | placeholder                               | false    | The component to display while the image is loading                          |
+| **error**         | Function                                | placeholder                               | false    | The component to display if the image loading has failed                     |
+| **loadEagerly**   | Boolean                                 | false                                     | false    | Whether to skip checking for viewport and always show the 'actual' component |
+| **observerProps** | {threshold: number, rootMargin: string} | {threshold: 0.01, rootMargin: "50px 0px"} | false    | Subset of props for the IntersectionObserver                                 |
 
 [You can consult Typescript types in the code](./src/LazyImage.tsx) as a more exact definition.
 

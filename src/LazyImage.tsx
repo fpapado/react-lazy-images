@@ -1,5 +1,5 @@
 import React from 'react';
-import Observer from 'react-intersection-observer';
+import Observer, {IntersectionObserverProps} from 'react-intersection-observer';
 
 /**
  * Values that the render props take
@@ -16,20 +16,45 @@ export interface LazyImageProps {
   src: string;
   /** The component to display while image has not loaded */
   placeholder: (RenderPropArgs) => React.ReactElement<{}>;
+
   /** The component to display once image has loaded */
   actual: (RenderPropArgs) => React.ReactElement<{}>;
-  /** The component to display once image has loaded */
+
+  /** The component to display while the image is loading */
   loading: (RenderPropArgs) => React.ReactElement<{}>;
-  /** The component to display once image has loaded */
+
+  /** The component to display if the image fails to load */
   error: (RenderPropArgs) => React.ReactElement<{}>;
+
   /** Whether to skip checking for viewport and always show the 'actual' component
    * @see https://github.com/fpapado/react-lazy-images/#eager-loading--server-side-rendering-ssr
    */
+
   loadEagerly?: boolean;
   /** Subset of props for the IntersectionObserver
    * @see https://github.com/thebuilder/react-intersection-observer#props
    */
-  observerProps?: any; // TODO: fix this by using IntersectionObserverProps, limit to RootMargin etc.
+
+  /** Props for the IntersectionObserver */
+  observerProps?: ObserverProps;
+}
+
+/** Subset of react-intersection-observer's props */
+export interface ObserverProps {
+  /**
+   * Margin around the root that expands the area for intersection.
+   * @see https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/rootMargin
+   * @default "50px 0px"
+   * @example Declaration same as CSS margin:
+   *  `"10px 20px 30px 40px"` (top, right, bottom, left).
+   */
+  rootMargin?: string;
+
+  /** Number between 0 and 1 indicating the the percentage that should be
+   * visible before triggering.
+   * @default `0.1`
+   */
+  threshold?: number;
 }
 
 export interface LazyImageState {
