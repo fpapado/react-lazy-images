@@ -66,9 +66,9 @@ storiesOf('LazyImage', module)
   )
   // With srcSet
   .add(
-    'With src and srcSet',
+    'With srcSet',
     withInfo(
-      'With srcset, the browser decides which image to load. In that case, src is not informative enough for preloading. You can pass the `srcSet` prop to provide that additional information to LazyImage.'
+      'With srcset, the browser decides which image to load. In that case, src is not informative enough for preloading. You can use the `srcSet` prop to provide that additional information to LazyImage.'
     )(() => (
       <Container>
         <LazyImage
@@ -93,7 +93,7 @@ storiesOf('LazyImage', module)
   )
   // With srcSet
   .add(
-    'Without src or srcSet',
+    'Without preloading (no src or srcSet)',
     withInfo(
       'Sometimes, it might be impractical to specify the src with your current setup. For example, it is possible that you are generating the sources for an Image CDN and have a dedicated component for it. In those cases, changing the component might be impractical in the short-term. If you provide no src or srcSet, then the preload-before-swap behaviour is not used. We believe that showing a possibly still-downloading image is better than having lazy-loading at all.'
     )(() => (
@@ -138,6 +138,40 @@ storiesOf('LazyImage', module)
             />
           )}
         />
+      </Container>
+    ))
+  )
+  // This isn't even specific to this library; just demonstrating how you might
+  // eagerly load content above the fold, and defer the rest
+  .add(
+    'Eagerly load some images',
+    withInfo(
+      'This is an example of how you can use loadEagerly to load important content directly, and defer the rest.'
+    )(() => (
+      <Container>
+        {[
+          ['first', '30/20', '300/200'],
+          ['second', '60/40', '600/400'],
+          ['third', '90/60', '900/600']
+        ].map(([key, placeholder, actual], i) => (
+          <LazyImage
+            loadEagerly={i === 0}
+            key={key}
+            src={`https://www.fillmurray.com/g/${actual}`}
+            placeholder={({cls}) => (
+              <img
+                src={`https://www.fillmurray.com/g/${placeholder}`}
+                className={`${cls} w-100`}
+              />
+            )}
+            actual={({cls}) => (
+              <img
+                src={`https://www.fillmurray.com/g/${actual}`}
+                className={`${cls} w-100`}
+              />
+            )}
+          />
+        ))}
       </Container>
     ))
   )
@@ -193,40 +227,6 @@ storiesOf('LazyImage', module)
             )}
           />
         </div>
-      </Container>
-    ))
-  )
-  // This isn't even specific to this library; just demonstrating how you might
-  // eagerly load content above the fold, and defer the rest
-  .add(
-    'Eagerly load some images',
-    withInfo(
-      'This is not specific to this library; just demonstrating how you might eagerly load content above the fold, and defer the rest'
-    )(() => (
-      <Container>
-        {[
-          ['first', '30/20', '300/200'],
-          ['second', '60/40', '600/400'],
-          ['third', '90/60', '900/600']
-        ].map(([key, placeholder, actual], i) => (
-          <LazyImage
-            loadEagerly={i === 0}
-            key={key}
-            src={`https://www.fillmurray.com/g/${actual}`}
-            placeholder={({cls}) => (
-              <img
-                src={`https://www.fillmurray.com/g/${placeholder}`}
-                className={`${cls} w-100`}
-              />
-            )}
-            actual={({cls}) => (
-              <img
-                src={`https://www.fillmurray.com/g/${actual}`}
-                className={`${cls} w-100`}
-              />
-            )}
-          />
-        ))}
       </Container>
     ))
   )
