@@ -14,6 +14,7 @@ interface RenderPropArgs {
 export interface LazyImageProps {
   /** The source of the image to load */
   src: string;
+  srcSet: string;
   /** The component to display while image has not loaded */
   placeholder: (RenderPropArgs) => React.ReactElement<{}>;
 
@@ -87,12 +88,21 @@ export class LazyImage extends React.Component<LazyImageProps, LazyImageState> {
   // Update functions
   onInView(inView) {
     if (inView) {
-      // Kick off request for Image and attach listeners for response
-      this.setState((state, props) => ({...state, imageState: 'Loading'}));
+      // If src is not specified, then there is nothing to preload; skip to Loaded state
+      // TODO: alternatively, we could have a sort of timeout here?
+      if (!this.props.src) {
+        this.setState((state, props) => ({
+          ...state,
+          imageState: 'LoadSuccess'
+        }));
+      } else {
+        // Kick off request for Image and attach listeners for response
+        this.setState((state, props) => ({...state, imageState: 'Loading'}));
 
-      loadImage(this.props.src)
-        .then(this.onLoadSuccess)
-        .catch(this.onLoadError);
+        loadImage({src: this.props.src, srcSet: this.props.srcSet})
+          .then(this.onLoadSuccess)
+          .catch(this.onLoadError);
+      }
     }
   }
 
@@ -167,9 +177,12 @@ export class LazyImage extends React.Component<LazyImageProps, LazyImageState> {
    using the img element per se. Should we use an explicit fetch(), perhaps?
  */
 /** Promise constructor for loading an image */
-const loadImage = src =>
+const loadImage = ({src, srcSet}) =>
   new Promise((resolve, reject) => {
     const image = new Image();
+    if (srcSet) {
+      image.srcset = srcSet;
+    }
     image.src = src;
     image.onload = resolve;
     image.onerror = reject;

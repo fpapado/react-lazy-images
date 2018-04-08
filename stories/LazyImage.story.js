@@ -64,6 +64,57 @@ storiesOf('LazyImage', module)
       </Container>
     ))
   )
+  // With srcSet
+  .add(
+    'With src and srcSet',
+    withInfo(
+      'With srcset, the browser decides which image to load. In that case, src is not informative enough for preloading. You can pass the `srcSet` prop to provide that additional information to LazyImage.'
+    )(() => (
+      <Container>
+        <LazyImage
+          src="https://www.fillmurray.com/g/300/200"
+          srcSet="https://www.fillmurray.com/g/900/600 900w, https://www.fillmurray.com/g/600/400 600w, https://www.fillmurray.com/g/300/200 300w"
+          placeholder={({cls}) => (
+            <img
+              src="https://www.fillmurray.com/g/60/40"
+              className={`${cls} w-100`}
+            />
+          )}
+          actual={({cls}) => (
+            <img
+              src="https://www.fillmurray.com/g/300/200"
+              srcSet="https://www.fillmurray.com/g/900/600 900w, https://www.fillmurray.com/g/600/400 600w, https://www.fillmurray.com/g/300/200 300w"
+              className={`${cls} w-100`}
+            />
+          )}
+        />
+      </Container>
+    ))
+  )
+  // With srcSet
+  .add(
+    'Without src or srcSet',
+    withInfo(
+      'Sometimes, it might be impractical to specify the src with your current setup. For example, it is possible that you are generating the sources for an Image CDN and have a dedicated component for it. In those cases, changing the component might be impractical in the short-term. If you provide no src or srcSet, then the preload-before-swap behaviour is not used. We believe that showing a possibly still-downloading image is better than having lazy-loading at all.'
+    )(() => (
+      <Container>
+        <LazyImage
+          placeholder={({cls}) => (
+            <img
+              src="https://www.fillmurray.com/g/60/40"
+              className={`${cls} w-100`}
+            />
+          )}
+          actual={({cls}) => (
+            <img
+              src="https://www.fillmurray.com/g/600/400"
+              className={`${cls} w-100`}
+            />
+          )}
+        />
+      </Container>
+    ))
+  )
   // Always load an image (aka "eagerly"; how the browser does it already.
   // Useful if you want to load the actual content without waiting for Javascript.
   .add(
