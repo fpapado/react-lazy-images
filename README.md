@@ -229,21 +229,24 @@ For the actual image request to kick off, Javascript has to have loaded, and det
 In cases where you are server-side rendering, there can be a non-neglible amount of time until Javascript is available (i.e. it has to download, parse, execute).
 For those cases, it would be beneficial if we can mark images to render with the intended/final src by default, so that the browser can start requesting them as soon as it gets the HTML.
 
-This is a pretty straightforward thing to implement; we short-circuit the process by using a `loadEagerly` prop:
+This behaviour is available by using a `loadEagerly` prop:
 
 ```jsx
 <LazyImage
   loadEagerly
   src="https://www.fillmurray.com/g/600/400"
-  placeholder={
-    <img src="https://www.fillmurray.com/g/60/40" className="w-100" />
-  }
-  actual={<img src="https://www.fillmurray.com/g/600/400" className="w-100" />}
-/>
+  placeholder={({cls}) => (
+    <img src="https://www.fillmurray.com/g/60/40" className={cls} />
+  )}
+  actual={({cls}) => (
+    <img src="https://www.fillmurray.com/g/600/400" className={cls} />
+  )}
+/>;
 ```
 
-While the implementation is simple, the patterns in your app will not necessarily be so.
-Think about the cases where it is beneficial to do this, and apply it with intent. Examples might be eager-loading hero images, the first few elements in a list and so on.
+While the usage is simple, the patterns in your app will not necessarily be so.
+Think about the cases where it is beneficial to do this, and apply it with intent. 
+Examples might be eager-loading hero images, preloading the first few elements in a list and so on.
 [Some of these use cases are provided as examples](#examples).
 
 ### Fallback without Javascript
