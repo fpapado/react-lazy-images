@@ -82,11 +82,11 @@ This brings us to the basic premise of any Lazy Image Loading library:
 * Prevent the browser from loading images directly
 * Once an image is in view, instruct the browser to load it and place it in the element
 
-In the past, this has meant "hiding" the actual `src` in a `data-src` attribute, and using classes to indicate state, e.g. `.isLazyLoaded .lazyLoad`.
-On initialisation, a script would query for these classes and attributes, keep track of visibily, and swap `data-src` with an actual `src`, kicking off the browser request process.
-It could even elect to preload the Image, and only swap once loaded.
+In vanilla JS, this means "hiding" the actual `src` in a `data-src` attribute, and using classes to indicate state, e.g. `.isLazyLoaded .lazyLoad`.
+On initialisation, a script queries for these classes and attributes, keeps track of visibily, and swaps `data-src` with an actual `src`, kicking off the browser request process.
+It can elect to preload the Image, and only swap once loaded.
 
-With React, all this implicit state management is made simpler, since you do not have to stash loading information in the DOM and pick it back up again.
+With React, all this implicit state management is brought into one place, since you do not have to stash loading information in the DOM and pick it back up again.
 This can potentially mean a nicer, more composable codebase, and it was one of the main design goals for this library.
 
 The way to do this visibility tracking has for the most part been listening for events such as scroll.
