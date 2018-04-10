@@ -19,6 +19,7 @@
 * [Examples](#examples)
 * [API Reference](#api-reference)
 * [Feedback](#feedback)
+* [Roadmap](#roadmap)
 * [Contributing](#contributing)
 * [Thanks](#thanks-and-inspiration)
 * [License](#license)
@@ -368,6 +369,10 @@ Read the notes section either on Storybook or the story source if you are wonder
 ## Feedback
 
 I have some specific questions that I would like input on. If you want to go exploring, or have used the library and had gripes with it, then see [`FEEDBACK.md`](./FEEDBACK.md) and let's have a discussion!
+
+## Roadmap
+
+See [`ROADMAP.md`](./ROADMAP.md) for information and ideas about where the project is headed.
 
 ## Contributing
 
