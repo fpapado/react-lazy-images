@@ -14,18 +14,25 @@ interface RenderPropArgs {
 export interface LazyImageProps {
   /** The source of the image to load */
   src: string;
-  srcSet: string;
-  /** The component to display while image has not loaded */
-  placeholder: (RenderPropArgs) => React.ReactElement<{}>;
+  srcSet?: string;
 
-  /** The component to display once image has loaded */
+  /** Component to display once image has loaded */
   actual: (RenderPropArgs) => React.ReactElement<{}>;
 
-  /** The component to display while the image is loading */
-  loading: (RenderPropArgs) => React.ReactElement<{}>;
+  /** Component to display while image has not been requested 
+  * @default: undefined
+  * */
+  placeholder?: (RenderPropArgs) => React.ReactElement<{}>;
 
-  /** The component to display if the image fails to load */
-  error: (RenderPropArgs) => React.ReactElement<{}>;
+  /** Component to display while the image is loading 
+  * @default placeholder, if defined
+  * */
+  loading?: (RenderPropArgs) => React.ReactElement<{}>;
+
+  /** Component to display if the image fails to load 
+  * @default placeholder, if defined
+  * */
+  error?: (RenderPropArgs) => React.ReactElement<{}>;
 
   /** Whether to skip checking for viewport and always show the 'actual' component
    * @see https://github.com/fpapado/react-lazy-images/#eager-loading--server-side-rendering-ssr

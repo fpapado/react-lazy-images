@@ -39,9 +39,9 @@ What it does not do by itself:
 
 * Polyfill `IntersectionObserver`. Adding polyfills is something you should do consciously at the application level. See [Polyfilling IntersectionObserver](#polyfill-intersectionobserver) for how to do this.
 * Dictate the kind of placeholders displayed. There are many ways to do it; you can use a simple box with a background color, a low-resolution image, some gradient, etc.
-In other words, this library focuses on loading the images once in view and supporting **loading patterns** around that.
-The presentational patterns are yours to decide!
-Fear not though, [we cover both patterns in the examples section](#examples).
+  In other words, this library focuses on loading the images once in view and supporting **loading patterns** around that.
+  The presentational patterns are yours to decide!
+  Fear not though, [we cover both patterns in the examples section](#examples).
 
 ## Install
 
@@ -58,10 +58,10 @@ Then import according to your modules model and bundler, such as [Rollup](https:
 ```js
 // ES Modules
 // For all possible functions to import look at the documentation
-import {LazyImage} from 'react-lazy-images';
+import { LazyImage } from "react-lazy-images";
 
 /// CommonJS modules
-const {LazyImage} = require('react-lazy-images');
+const { LazyImage } = require("react-lazy-images");
 ```
 
 A [UMD](https://github.com/umdjs/umd) version is also available on [unpkg](https://unpkg.com/):
@@ -102,14 +102,14 @@ Using this API is not specific to React; it just seems like a good fit for this 
 If you want to just dive in, do this:
 
 ```jsx
-import {LazyImage} from 'react-lazy-images';
+import { LazyImage } from "react-lazy-images";
 
 <LazyImage
   src="https://www.fillmurray.com/g/600/400"
-  placeholder={({cls}) => (
+  placeholder={({ cls }) => (
     <img src="https://www.fillmurray.com/g/60/40" className={cls} />
   )}
-  actual={({cls}) => (
+  actual={({ cls }) => (
     <img src="https://www.fillmurray.com/g/600/400" className={cls} />
   )}
 />;
@@ -202,16 +202,16 @@ You can choose what to display on Loading and Error using the render props `load
 <div className="bg-light-silver h5 w-100">
   <LazyImage
     src="https://www.fillmurray.com/notanimage"
-    placeholder={({cls}) => <div className={cls} />}
-    actual={({cls}) => (
+    placeholder={({ cls }) => <div className={cls} />}
+    actual={({ cls }) => (
       <img src="https://www.fillmurray.com/notanimage" className={cls} />
     )}
-    loading={({cls}) => (
+    loading={({ cls }) => (
       <div className={cls}>
         <p className="pa3 f5 lh-copy near-white">Loading...</p>
       </div>
     )}
-    error={({cls}) => (
+    error={({ cls }) => (
       <div className={`bg-light-red h-100 w-100 ${cls}`}>
         <p>There was an error fetching this image :(</p>
       </div>
@@ -235,17 +235,17 @@ This behaviour is available by using a `loadEagerly` prop:
 <LazyImage
   loadEagerly
   src="https://www.fillmurray.com/g/600/400"
-  placeholder={({cls}) => (
+  placeholder={({ cls }) => (
     <img src="https://www.fillmurray.com/g/60/40" className={cls} />
   )}
-  actual={({cls}) => (
+  actual={({ cls }) => (
     <img src="https://www.fillmurray.com/g/600/400" className={cls} />
   )}
-/>;
+/>
 ```
 
 While the usage is simple, the patterns in your app will not necessarily be so.
-Think about the cases where it is beneficial to do this, and apply it with intent. 
+Think about the cases where it is beneficial to do this, and apply it with intent.
 Examples might be eager-loading hero images, preloading the first few elements in a list and so on.
 [Some of these use cases are provided as examples](#examples).
 
@@ -328,7 +328,7 @@ npm install --save intersection-observer
 And import it at your app's entry point:
 
 ```js
-import 'intersection-observer';
+import "intersection-observer";
 ```
 
 [Polyfill.io is an alternative method of distributing the polyfill](polyfill.io) if you wish.
@@ -341,7 +341,9 @@ The polyfill behaviour is to [fall back to the older strategy](https://github.co
 It will not be as performant as the native IntersectionObserver, but likely no worse than most implementations of the older strategy.
 
 ## Examples
+
 ### About understanding the library and loading patterns
+
 A variety of usage examples and recipes are provided in the form of Storybook.
 
 [You can browse the documentation online](https://fpapado.github.io/react-lazy-images) or look at `stories/`.
@@ -349,6 +351,7 @@ A variety of usage examples and recipes are provided in the form of Storybook.
 Read the notes section either on Storybook or the story source if you are wondering about the specifics of each pattern demonstrated.
 
 ### About abstracting over it and presentational patterns
+
 [The starter on Codesandbox](https://codesandbox.io/s/jnn9wjkj1w) has a good basis for two popular presentational patterns.
 In particular, it shows intrinsic placeholders and fading in the actual image.
 
@@ -356,16 +359,16 @@ In particular, it shows intrinsic placeholders and fading in the actual image.
 
 **`<LazyImage />`** accepts the following props:
 
-| Name              | Type                                    | Default                                   | Required | Description                                                                                                                                                                                          |
-| ----------------- | --------------------------------------- | ----------------------------------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **src**           | String                                  |                                           | true     | The source of the image to load                                                                                                                                                                      |
+| Name              | Type                                    | Default                                   | Required | Description                                                                                           |
+| ----------------- | --------------------------------------- | ----------------------------------------- | -------- | ----------------------------------------------------------------------------------------------------- |
+| **src**           | String                                  |                                           | true     | The source of the image to load                                                                       |
 | **srcSet**        | String                                  |                                           | false    | If your images use srcset, you can pass the `srcSet` prop to provide that information for preloading. |
-| **placeholder**   | Function (render prop)                  |                                           | true     | Component to display while image has not loaded                                                                                                                                                      |
-| **actual**        | Function (render prop)                  |                                           | true     | Component to display once image has loaded                                                                                                                                                           |
-| **loading**       | Function (render prop)                  | placeholder                               | false    | Component to display while the image is loading                                                                                                                                                      |
-| **error**         | Function                                | placeholder                               | false    | Component to display if the image loading has failed (render prop)                                                                                                                                   |
-| **loadEagerly**   | Boolean                                 | false                                     | false    | Whether to skip checking for viewport and always show the 'actual' component                                                                                                                         |
-| **observerProps** | {threshold: number, rootMargin: string} | {threshold: 0.01, rootMargin: "50px 0px"} | false    | Subset of props for the IntersectionObserver                                                                                                                                                         |
+| **actual**        | Function (render prop)                  |                                           | true     | Component to display once image has loaded                                                            |
+| **placeholder**   | Function (render prop)                  |                                           | false    | Component to display while no request for the actual image has been made                              |
+| **loading**       | Function (render prop)                  | placeholder                               | false    | Component to display while the image is loading                                                       |
+| **error**         | Function                                | placeholder                               | false    | Component to display if the image loading has failed (render prop)                                    |
+| **loadEagerly**   | Boolean                                 | false                                     | false    | Whether to skip checking for viewport and always show the 'actual' component                          |
+| **observerProps** | {threshold: number, rootMargin: string} | {threshold: 0.01, rootMargin: "50px 0px"} | false    | Subset of props for the IntersectionObserver                                                          |
 
 [You can consult Typescript types in the code](./src/LazyImage.tsx) as a more exact definition.
 
