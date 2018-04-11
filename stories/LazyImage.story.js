@@ -269,7 +269,7 @@ storiesOf('LazyImage', module)
   .add(
     'Background image',
     withInfo(
-      'You are in control of what gets rendered, so you can just do this.'
+      'You are in control of what gets rendered, so you can set the url of the background image, and swap in a component that uses it on load. It is not much different from the basic use case.'
     )(() => {
       const BgImage = ({cls, bgSrc}) => (
         <div

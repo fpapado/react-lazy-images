@@ -35,14 +35,13 @@
 * Easy to understand source code. You should be able to fork and do your thing if desired.
 * Ample documentation to help you understand the problem, in addition to the solutions.
 
-What it does not do out:
+What it does not do by itself:
 
 * Polyfill `IntersectionObserver`. Adding polyfills is something you should do consciously at the application level. See [Polyfilling IntersectionObserver](#polyfill-intersectionobserver) for how to do this.
-* Dictate the kind of placeholders displayed. There are many ways to do it; you can use a simple box with a background color (I hear gray is popular), a blurred image, some gradient, or anything you'd like. You are in control of the element that gets rendered.
-* Animate transitions between placeholder and source. Again, you are in control of the containers, so it should be possible to implement those at the consumer.
-
-In other words, this library focuses on loading the images once in view and supporting loading patterns around that.
-The actual components are yours to decide!
+* Dictate the kind of placeholders displayed. There are many ways to do it; you can use a simple box with a background color, a low-resolution image, some gradient, etc.
+In other words, this library focuses on loading the images once in view and supporting **loading** patterns around that.
+The presentational patterns are yours to decide!
+Fear not though, [we cover both patterns in the examples section](#examples).
 
 ## Install
 
@@ -342,12 +341,16 @@ The polyfill behaviour is to [fall back to the older strategy](https://github.co
 It will not be as performant as the native IntersectionObserver, but likely no worse than most implementations of the older strategy.
 
 ## Examples
-
+### About understanding the library and loading patterns
 A variety of usage examples and recipes is provided in the form of storybook.
 
 [You can browse the documentation online](https://fpapado.github.io/react-lazy-images) or look at `stories/`.
 
 Read the notes section either on Storybook or the story source if you are wondering about the specifics of each pattern demonstrated.
+
+### About using it in practice and abstracting over it
+[The starter on Codesandbox](https://codesandbox.io/s/jnn9wjkj1w) has a good basis for two popular presentational patterns.
+In particular, it shows intrinsic placeholders and fading in the actual image.
 
 ## API Reference
 
@@ -386,6 +389,8 @@ The library backing this one, [react-intersection-observer library](https://gith
 Further thanks for demonstrating Storybook as documentation for lazy-loading.
 
 [Paul Lewis' implementation of lazy image loading](https://github.com/GoogleChromeLabs/sample-media-pwa/blob/master/src/client/scripts/helpers/lazy-load-images.js) has the concept of pre-loading images before swapping.
+
+[Dave Rupert has a good guide on intrinsic image placeholders](https://daverupert.com/2015/12/intrinsic-placeholders-with-picture/)
 
 [How Medium does lazy image loading](https://jmperezperez.com/medium-image-progressive-loading-placeholder/)
 
