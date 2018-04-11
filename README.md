@@ -106,12 +106,8 @@ import { LazyImage } from "react-lazy-images";
 
 <LazyImage
   src="https://www.fillmurray.com/g/600/400"
-  placeholder={({ cls }) => (
-    <img src="https://www.fillmurray.com/g/60/40" className={cls} />
-  )}
-  actual={({ cls }) => (
-    <img src="https://www.fillmurray.com/g/600/400" className={cls} />
-  )}
+  placeholder={() => <img src="https://www.fillmurray.com/g/60/40" />}
+  actual={() => <img src="https://www.fillmurray.com/g/600/400" />}
 />;
 ```
 
@@ -135,28 +131,28 @@ Thus, whether you want to display a simple `<img>`, your own `<Image>`, or even 
   src={https://www.fillmurray.com/g/600/400}
   // This is rendered first
   placeholder={
-    ({cls}) =>
-      <img src="https://www.fillmurray.com/g/60/40" className={cls} />
+    () =>
+      <img src="https://www.fillmurray.com/g/60/40" />
   }
   // This is rendered once in view
   actual={
-    ({cls}) =>
-      <img src="https://www.fillmurray.com/g/600/400" className={cls} />
+    () =>
+      <img src="https://www.fillmurray.com/g/600/400" />
   }
 />
 
 // Perhaps you want a container?
 <LazyImage
   placeholder={
-    ({cls}) =>
-      <div className={`LazyImage-Placeholder ${cls}`}">
+    () =>
+      <div className={`LazyImage-Placeholder`}">
         <img src="https://www.fillmurray.com/g/60/40"/>
       </div>
   }
   actual={
-    ({cls}) =>
-      <div className={`LazyImage-Actual ${cls}`}>
-        <img src="https://www.fillmurray.com/g/600/400" className={cls} />
+    () =>
+      <div className={`LazyImage-Actual`}>
+        <img src="https://www.fillmurray.com/g/600/400" />
       </div>
   }
 />
@@ -178,15 +174,15 @@ This behaviour is provided with the `src` prop:
 <LazyImage
   src="https://www.fillmurray.com/g/600/400"
   placeholder={
-    ({cls}) =>
-      <div className={`LazyImage-Placeholder ${cls}`}">
+    () =>
+      <div className={`LazyImage-Placeholder`}">
         <img src="https://www.fillmurray.com/g/60/40"/>
       </div>
   }
   actual={
-    ({cls}) =>
-      <div className={`LazyImage-Actual ${cls}`}>
-        <img src="https://www.fillmurray.com/g/600/400" className={cls} />
+    () =>
+      <div className={`LazyImage-Actual`}>
+        <img src="https://www.fillmurray.com/g/600/400" />
       </div>
   }
 />
@@ -202,17 +198,14 @@ You can choose what to display on Loading and Error using the render props `load
 <div className="bg-light-silver h5 w-100">
   <LazyImage
     src="https://www.fillmurray.com/notanimage"
-    placeholder={({ cls }) => <div className={cls} />}
-    actual={({ cls }) => (
-      <img src="https://www.fillmurray.com/notanimage" className={cls} />
-    )}
-    loading={({ cls }) => (
-      <div className={cls}>
+    actual={() => <img src="https://www.fillmurray.com/notanimage" />}
+    loading={() => (
+      <div>
         <p className="pa3 f5 lh-copy near-white">Loading...</p>
       </div>
     )}
-    error={({ cls }) => (
-      <div className={`bg-light-red h-100 w-100 ${cls}`}>
+    error={() => (
+      <div className="bg-light-red h-100 w-100">
         <p>There was an error fetching this image :(</p>
       </div>
     )}
@@ -235,12 +228,8 @@ This behaviour is available by using a `loadEagerly` prop:
 <LazyImage
   loadEagerly
   src="https://www.fillmurray.com/g/600/400"
-  placeholder={({ cls }) => (
-    <img src="https://www.fillmurray.com/g/60/40" className={cls} />
-  )}
-  actual={({ cls }) => (
-    <img src="https://www.fillmurray.com/g/600/400" className={cls} />
-  )}
+  placeholder={() => <img src="https://www.fillmurray.com/g/60/40" />}
+  actual={() => <img src="https://www.fillmurray.com/g/600/400" />}
 />
 ```
 

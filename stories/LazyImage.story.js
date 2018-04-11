@@ -33,32 +33,20 @@ storiesOf('LazyImage', module)
       <Container>
         <LazyImage
           src="https://www.fillmurray.com/g/600/400"
-          placeholder={({cls}) => (
-            <img
-              src="https://www.fillmurray.com/g/60/40"
-              className={`${cls} w-100`}
-            />
+          placeholder={() => (
+            <img src="https://www.fillmurray.com/g/60/40" className="w-100" />
           )}
-          actual={({cls}) => (
-            <img
-              src="https://www.fillmurray.com/g/600/400"
-              className={`${cls} w-100`}
-            />
+          actual={() => (
+            <img src="https://www.fillmurray.com/g/600/400" className="w-100" />
           )}
         />
         <LazyImage
           src="https://www.fillmurray.com/g/300/200"
-          placeholder={({cls}) => (
-            <img
-              src="https://www.fillmurray.com/g/30/20"
-              className={`${cls} w-100`}
-            />
+          placeholder={() => (
+            <img src="https://www.fillmurray.com/g/30/20" className="w-100" />
           )}
-          actual={({cls}) => (
-            <img
-              src="https://www.fillmurray.com/g/300/200"
-              className={`${cls} w-100`}
-            />
+          actual={() => (
+            <img src="https://www.fillmurray.com/g/300/200" className="w-100" />
           )}
         />
       </Container>
@@ -74,17 +62,14 @@ storiesOf('LazyImage', module)
         <LazyImage
           src="https://www.fillmurray.com/g/300/200"
           srcSet="https://www.fillmurray.com/g/900/600 900w, https://www.fillmurray.com/g/600/400 600w, https://www.fillmurray.com/g/300/200 300w"
-          placeholder={({cls}) => (
-            <img
-              src="https://www.fillmurray.com/g/60/40"
-              className={`${cls} w-100`}
-            />
+          placeholder={() => (
+            <img src="https://www.fillmurray.com/g/60/40" className="w-100" />
           )}
-          actual={({cls}) => (
+          actual={() => (
             <img
               src="https://www.fillmurray.com/g/300/200"
               srcSet="https://www.fillmurray.com/g/900/600 900w, https://www.fillmurray.com/g/600/400 600w, https://www.fillmurray.com/g/300/200 300w"
-              className={`${cls} w-100`}
+              className="w-100"
             />
           )}
         />
@@ -99,17 +84,11 @@ storiesOf('LazyImage', module)
     )(() => (
       <Container>
         <LazyImage
-          placeholder={({cls}) => (
-            <img
-              src="https://www.fillmurray.com/g/60/40"
-              className={`${cls} w-100`}
-            />
+          placeholder={() => (
+            <img src="https://www.fillmurray.com/g/60/40" className="w-100" />
           )}
-          actual={({cls}) => (
-            <img
-              src="https://www.fillmurray.com/g/600/400"
-              className={`${cls} w-100`}
-            />
+          actual={() => (
+            <img src="https://www.fillmurray.com/g/600/400" className="w-100" />
           )}
         />
       </Container>
@@ -125,17 +104,11 @@ storiesOf('LazyImage', module)
       <Container>
         <LazyImage
           loadEagerly
-          placeholder={({cls}) => (
-            <img
-              src="https://www.fillmurray.com/g/60/40"
-              className={`${cls} w-100`}
-            />
+          placeholder={() => (
+            <img src="https://www.fillmurray.com/g/60/40" className="w-100" />
           )}
-          actual={({cls}) => (
-            <img
-              src="https://www.fillmurray.com/g/600/400"
-              className={`${cls} w-100`}
-            />
+          actual={() => (
+            <img src="https://www.fillmurray.com/g/600/400" className="w-100" />
           )}
         />
       </Container>
@@ -158,16 +131,16 @@ storiesOf('LazyImage', module)
             loadEagerly={i === 0}
             key={key}
             src={`https://www.fillmurray.com/g/${actual}`}
-            placeholder={({cls}) => (
+            placeholder={() => (
               <img
                 src={`https://www.fillmurray.com/g/${placeholder}`}
-                className={`${cls} w-100`}
+                className="w-100"
               />
             )}
-            actual={({cls}) => (
+            actual={() => (
               <img
                 src={`https://www.fillmurray.com/g/${actual}`}
-                className={`${cls} w-100`}
+                className="w-100"
               />
             )}
           />
@@ -183,15 +156,10 @@ storiesOf('LazyImage', module)
         <div className="bg-light-silver h5 w-100">
           <LazyImage
             src="https://www.fillmurray.com/g/3000/2000"
-            placeholder={({cls}) => <div className={cls} />}
-            actual={({cls}) => (
-              <img
-                src="https://www.fillmurray.com/g/3000/2000"
-                className={cls}
-              />
-            )}
-            loading={({cls}) => (
-              <div className={cls}>
+            placeholder={() => <div />}
+            actual={() => <img src="https://www.fillmurray.com/g/3000/2000" />}
+            loading={() => (
+              <div>
                 <p className="pa3 f5 lh-copy near-white">Loading...</p>
               </div>
             )}
@@ -208,20 +176,15 @@ storiesOf('LazyImage', module)
         <div className="bg-light-silver h5 w-100">
           <LazyImage
             src="https://www.fillmurray.com/notanimage"
-            placeholder={({cls}) => <div className={cls} />}
-            actual={({cls}) => (
-              <img
-                src="https://www.fillmurray.com/notanimage"
-                className={cls}
-              />
-            )}
-            loading={({cls}) => (
-              <div className={cls}>
+            placeholder={() => <div />}
+            actual={() => <img src="https://www.fillmurray.com/notanimage" />}
+            loading={() => (
+              <div>
                 <p className="pa3 f5 lh-copy near-white">Loading...</p>
               </div>
             )}
-            error={({cls}) => (
-              <div className={`bg-light-red h-100 w-100 ${cls}`}>
+            error={() => (
+              <div className={`bg-light-red h-100 w-100 $`}>
                 <p>There was an error fetching this image :(</p>
               </div>
             )}
@@ -247,16 +210,16 @@ storiesOf('LazyImage', module)
               <LazyImage
                 key={key}
                 src={`https://www.fillmurray.com/g/${actual}`}
-                placeholder={({cls}) => (
+                placeholder={() => (
                   <img
                     src={`https://www.fillmurray.com/g/${placeholder}`}
-                    className={`${cls} w-100`}
+                    className="w-100"
                   />
                 )}
-                actual={({cls}) => (
+                actual={() => (
                   <img
                     src={`https://www.fillmurray.com/g/${actual}`}
-                    className={`${cls} w-100`}
+                    className="w-100"
                   />
                 )}
               />
@@ -271,9 +234,9 @@ storiesOf('LazyImage', module)
     withInfo(
       'You are in control of what gets rendered, so you can set the url of the background image, and swap in a component that uses it on load. It is not much different from the basic use case.'
     )(() => {
-      const BgImage = ({cls, bgSrc}) => (
+      const BgImage = ({bgSrc}) => (
         <div
-          className={`${cls} w5 h5 contain bg-center`}
+          className={`$ w5 h5 contain bg-center`}
           style={{backgroundImage: `url(${bgSrc})`}}
         />
       );
@@ -281,11 +244,11 @@ storiesOf('LazyImage', module)
         <Container>
           <LazyImage
             src="https://www.fillmurray.com/g/500/700"
-            placeholder={({cls}) => (
-              <BgImage bgSrc="https://www.fillmurray.com/g/50/70" cls={cls} />
+            placeholder={() => (
+              <BgImage bgSrc="https://www.fillmurray.com/g/50/70" />
             )}
-            actual={({cls}) => (
-              <BgImage bgSrc="https://www.fillmurray.com/g/500/700" cls={cls} />
+            actual={() => (
+              <BgImage bgSrc="https://www.fillmurray.com/g/500/700" />
             )}
           />
         </Container>

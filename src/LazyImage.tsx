@@ -4,9 +4,7 @@ import Observer, {IntersectionObserverProps} from 'react-intersection-observer';
 /**
  * Values that the render props take
  */
-interface RenderPropArgs {
-  cls: string;
-}
+// interface RenderPropArgs {}
 
 /**
  * Valid props for LazyImage
@@ -17,22 +15,22 @@ export interface LazyImageProps {
   srcSet?: string;
 
   /** Component to display once image has loaded */
-  actual: (RenderPropArgs) => React.ReactElement<{}>;
+  actual: () => React.ReactElement<{}>;
 
   /** Component to display while image has not been requested
    * @default: undefined
    */
-  placeholder?: (RenderPropArgs) => React.ReactElement<{}>;
+  placeholder?: () => React.ReactElement<{}>;
 
   /** Component to display while the image is loading
    * @default placeholder, if defined
    */
-  loading?: (RenderPropArgs) => React.ReactElement<{}>;
+  loading?: () => React.ReactElement<{}>;
 
   /** Component to display if the image fails to load
    * @default actual (broken image)
    */
-  error?: (RenderPropArgs) => React.ReactElement<{}>;
+  error?: () => React.ReactElement<{}>;
 
   /** Whether to skip checking for viewport and always show the 'actual' component
    * @see https://github.com/fpapado/react-lazy-images/#eager-loading--server-side-rendering-ssr
@@ -128,11 +126,7 @@ export class LazyImage extends React.Component<LazyImageProps, LazyImageState> {
   }
 
   renderEager({actual}: LazyImageProps) {
-    return (
-      <React.Fragment>
-        {actual({cls: 'LazyImage LazyImage-Actual'})}
-      </React.Fragment>
-    );
+    return <React.Fragment>{actual()}</React.Fragment>;
   }
 
   renderLazy(state, {observerProps, ...rest}: LazyImageProps) {
@@ -158,25 +152,18 @@ export class LazyImage extends React.Component<LazyImageProps, LazyImageState> {
   ) {
     switch (imageState) {
       case 'NotAsked':
-        return (
-          !!placeholder && placeholder({cls: 'LazyImage LazyImage-Placeholder'})
-        );
+        return !!placeholder && placeholder();
 
       case 'Loading':
         // Only render loading if specified, otherwise placeholder
-        return !!loading
-          ? loading({cls: 'LazyImage LazyImage-Loading'})
-          : !!placeholder &&
-              placeholder({cls: 'LazyImage LazyImage-Placeholder'});
+        return !!loading ? loading() : !!placeholder && placeholder();
 
       case 'LoadSuccess':
-        return actual({cls: 'LazyImage LazyImage-Placeholder'});
+        return actual();
 
       case 'LoadError':
         // Only render error if specified, otherwise actual
-        return !!error
-          ? error({cls: 'LazyImage LazyImage-Error'})
-          : actual({cls: 'LazyImage LazyImage-Placeholder'});
+        return !!error ? error() : actual();
     }
   }
 }
