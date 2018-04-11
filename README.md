@@ -364,9 +364,9 @@ In particular, it shows intrinsic placeholders and fading in the actual image.
 | **src**           | String                                  |                                           | true     | The source of the image to load                                                                       |
 | **srcSet**        | String                                  |                                           | false    | If your images use srcset, you can pass the `srcSet` prop to provide that information for preloading. |
 | **actual**        | Function (render prop)                  |                                           | true     | Component to display once image has loaded                                                            |
-| **placeholder**   | Function (render prop)                  |                                           | false    | Component to display while no request for the actual image has been made                              |
+| **placeholder**   | Function (render prop)                  | undefined                                 | false    | Component to display while no request for the actual image has been made                              |
 | **loading**       | Function (render prop)                  | placeholder                               | false    | Component to display while the image is loading                                                       |
-| **error**         | Function                                | placeholder                               | false    | Component to display if the image loading has failed (render prop)                                    |
+| **error**         | Function                                | actual (broken image)                     | false    | Component to display if the image loading has failed (render prop)                                    |
 | **loadEagerly**   | Boolean                                 | false                                     | false    | Whether to skip checking for viewport and always show the 'actual' component                          |
 | **observerProps** | {threshold: number, rootMargin: string} | {threshold: 0.01, rootMargin: "50px 0px"} | false    | Subset of props for the IntersectionObserver                                                          |
 

@@ -19,19 +19,19 @@ export interface LazyImageProps {
   /** Component to display once image has loaded */
   actual: (RenderPropArgs) => React.ReactElement<{}>;
 
-  /** Component to display while image has not been requested 
-  * @default: undefined
-  * */
+  /** Component to display while image has not been requested
+   * @default: undefined
+   */
   placeholder?: (RenderPropArgs) => React.ReactElement<{}>;
 
-  /** Component to display while the image is loading 
-  * @default placeholder, if defined
-  * */
+  /** Component to display while the image is loading
+   * @default placeholder, if defined
+   */
   loading?: (RenderPropArgs) => React.ReactElement<{}>;
 
-  /** Component to display if the image fails to load 
-  * @default placeholder, if defined
-  * */
+  /** Component to display if the image fails to load
+   * @default actual (broken image)
+   */
   error?: (RenderPropArgs) => React.ReactElement<{}>;
 
   /** Whether to skip checking for viewport and always show the 'actual' component
@@ -158,13 +158,16 @@ export class LazyImage extends React.Component<LazyImageProps, LazyImageState> {
   ) {
     switch (imageState) {
       case 'NotAsked':
-        return placeholder({cls: 'LazyImage LazyImage-Placeholder'});
+        return (
+          !!placeholder && placeholder({cls: 'LazyImage LazyImage-Placeholder'})
+        );
 
       case 'Loading':
         // Only render loading if specified, otherwise placeholder
         return !!loading
           ? loading({cls: 'LazyImage LazyImage-Loading'})
-          : placeholder({cls: 'LazyImage LazyImage-Placeholder'});
+          : !!placeholder &&
+              placeholder({cls: 'LazyImage LazyImage-Placeholder'});
 
       case 'LoadSuccess':
         return actual({cls: 'LazyImage LazyImage-Placeholder'});
@@ -180,9 +183,6 @@ export class LazyImage extends React.Component<LazyImageProps, LazyImageState> {
 
 // Utilities
 
-/* NOTE: this seems like the conventional way of doing it, and yet we are not
-   using the img element per se. Should we use an explicit fetch(), perhaps?
- */
 /** Promise constructor for loading an image */
 const loadImage = ({src, srcSet}) =>
   new Promise((resolve, reject) => {
