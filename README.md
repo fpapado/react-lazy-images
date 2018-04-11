@@ -39,7 +39,7 @@ What it does not do by itself:
 
 * Polyfill `IntersectionObserver`. Adding polyfills is something you should do consciously at the application level. See [Polyfilling IntersectionObserver](#polyfill-intersectionobserver) for how to do this.
 * Dictate the kind of placeholders displayed. There are many ways to do it; you can use a simple box with a background color, a low-resolution image, some gradient, etc.
-In other words, this library focuses on loading the images once in view and supporting **loading** patterns around that.
+In other words, this library focuses on loading the images once in view and supporting **loading patterns** around that.
 The presentational patterns are yours to decide!
 Fear not though, [we cover both patterns in the examples section](#examples).
 
@@ -342,13 +342,13 @@ It will not be as performant as the native IntersectionObserver, but likely no w
 
 ## Examples
 ### About understanding the library and loading patterns
-A variety of usage examples and recipes is provided in the form of storybook.
+A variety of usage examples and recipes are provided in the form of Storybook.
 
 [You can browse the documentation online](https://fpapado.github.io/react-lazy-images) or look at `stories/`.
 
 Read the notes section either on Storybook or the story source if you are wondering about the specifics of each pattern demonstrated.
 
-### About using it in practice and abstracting over it
+### About abstracting over it and presentational patterns
 [The starter on Codesandbox](https://codesandbox.io/s/jnn9wjkj1w) has a good basis for two popular presentational patterns.
 In particular, it shows intrinsic placeholders and fading in the actual image.
 
