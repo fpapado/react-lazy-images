@@ -11,7 +11,7 @@ import Observer, {IntersectionObserverProps} from 'react-intersection-observer';
  */
 export interface LazyImageProps {
   /** The source of the image to load */
-  src: string;
+  src?: string;
   srcSet?: string;
 
   /** Component to display once image has loaded */

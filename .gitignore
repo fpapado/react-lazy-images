@@ -1,5 +1,6 @@
 .DS_Store
 microbundle/
+ts-build/
 node_modules/
 dist/
 public/

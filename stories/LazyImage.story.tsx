@@ -1,11 +1,8 @@
-import * as React from 'react';
+import React from 'react';
 import {storiesOf} from '@storybook/react';
 import {action} from '@storybook/addon-actions';
 import {withInfo} from '@storybook/addon-info';
-import {
-  LazyImage,
-  renderDefaultFallback
-} from '../dist/react-lazy-images.es.js';
+import {LazyImage} from '../src/LazyImage';
 
 const Container = ({children}) => (
   <div className="pa3 near-black bg-washed-yellow">
@@ -24,7 +21,10 @@ const Container = ({children}) => (
 );
 
 // Component that preloads the image and only swaps once ready
-storiesOf('LazyImage', module)
+//@ts-ignore
+const stories = storiesOf('LazyImage', module);
+
+stories
   .add(
     'Basic use',
     withInfo(
