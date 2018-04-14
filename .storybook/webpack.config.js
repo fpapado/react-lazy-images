@@ -4,10 +4,13 @@ const path = require('path');
 module.exports = (baseConfig, env, config) => {
   config.module.rules.push({
     test: /\.tsx?$/,
-    include: [path.resolve(__dirname, '../src/'), path.resolve(__dirname, '../stories/')],
+    include: [
+      path.resolve(__dirname, '../src/'),
+      path.resolve(__dirname, '../stories/')
+    ],
     use: [
       require.resolve('awesome-typescript-loader'),
-      require.resolve("react-docgen-typescript-loader")
+      require.resolve('react-docgen-typescript-loader')
     ]
   });
   // config.plugins.push(new TSDocgenPlugin());
