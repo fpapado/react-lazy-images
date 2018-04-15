@@ -42,7 +42,7 @@ export interface LazyImageFullProps extends CommonLazyImageProps {
   children?: ((RenderPropArgs) => React.ReactNode) | React.ReactNode;
 
   /** Render prop boolean indicating inView state */
-  render?: (RenderPropArgs) => React.ReactNode,
+  render?: (RenderPropArgs) => React.ReactNode;
 }
 
 /** Values that the render props take */
@@ -130,7 +130,7 @@ export class LazyImageFull extends React.Component<
 
   // Render function
   render() {
-    const {observerProps, children, src, srcSet} = this.props;
+    const {observerProps, src, srcSet, children, render} = this.props;
     const {imageState} = this.state;
 
     return (
@@ -141,9 +141,11 @@ export class LazyImageFull extends React.Component<
         onChange={this.onInView}
         triggerOnce
       >
-        {typeof children === 'function'
-          ? children({src, srcSet, imageState})
-          : children}
+        {typeof render === 'function'
+          ? render({src, srcSet, imageState})
+          : typeof children === 'function'
+            ? children({src, srcSet, imageState})
+            : null}
       </Observer>
     );
   }
