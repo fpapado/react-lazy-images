@@ -118,7 +118,8 @@ Additionally, make sure you understand [how to polyfill IntersectionObserver](#p
 From then on:
 
 * If you want to learn more about the API and the problem space, read the rest of this section.
-* If you want to list the props, see the [API reference](#api-reference)
+* If you need more fine-grained rendering, [read about `LazyImageFull`](#more-control-with-lazyimagefull).
+* If you want to list the props, see the [API reference](#api-reference).
 
 ### Customising what is displayed
 
@@ -159,6 +160,39 @@ Thus, whether you want to display a simple `<img>`, your own `<Image>`, or even 
 ```
 
 These props are there to instruct the component what to render in those places, and they take some useful information (in this case, a className) from the LazyImage.
+
+### More control with LazyImageFull
+
+`LazyImage` should work for most cases, but you might need more fine-grained rendering.
+One use case would be doing animations with CSS transitions, where re-rendering the component (which `LazyImage` does) would not be sufficient.
+In those cases, consider `LazyImageFull`:
+
+```jsx
+import {LazyImageFull, ImageState} from 'react-lazy-images';
+
+// Function as child
+<LazyImageFull>
+  {({src, srcSet, imageState}) =>
+    <img src={imageState === ImageState.LoadSuccess ? 'https://fillmurray.com/g/600/400 : 'https://fillmurray.com/g/30/20'} style={{opacity: ImageState.LoadSuccess ? '1' : '0.5'}} />
+  }
+</LazyImageFull>
+
+// render prop
+<LazyImageFull
+  render={({src, srcSet, imageState}) =>
+    <img src={imageState === ImageState.LoadSuccess ? 'https://fillmurray.com/g/600/400 : 'https://fillmurray.com/g/30/20'} style={{opacity: ImageState.LoadSuccess ? '1' : '0.5'}} />
+  } />
+```
+
+This component takes a function as a child, which accepts `{src, srcSet, imageState}`.
+The various image states are imported as `{ImageState}`, and you can conditionally render based on them.
+You can also pass this function as a `render` prop.
+
+This technique can give you more fine-grained rendering if needed, but can potentially be more verbose.
+Any of the presentational patterns presented that are possible with `LazyImage` are also possible with `LazyImageFull`.
+(The opposite is not necessarily true, or at least has more duplication).
+
+In fact, if you check [`src/LazyImage.tsx`](./src/LazyImage.tsx), you will see that `LazyImage` is implemented in terms of `LazyImageFull`!
 
 ### Load before swap
 
@@ -355,11 +389,22 @@ In particular, it shows intrinsic placeholders and fading in the actual image.
 | **actual**        | Function (render prop)                  |                                           | true     | Component to display once image has loaded                                                            |
 | **placeholder**   | Function (render prop)                  | undefined                                 | false    | Component to display while no request for the actual image has been made                              |
 | **loading**       | Function (render prop)                  | placeholder                               | false    | Component to display while the image is loading                                                       |
-| **error**         | Function                                | actual (broken image)                     | false    | Component to display if the image loading has failed (render prop)                                    |
+| **error**         | Function (render prop)                  | actual (broken image)                     | false    | Component to display if the image loading has failed (render prop)                                    |
 | **loadEagerly**   | Boolean                                 | false                                     | false    | Whether to skip checking for viewport and always show the 'actual' component                          |
 | **observerProps** | {threshold: number, rootMargin: string} | {threshold: 0.01, rootMargin: "50px 0px"} | false    | Subset of props for the IntersectionObserver                                                          |
 
 [You can consult Typescript types in the code](./src/LazyImage.tsx) as a more exact definition.
+
+**`<LazyImageFull />`** accepts the following props:
+
+| Name              | Type                                                            | Default                                   | Required             | Description                                                                                           |
+| ----------------- | --------------------------------------------------------------- | ----------------------------------------- | -------------------- | ----------------------------------------------------------------------------------------------------- |
+| **src**           | String                                                          |                                           | true                 | The source of the image to load                                                                       |
+| **srcSet**        | String                                                          |                                           | false                | If your images use srcset, you can pass the `srcSet` prop to provide that information for preloading. |
+| **loadEagerly**   | Boolean                                                         | false                                     | false                | Whether to skip checking for viewport and always show the 'actual' component                          |
+| **observerProps** | {threshold: number, rootMargin: string}                         | {threshold: 0.01, rootMargin: "50px 0px"} | false                | Subset of props for the IntersectionObserver                                                          |
+| **render**        | Function of type ({src, srcSet, imageState}) => React.ReactNode |                                           | true (or `children`) | Function to call that renders based on the props and state provided to it by LazyImageFull            |
+| **children**      | Function of type ({src, srcSet, imageState}) => React.ReactNode |                                           | true (or `render`)   | Function to call that renders based on the props and state provided to it by LazyImageFull            |
 
 ## Feedback
 

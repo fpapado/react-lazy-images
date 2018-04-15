@@ -1,19 +1,10 @@
 import React from 'react';
-import Observer, {IntersectionObserverProps} from 'react-intersection-observer';
-
-/**
- * Values that the render props take
- */
-// interface RenderPropArgs {}
+import {LazyImageFull, CommonLazyImageProps, ImageState} from './LazyImageFull';
 
 /**
  * Valid props for LazyImage
  */
-export interface LazyImageProps {
-  /** The source of the image to load */
-  src: string;
-  srcSet?: string;
-
+export interface LazyImageProps extends CommonLazyImageProps {
   /** Component to display once image has loaded */
   actual: () => React.ReactElement<{}>;
 
@@ -31,153 +22,37 @@ export interface LazyImageProps {
    * @default actual (broken image)
    */
   error?: () => React.ReactElement<{}>;
-
-  /** Whether to skip checking for viewport and always show the 'actual' component
-   * @see https://github.com/fpapado/react-lazy-images/#eager-loading--server-side-rendering-ssr
-   */
-
-  loadEagerly?: boolean;
-  /** Subset of props for the IntersectionObserver
-   * @see https://github.com/thebuilder/react-intersection-observer#props
-   */
-
-  /** Props for the IntersectionObserver */
-  observerProps?: ObserverProps;
 }
-
-/** Subset of react-intersection-observer's props */
-export interface ObserverProps {
-  /**
-   * Margin around the root that expands the area for intersection.
-   * @see https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/rootMargin
-   * @default "50px 0px"
-   * @example Declaration same as CSS margin:
-   *  `"10px 20px 30px 40px"` (top, right, bottom, left).
-   */
-  rootMargin?: string;
-
-  /** Number between 0 and 1 indicating the the percentage that should be
-   * visible before triggering.
-   * @default `0.1`
-   */
-  threshold?: number;
-}
-
-export interface LazyImageState {
-  inView: boolean;
-  imageState: ImageState;
-}
-
-export type ImageState = 'NotAsked' | 'Loading' | 'LoadSuccess' | 'LoadError';
 
 /**
  * Component that preloads the image once it is in the viewport,
- * and then swaps it in.
+ * and then swaps it in. Has predefined rendering logic, but the
+ * specifics are up to the caller.
  */
-export class LazyImage extends React.Component<LazyImageProps, LazyImageState> {
-  constructor(props) {
-    super(props);
-    this.state = {inView: false, imageState: 'NotAsked'};
+export const LazyImage: React.StatelessComponent<LazyImageProps> = ({
+  actual,
+  placeholder,
+  loading,
+  error,
+  ...rest
+}) => (
+  <LazyImageFull {...rest}>
+    {({src, srcSet, imageState}) => {
+      switch (imageState) {
+        case ImageState.NotAsked:
+          return !!placeholder && placeholder();
 
-    // Bind methods
-    // This would be nicer with arrow functions and class properties,
-    // but holding off until they are settled.
-    this.onInView = this.onInView.bind(this);
-    this.onLoadSuccess = this.onLoadSuccess.bind(this);
-    this.onLoadError = this.onLoadError.bind(this);
-    this.renderEager = this.renderEager.bind(this);
-    this.renderLazy = this.renderLazy.bind(this);
-    this.renderState = this.renderState.bind(this);
-  }
+        case ImageState.Loading:
+          // Only render loading if specified, otherwise placeholder
+          return !!loading ? loading() : !!placeholder && placeholder();
 
-  // Update functions
-  onInView(inView) {
-    if (inView) {
-      // If src is not specified, then there is nothing to preload; skip to Loaded state
-      // TODO: alternatively, we could have a sort of timeout here?
-      if (!this.props.src) {
-        this.setState((state, props) => ({
-          ...state,
-          imageState: 'LoadSuccess'
-        }));
-      } else {
-        // Kick off request for Image and attach listeners for response
-        this.setState((state, props) => ({...state, imageState: 'Loading'}));
+        case ImageState.LoadSuccess:
+          return actual();
 
-        loadImage({src: this.props.src, srcSet: this.props.srcSet})
-          .then(this.onLoadSuccess)
-          .catch(this.onLoadError);
+        case ImageState.LoadError:
+          // Only render error if specified, otherwise actual
+          return !!error ? error() : actual();
       }
-    }
-  }
-
-  onLoadSuccess() {
-    this.setState((state, props) => ({...state, imageState: 'LoadSuccess'}));
-  }
-
-  onLoadError() {
-    this.setState((state, props) => ({...state, imageState: 'LoadError'}));
-  }
-
-  // Render functions
-  render() {
-    if (this.props.loadEagerly) return this.renderEager(this.props);
-    return this.renderLazy(this.state, this.props);
-  }
-
-  renderEager({actual}: LazyImageProps) {
-    return <React.Fragment>{actual()}</React.Fragment>;
-  }
-
-  renderLazy(state, {observerProps, ...rest}: LazyImageProps) {
-    return (
-      <React.Fragment>
-        <Observer
-          rootMargin="50px 0px"
-          threshold={0.01}
-          {...observerProps}
-          onChange={this.onInView}
-          triggerOnce
-        >
-          {this.renderState(state.imageState, rest)}
-        </Observer>
-      </React.Fragment>
-    );
-  }
-
-  /** Render the appropriate component based on state */
-  renderState(
-    imageState: ImageState,
-    {actual, placeholder, loading, error}: LazyImageProps
-  ) {
-    switch (imageState) {
-      case 'NotAsked':
-        return !!placeholder && placeholder();
-
-      case 'Loading':
-        // Only render loading if specified, otherwise placeholder
-        return !!loading ? loading() : !!placeholder && placeholder();
-
-      case 'LoadSuccess':
-        return actual();
-
-      case 'LoadError':
-        // Only render error if specified, otherwise actual
-        return !!error ? error() : actual();
-    }
-  }
-}
-
-// Utilities
-
-/** Promise constructor for loading an image */
-const loadImage = ({src, srcSet}) =>
-  new Promise((resolve, reject) => {
-    const image = new Image();
-    if (srcSet) {
-      image.srcset = srcSet;
-    }
-    image.src = src;
-    image.onload = resolve;
-    image.onerror = reject;
-  });
+    }}
+  </LazyImageFull>
+);

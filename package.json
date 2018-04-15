@@ -12,7 +12,7 @@
     "bundle:dev": "./microbundle/dist/cli.js watch --compress false --external all",
     "bundle:prod": "./microbundle/dist/cli.js build --external all",
     "bundle:storybook": "./microbundle/dist/cli.js build --compress false --external all",
-    "size": "gzip-size dist/react-lazy-images.js && bundlesize",
+    "size": "bundlesize",
     "storybook": "start-storybook -p 8080",
     "storybook-static": "build-storybook -c .storybook -o .out",
     "deploy-storybook": "npm run bundle:storybook && storybook-to-ghpages",
