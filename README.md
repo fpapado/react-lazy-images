@@ -105,7 +105,7 @@ If you want to just dive in, do this:
 import { LazyImage } from "react-lazy-images";
 
 <LazyImage
-  src="https://www.fillmurray.com/g/600/400"
+  src="/img/porto_buildings_large.jpg"
   placeholder={() => <img src="/img/porto_buildings_lowres.jpg" alt="Buildings with tiled exteriors, lit by the sunset." />}
   actual={() => <img src="/img/porto_buildings_large.jpg" alt="Buildings with tiled exteriors, lit by the sunset." />}
 />;
@@ -129,7 +129,7 @@ Thus, whether you want to display a simple `<img>`, your own `<Image>`, or even 
 
 ```jsx
 <LazyImage
-  src={https://www.fillmurray.com/g/600/400}
+  src="/img/porto_buildings_large.jpg"
   // This is rendered first
   placeholder={
     () =>
@@ -212,7 +212,7 @@ This behaviour is provided with the `src` prop:
 // Note that the actual src is also provided separately,
 // so that the image can be requested before rendering
 <LazyImage
-  src="https://www.fillmurray.com/g/600/400"
+  src="/img/porto_buildings_large.jpg"
   placeholder={
     () =>
       <div className={`LazyImage-Placeholder`}">
@@ -267,7 +267,7 @@ This behaviour is available by using a `loadEagerly` prop:
 ```jsx
 <LazyImage
   loadEagerly
-  src="https://www.fillmurray.com/g/600/400"
+  src="/img/porto_buildings_large.jpg"
   placeholder={
     () =>
       <img src="/img/porto_buildings_lowres.jpg" alt="Buildings with tiled exteriors, lit by the sunset." />
