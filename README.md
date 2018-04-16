@@ -106,8 +106,8 @@ import { LazyImage } from "react-lazy-images";
 
 <LazyImage
   src="https://www.fillmurray.com/g/600/400"
-  placeholder={() => <img src="https://www.fillmurray.com/g/60/40" />}
-  actual={() => <img src="https://www.fillmurray.com/g/600/400" />}
+  placeholder={() => <img src="/demo/porto_buildings_lowres.jpg" alt="Buildings with tiled exteriors, lit by the sunset." />}
+  actual={() => <img src="/demo/porto_buildings_large.jpg" alt="Buildings with tiled exteriors, lit by the sunset." />}
 />;
 ```
 
@@ -133,12 +133,12 @@ Thus, whether you want to display a simple `<img>`, your own `<Image>`, or even 
   // This is rendered first
   placeholder={
     () =>
-      <img src="https://www.fillmurray.com/g/60/40" />
+      <img src="/demo/porto_buildings_lowres.jpg" alt="Buildings with tiled exteriors, lit by the sunset." />
   }
   // This is rendered once in view
   actual={
     () =>
-      <img src="https://www.fillmurray.com/g/600/400" />
+      <img src="/demo/porto_buildings_large.jpg" alt="Buildings with tiled exteriors, lit by the sunset." />
   }
 />
 
@@ -147,13 +147,13 @@ Thus, whether you want to display a simple `<img>`, your own `<Image>`, or even 
   placeholder={
     () =>
       <div className={`LazyImage-Placeholder`}">
-        <img src="https://www.fillmurray.com/g/60/40"/>
+        <img src="/demo/porto_buildings_lowres.jpg" alt="Buildings with tiled exteriors, lit by the sunset." />
       </div>
   }
   actual={
     () =>
       <div className={`LazyImage-Actual`}>
-        <img src="https://www.fillmurray.com/g/600/400" />
+        <img src="/demo/porto_buildings_large.jpg" alt="Buildings with tiled exteriors, lit by the sunset." />
       </div>
   }
 />
@@ -173,15 +173,21 @@ import {LazyImageFull, ImageState} from 'react-lazy-images';
 // Function as child
 <LazyImageFull>
   {({src, srcSet, imageState}) =>
-    <img src={imageState === ImageState.LoadSuccess ? 'https://fillmurray.com/g/600/400 : 'https://fillmurray.com/g/30/20'} style={{opacity: ImageState.LoadSuccess ? '1' : '0.5'}} />
+    <img
+      src={imageState === ImageState.LoadSuccess ? '/demo/porto_buildings_large' : '/demo/porto_buildings_lowres'} style={{opacity: ImageState.LoadSuccess ? '1' : '0.5'}} 
+      alt="Buildings with tiled exteriors, lit by the sunset." />
+    />
   }
 </LazyImageFull>
 
 // render prop
 <LazyImageFull
   render={({src, srcSet, imageState}) =>
-    <img src={imageState === ImageState.LoadSuccess ? 'https://fillmurray.com/g/600/400 : 'https://fillmurray.com/g/30/20'} style={{opacity: ImageState.LoadSuccess ? '1' : '0.5'}} />
-  } />
+    <img
+      src={imageState === ImageState.LoadSuccess ? '/demo/porto_buildings_large' : '/demo/porto_buildings_lowres'} style={{opacity: ImageState.LoadSuccess ? '1' : '0.5'}} 
+      alt="Buildings with tiled exteriors, lit by the sunset." />
+    />}
+  />
 ```
 
 This component takes a function as a child, which accepts `{src, srcSet, imageState}`.
@@ -210,13 +216,13 @@ This behaviour is provided with the `src` prop:
   placeholder={
     () =>
       <div className={`LazyImage-Placeholder`}">
-        <img src="https://www.fillmurray.com/g/60/40"/>
+        <img src="/demo/porto_buildings_lowres.jpg" alt="Buildings with tiled exteriors, lit by the sunset." />
       </div>
   }
   actual={
     () =>
       <div className={`LazyImage-Actual`}>
-        <img src="https://www.fillmurray.com/g/600/400" />
+        <img src="/demo/porto_buildings_large.jpg" alt="Buildings with tiled exteriors, lit by the sunset." />
       </div>
   }
 />
@@ -232,7 +238,7 @@ You can choose what to display on Loading and Error using the render props `load
 <div className="bg-light-silver h5 w-100">
   <LazyImage
     src="https://www.fillmurray.com/notanimage"
-    actual={() => <img src="https://www.fillmurray.com/notanimage" />}
+    actual={() => <img src="/demo/porto_buildings_large.jpg" alt="Buildings with tiled exteriors, lit by the sunset." />}
     loading={() => (
       <div>
         <p className="pa3 f5 lh-copy near-white">Loading...</p>
@@ -262,8 +268,14 @@ This behaviour is available by using a `loadEagerly` prop:
 <LazyImage
   loadEagerly
   src="https://www.fillmurray.com/g/600/400"
-  placeholder={() => <img src="https://www.fillmurray.com/g/60/40" />}
-  actual={() => <img src="https://www.fillmurray.com/g/600/400" />}
+  placeholder={
+    () =>
+      <img src="/demo/porto_buildings_lowres.jpg" alt="Buildings with tiled exteriors, lit by the sunset." />
+  }
+  actual={
+    () =>
+      <img src="/demo/porto_buildings_large.jpg" alt="Buildings with tiled exteriors, lit by the sunset." />
+  }
 />
 ```
 
@@ -295,11 +307,11 @@ Here is what it looks like rendered:
 
 // Your component (as rendered)
 // Placeholder since JS has not run; will be hidden with the style above.
-<img src="placeholderImgSrc" class="LazyImage"/>
+<img src="/demo/porto_buildings_lowres.jpg" alt="Buildings with tiled exteriors, lit by the sunset." />
 
-// img tags that are hidden are not loaded, yay!
+// Declare the actual image as you would, inside a noscript
 <noscript>
-  <img src="actualImgSrc" />  // Render the actual as usual
+  <img src="/demo/porto_buildings_large.jpg" alt="Buildings with tiled exteriors, lit by the sunset." />
 </noscript>
 ```
 
@@ -326,7 +338,7 @@ You would probably do something like this:
   actual={//the usual}
 />
 <Fallback>
-  <img src="actualImgSrc" />
+  <img src="/demo/porto_buildings_large.jpg" alt="Buildings with tiled exteriors, lit by the sunset." />
 </Fallback>
 ```
 
