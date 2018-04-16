@@ -174,7 +174,7 @@ import {LazyImageFull, ImageState} from 'react-lazy-images';
 <LazyImageFull>
   {({src, srcSet, imageState}) =>
     <img
-      src={imageState === ImageState.LoadSuccess ? '/img/porto_buildings_large' : '/img/porto_buildings_lowres'} style={{opacity: ImageState.LoadSuccess ? '1' : '0.5'}} 
+      src={imageState === ImageState.LoadSuccess ? '/img/porto_buildings_large.jpg' : '/img/porto_buildings_lowres.jpg'} style={{opacity: ImageState.LoadSuccess ? '1' : '0.5'}} 
       alt="Buildings with tiled exteriors, lit by the sunset." />
     />
   }
@@ -184,7 +184,7 @@ import {LazyImageFull, ImageState} from 'react-lazy-images';
 <LazyImageFull
   render={({src, srcSet, imageState}) =>
     <img
-      src={imageState === ImageState.LoadSuccess ? '/img/porto_buildings_large' : '/img/porto_buildings_lowres'} style={{opacity: ImageState.LoadSuccess ? '1' : '0.5'}} 
+      src={imageState === ImageState.LoadSuccess ? '/img/porto_buildings_large.jpg' : '/img/porto_buildings_lowres.jpg'} style={{opacity: ImageState.LoadSuccess ? '1' : '0.5'}} 
       alt="Buildings with tiled exteriors, lit by the sunset." />
     />}
   />

@@ -30,13 +30,13 @@ storiesOf('LazyImageFull', module)
     Anything you can implement with LazyImage, you can implement with LazyImageFull.`
     )(() => (
       <Container>
-        <LazyImageFull src="/img/porto_buildings_large.jpg">
+        <LazyImageFull src="img/porto_buildings_large.jpg">
           {({imageState, src}) => (
             <img
               src={
                 imageState === ImageState.LoadSuccess
                   ? src
-                  : '/img/porto_buildings_lowres.jpg'
+                  : 'img/porto_buildings_lowres.jpg'
               }
               alt="Buildings with tiled exteriors, lit by the sunset."
               className="w-100"
@@ -51,13 +51,13 @@ storiesOf('LazyImageFull', module)
     withInfo()(() => (
       <Container>
         <LazyImageFull
-          src="/img/porto_buildings_large.jpg"
+          src="img/porto_buildings_large.jpg"
           render={({imageState, src}) => (
             <img
               src={
                 imageState === ImageState.LoadSuccess
                   ? src
-                  : '/img/porto_buildings_lowres.jpg'
+                  : 'img/porto_buildings_lowres.jpg'
               }
               alt="Buildings with tiled exteriors, lit by the sunset."
               className="w-100"

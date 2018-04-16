@@ -9,7 +9,7 @@ import {
 
 const PlaceholderImage = () => (
   <img
-    src="/img/porto_buildings_lowres.jpg"
+    src="img/porto_buildings_lowres.jpg"
     alt="Buildings with tiled exteriors, lit by the sunset."
     className="w-100"
   />
@@ -17,7 +17,7 @@ const PlaceholderImage = () => (
 
 const ActualImage = () => (
   <img
-    src="/img/porto_buildings_large.jpg"
+    src="img/porto_buildings_large.jpg"
     alt="Buildings with tiled exteriors, lit by the sunset."
     className="w-100"
   />
@@ -48,7 +48,7 @@ storiesOf('LazyImage', module)
     )(() => (
       <Container>
         <LazyImage
-          src="/img/porto_buildings_large.jpg"
+          src="img/porto_buildings_large.jpg"
           placeholder={() => <PlaceholderImage />}
           actual={() => <ActualImage />}
         />
@@ -157,7 +157,7 @@ storiesOf('LazyImage', module)
       <Container>
         <div className="bg-light-silver h5 w-100">
           <LazyImage
-            src="/img/porto_buildings_large.jpg"
+            src="img/porto_buildings_large.jpg"
             placeholder={() => <div />}
             actual={() => <ActualImage />}
             loading={() => (
@@ -246,11 +246,11 @@ storiesOf('LazyImage', module)
         <Container>
           <LazyImage
             src="https://www.fillmurray.com/g/500/700"
-            src="/img/porto_buildings_large.jpg"
+            src="img/porto_buildings_large.jpg"
             placeholder={() => (
-              <BgImage bgSrc="/img/porto_buildings_lowres.jpg" />
+              <BgImage bgSrc="img/porto_buildings_lowres.jpg" />
             )}
-            actual={() => <BgImage bgSrc="/img/porto_buildings_large.jpg" />}
+            actual={() => <BgImage bgSrc="img/porto_buildings_large.jpg" />}
           />
         </Container>
       );
