@@ -14,7 +14,7 @@
     "bundle:storybook": "./microbundle/dist/cli.js build --compress false --external all",
     "size": "bundlesize",
     "storybook": "start-storybook -p 8080 -s ./stories/demo",
-    "build-storybook": "build-storybook -c .storybook -s ./stories/demo -o .out",
+    "build-storybook": "npm run bundle:storybook && build-storybook -c .storybook -s ./stories/demo -o .out",
     "deploy-storybook": "storybook-to-ghpages --existing-output-dir=.out",
     "test": "npm run build",
     "prepare": "npm t",
