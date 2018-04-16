@@ -30,14 +30,15 @@ storiesOf('LazyImageFull', module)
     Anything you can implement with LazyImage, you can implement with LazyImageFull.`
     )(() => (
       <Container>
-        <LazyImageFull src="https://www.fillmurray.com/g/600/400">
+        <LazyImageFull src="/img/porto_buildings_large.jpg">
           {({imageState, src}) => (
             <img
               src={
                 imageState === ImageState.LoadSuccess
                   ? src
-                  : 'https://www.fillmurray.com/g/60/40'
+                  : '/img/porto_buildings_lowres.jpg'
               }
+              alt="Buildings with tiled exteriors, lit by the sunset."
               className="w-100"
             />
           )}
@@ -50,14 +51,15 @@ storiesOf('LazyImageFull', module)
     withInfo()(() => (
       <Container>
         <LazyImageFull
-          src="https://www.fillmurray.com/g/600/400"
+          src="/img/porto_buildings_large.jpg"
           render={({imageState, src}) => (
             <img
               src={
                 imageState === ImageState.LoadSuccess
                   ? src
-                  : 'https://www.fillmurray.com/g/60/40'
+                  : '/img/porto_buildings_lowres.jpg'
               }
+              alt="Buildings with tiled exteriors, lit by the sunset."
               className="w-100"
             />
           )}

@@ -7,6 +7,22 @@ import {
   renderDefaultFallback
 } from '../dist/react-lazy-images.es.js';
 
+const PlaceholderImage = () => (
+  <img
+    src="/img/porto_buildings_lowres.jpg"
+    alt="Buildings with tiled exteriors, lit by the sunset."
+    className="w-100"
+  />
+);
+
+const ActualImage = () => (
+  <img
+    src="/img/porto_buildings_large.jpg"
+    alt="Buildings with tiled exteriors, lit by the sunset."
+    className="w-100"
+  />
+);
+
 const Container = ({children}) => (
   <div className="pa3 near-black bg-washed-yellow">
     <div
@@ -32,22 +48,9 @@ storiesOf('LazyImage', module)
     )(() => (
       <Container>
         <LazyImage
-          src="https://www.fillmurray.com/g/600/400"
-          placeholder={() => (
-            <img src="https://www.fillmurray.com/g/60/40" className="w-100" />
-          )}
-          actual={() => (
-            <img src="https://www.fillmurray.com/g/600/400" className="w-100" />
-          )}
-        />
-        <LazyImage
-          src="https://www.fillmurray.com/g/300/200"
-          placeholder={() => (
-            <img src="https://www.fillmurray.com/g/30/20" className="w-100" />
-          )}
-          actual={() => (
-            <img src="https://www.fillmurray.com/g/300/200" className="w-100" />
-          )}
+          src="/img/porto_buildings_large.jpg"
+          placeholder={() => <PlaceholderImage />}
+          actual={() => <ActualImage />}
         />
       </Container>
     ))
@@ -63,13 +66,18 @@ storiesOf('LazyImage', module)
           src="https://www.fillmurray.com/g/300/200"
           srcSet="https://www.fillmurray.com/g/900/600 900w, https://www.fillmurray.com/g/600/400 600w, https://www.fillmurray.com/g/300/200 300w"
           placeholder={() => (
-            <img src="https://www.fillmurray.com/g/60/40" className="w-100" />
+            <img
+              src="https://www.fillmurray.com/g/60/40"
+              className="w-100"
+              alt="A portrait of Bill Murray."
+            />
           )}
           actual={() => (
             <img
               src="https://www.fillmurray.com/g/300/200"
               srcSet="https://www.fillmurray.com/g/900/600 900w, https://www.fillmurray.com/g/600/400 600w, https://www.fillmurray.com/g/300/200 300w"
               className="w-100"
+              alt="A portrait of Bill Murray."
             />
           )}
         />
@@ -84,12 +92,8 @@ storiesOf('LazyImage', module)
     )(() => (
       <Container>
         <LazyImage
-          placeholder={() => (
-            <img src="https://www.fillmurray.com/g/60/40" className="w-100" />
-          )}
-          actual={() => (
-            <img src="https://www.fillmurray.com/g/600/400" className="w-100" />
-          )}
+          placeholder={() => <PlaceholderImage />}
+          actual={() => <ActualImage />}
         />
       </Container>
     ))
@@ -104,12 +108,8 @@ storiesOf('LazyImage', module)
       <Container>
         <LazyImage
           loadEagerly
-          placeholder={() => (
-            <img src="https://www.fillmurray.com/g/60/40" className="w-100" />
-          )}
-          actual={() => (
-            <img src="https://www.fillmurray.com/g/600/400" className="w-100" />
-          )}
+          placeholder={() => <PlaceholderImage />}
+          actual={() => <ActualImage />}
         />
       </Container>
     ))
@@ -135,12 +135,14 @@ storiesOf('LazyImage', module)
               <img
                 src={`https://www.fillmurray.com/g/${placeholder}`}
                 className="w-100"
+                alt="A portrait of Bill Murray."
               />
             )}
             actual={() => (
               <img
                 src={`https://www.fillmurray.com/g/${actual}`}
                 className="w-100"
+                alt="A portrait of Bill Murray."
               />
             )}
           />
@@ -155,9 +157,9 @@ storiesOf('LazyImage', module)
       <Container>
         <div className="bg-light-silver h5 w-100">
           <LazyImage
-            src="https://www.fillmurray.com/g/3000/2000"
+            src="/img/porto_buildings_large.jpg"
             placeholder={() => <div />}
-            actual={() => <img src="https://www.fillmurray.com/g/3000/2000" />}
+            actual={() => <ActualImage />}
             loading={() => (
               <div>
                 <p className="pa3 f5 lh-copy near-white">Loading...</p>
@@ -244,12 +246,11 @@ storiesOf('LazyImage', module)
         <Container>
           <LazyImage
             src="https://www.fillmurray.com/g/500/700"
+            src="/img/porto_buildings_large.jpg"
             placeholder={() => (
-              <BgImage bgSrc="https://www.fillmurray.com/g/50/70" />
+              <BgImage bgSrc="/img/porto_buildings_lowres.jpg" />
             )}
-            actual={() => (
-              <BgImage bgSrc="https://www.fillmurray.com/g/500/700" />
-            )}
+            actual={() => <BgImage bgSrc="/img/porto_buildings_large.jpg" />}
           />
         </Container>
       );
