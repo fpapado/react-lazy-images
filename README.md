@@ -171,10 +171,11 @@ In those cases, consider `LazyImageFull`:
 import {LazyImageFull, ImageState} from 'react-lazy-images';
 
 // Function as child
-<LazyImageFull>
+// `src` and `srcSet` are passed back to the render callback for convenience/consistency
+<LazyImageFull src='/img/porto_buildings_large.jpg'>
   {({src, srcSet, imageState}) =>
     <img
-      src={imageState === ImageState.LoadSuccess ? '/img/porto_buildings_large.jpg' : '/img/porto_buildings_lowres.jpg'} style={{opacity: ImageState.LoadSuccess ? '1' : '0.5'}} 
+      src={imageState === ImageState.LoadSuccess ? src : '/img/porto_buildings_lowres.jpg'} style={{opacity: ImageState.LoadSuccess ? '1' : '0.5'}}
       alt="Buildings with tiled exteriors, lit by the sunset." />
     />
   }
@@ -182,9 +183,10 @@ import {LazyImageFull, ImageState} from 'react-lazy-images';
 
 // render prop
 <LazyImageFull
+  src='/img/porto_buildings_large.jpg'
   render={({src, srcSet, imageState}) =>
     <img
-      src={imageState === ImageState.LoadSuccess ? '/img/porto_buildings_large.jpg' : '/img/porto_buildings_lowres.jpg'} style={{opacity: ImageState.LoadSuccess ? '1' : '0.5'}} 
+      src={imageState === ImageState.LoadSuccess ? src : '/img/porto_buildings_lowres.jpg'} style={{opacity: ImageState.LoadSuccess ? '1' : '0.5'}} 
       alt="Buildings with tiled exteriors, lit by the sunset." />
     />}
   />
