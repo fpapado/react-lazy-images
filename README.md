@@ -106,8 +106,18 @@ import { LazyImage } from "react-lazy-images";
 
 <LazyImage
   src="/img/porto_buildings_large.jpg"
-  placeholder={() => <img src="/img/porto_buildings_lowres.jpg" alt="Buildings with tiled exteriors, lit by the sunset." />}
-  actual={() => <img src="/img/porto_buildings_large.jpg" alt="Buildings with tiled exteriors, lit by the sunset." />}
+  placeholder={() => (
+    <img
+      src="/img/porto_buildings_lowres.jpg"
+      alt="Buildings with tiled exteriors, lit by the sunset."
+    />
+  )}
+  actual={() => (
+    <img
+      src="/img/porto_buildings_large.jpg"
+      alt="Buildings with tiled exteriors, lit by the sunset."
+    />
+  )}
 />;
 ```
 
@@ -175,7 +185,8 @@ import {LazyImageFull, ImageState} from 'react-lazy-images';
 <LazyImageFull src='/img/porto_buildings_large.jpg'>
   {({src, srcSet, imageState}) =>
     <img
-      src={imageState === ImageState.LoadSuccess ? src : '/img/porto_buildings_lowres.jpg'} style={{opacity: ImageState.LoadSuccess ? '1' : '0.5'}}
+      src={imageState === ImageState.LoadSuccess ? src : '/img/porto_buildings_lowres.jpg'}
+      style={{opacity: ImageState.LoadSuccess ? '1' : '0.5'}}
       alt="Buildings with tiled exteriors, lit by the sunset." />
     />
   }
@@ -186,9 +197,11 @@ import {LazyImageFull, ImageState} from 'react-lazy-images';
   src='/img/porto_buildings_large.jpg'
   render={({src, srcSet, imageState}) =>
     <img
-      src={imageState === ImageState.LoadSuccess ? src : '/img/porto_buildings_lowres.jpg'} style={{opacity: ImageState.LoadSuccess ? '1' : '0.5'}} 
+      src={imageState === ImageState.LoadSuccess ? src : '/img/porto_buildings_lowres.jpg'}
+      style={{opacity: ImageState.LoadSuccess ? '1' : '0.5'}}
       alt="Buildings with tiled exteriors, lit by the sunset." />
-    />}
+    />
+  }
   />
 ```
 
@@ -240,7 +253,12 @@ You can choose what to display on Loading and Error using the render props `load
 <div className="bg-light-silver h5 w-100">
   <LazyImage
     src="https://www.fillmurray.com/notanimage"
-    actual={() => <img src="/img/porto_buildings_large.jpg" alt="Buildings with tiled exteriors, lit by the sunset." />}
+    actual={() => (
+      <img
+        src="/img/porto_buildings_large.jpg"
+        alt="Buildings with tiled exteriors, lit by the sunset."
+      />
+    )}
     loading={() => (
       <div>
         <p className="pa3 f5 lh-copy near-white">Loading...</p>
@@ -270,14 +288,18 @@ This behaviour is available by using a `loadEagerly` prop:
 <LazyImage
   loadEagerly
   src="/img/porto_buildings_large.jpg"
-  placeholder={
-    () =>
-      <img src="/img/porto_buildings_lowres.jpg" alt="Buildings with tiled exteriors, lit by the sunset." />
-  }
-  actual={
-    () =>
-      <img src="/img/porto_buildings_large.jpg" alt="Buildings with tiled exteriors, lit by the sunset." />
-  }
+  placeholder={() => (
+    <img
+      src="/img/porto_buildings_lowres.jpg"
+      alt="Buildings with tiled exteriors, lit by the sunset."
+    />
+  )}
+  actual={() => (
+    <img
+      src="/img/porto_buildings_large.jpg"
+      alt="Buildings with tiled exteriors, lit by the sunset."
+    />
+  )}
 />
 ```
 
