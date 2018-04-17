@@ -202,7 +202,7 @@ import {LazyImageFull, ImageState} from 'react-lazy-images';
       alt="Buildings with tiled exteriors, lit by the sunset." />
     />
   }
-  />
+/>
 ```
 
 This component takes a function as a child, which accepts `{src, srcSet, imageState}`.
@@ -331,7 +331,7 @@ Here is what it looks like rendered:
 
 // Your component (as rendered)
 // Placeholder since JS has not run; will be hidden with the style above.
-<img src="/img/porto_buildings_lowres.jpg" alt="Buildings with tiled exteriors, lit by the sunset." />
+<img class="LazyImage" src="/img/porto_buildings_lowres.jpg" alt="Buildings with tiled exteriors, lit by the sunset." />
 
 // Declare the actual image as you would, inside a noscript
 <noscript>
@@ -340,18 +340,18 @@ Here is what it looks like rendered:
 ```
 
 Until v0.3.0, this library had a fallback API, in the form of a `fallback` render prop.
-This has been disabled due to issues with `<noscript>` in react causing the fallback to always load.
+This has been disabled due to issues with `<noscript>` in React causing the fallback to always load.
 
 (See https://github.com/facebook/react/issues/11423 for more details)
 
-Current solutions involve either using `dangerouslySetInnerHTML`, which is not safe, or `ReactDOMServer.renderToStaticMarkup`.
+Current solutions involve either using `dangerouslySetInnerHTML`, which is not safe for arbitrary library use, or `ReactDOMServer.renderToStaticMarkup`.
 I thought it would be irresponsible to hide the fact that `dangerouslySetInnerHTML` is used from the user, so that excludes the first option.
 I also think that using the server method, albeit safe, would be messy with some bundling configurations (which would keep the entirety of `react-dom/server`).
 
-Silver lining:
+**Silver lining:**
 
-There is generally no case where `<noscript>` will be rendered by client-side react, which means that, if you are in charge of server-rendering and
-you trust your bundling setup, then you can have this fallback!
+There is generally no case where `<noscript>` will be rendered by client-side react. 
+This means that, if you are in charge of server-rendering and you trust your bundling setup, then you can have this fallback!
 Look at [`src/fallbackUtils.tsx`](./src/fallbackUtils.tsx) for a function that can work.
 You would probably do something like this:
 
@@ -455,17 +455,18 @@ See [`ROADMAP.md`](./ROADMAP.md) for information and ideas about where the proje
 I would love to have contributions on this! Are there more patterns that we can expose and simplify? Is something not clear? See `CONTRIBUTING.md` for details.
 
 ## Thanks and Inspiration
+Here are some resources whose ideas resonate with me and have informed this library.
 
-Jeremy Wagner's writing on [Lazy Loading Images and Video](https://developers.google.com/web/fundamentals/performance/lazy-loading-guidance/images-and-video/) is a good reference for the problem and solutions space.
+- Jeremy Wagner's writing on [Lazy Loading Images and Video](https://developers.google.com/web/fundamentals/performance/lazy-loading-guidance/images-and-video/) is a good reference for the problem and solutions space.
 
-The library backing this one, [react-intersection-observer library](https://github.com/thebuilder/react-intersection-observer).
+- The library backing this one, [react-intersection-observer](https://github.com/thebuilder/react-intersection-observer).
 Further thanks for demonstrating Storybook as documentation for lazy-loading.
 
-[Paul Lewis' implementation of lazy image loading](https://github.com/GoogleChromeLabs/sample-media-pwa/blob/master/src/client/scripts/helpers/lazy-load-images.js) has the concept of pre-loading images before swapping.
+- [José M. Pérez has a good resource on lazy loading](https://jmperezperez.com/high-performance-lazy-loading/)
 
-[Dave Rupert has a good guide on intrinsic image placeholders](https://daverupert.com/2015/12/intrinsic-placeholders-with-picture/)
+- [Paul Lewis' implementation of lazy image loading](https://github.com/GoogleChromeLabs/sample-media-pwa/blob/master/src/client/scripts/helpers/lazy-load-images.js) has the concept of pre-loading images before swapping.
 
-[How Medium does lazy image loading](https://jmperezperez.com/medium-image-progressive-loading-placeholder/)
+- [Dave Rupert has a good guide on intrinsic image placeholders](https://daverupert.com/2015/12/intrinsic-placeholders-with-picture/)
 
 ## License
 
