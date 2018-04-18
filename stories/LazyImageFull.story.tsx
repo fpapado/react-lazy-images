@@ -2,7 +2,7 @@ import React from 'react';
 import {storiesOf} from '@storybook/react';
 import {action} from '@storybook/addon-actions';
 import {withInfo} from '@storybook/addon-info';
-import {LazyImageFull, ImageState} from '../dist/react-lazy-images.es.js';
+import {LazyImageFull, ImageState} from '../src/index';
 import {Container} from './utils';
 
 // Component that preloads the image and passes the loading state in render prop

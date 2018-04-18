@@ -2,7 +2,7 @@ import React from 'react';
 import {storiesOf} from '@storybook/react';
 import {action} from '@storybook/addon-actions';
 import {withInfo} from '@storybook/addon-info';
-import {LazyImage} from '../dist/react-lazy-images.es.js';
+import {LazyImage} from '../src/index';
 import {Container} from './utils';
 
 const PlaceholderImage = () => (
@@ -69,7 +69,8 @@ stories
       </Container>
     ))
   )
-  // With srcSet
+  // Without preloading
+  /*
   .add(
     'Without preloading (no src or srcSet)',
     withInfo(
@@ -83,6 +84,7 @@ stories
       </Container>
     ))
   )
+  */
   // Always load an image (aka "eagerly"; how the browser does it already.
   // Useful if you want to load the actual content without waiting for Javascript.
   .add(
@@ -93,6 +95,7 @@ stories
       <Container>
         <LazyImage
           loadEagerly
+          src="img/porto_buildings_large.jpg"
           placeholder={() => <PlaceholderImage />}
           actual={() => <ActualImage />}
         />
