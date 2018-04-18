@@ -1,20 +1,6 @@
 import React from 'react';
 import Observer, {IntersectionObserverProps} from 'react-intersection-observer';
 
-/** The component's state */
-export type LazyImageFullState = {
-  hasBeenInView: boolean;
-  imageState: ImageState;
-};
-
-/** States that the image loading can be in */
-export enum ImageState {
-  NotAsked = 'NotAsked',
-  Loading = 'Loading',
-  LoadSuccess = 'LoadSuccess',
-  LoadError = 'LoadError'
-}
-
 /**
  * Valid props for LazyImage components
  */
@@ -39,17 +25,20 @@ export interface CommonLazyImageProps {
 /** Valid props for LazyImageFull */
 export interface LazyImageFullProps extends CommonLazyImageProps {
   /** Children should be either a function or a node */
-  children?: ((RenderPropArgs) => React.ReactNode) | React.ReactNode;
+  children?:
+    | ((args: LazyImageFullRenderPropArgs) => React.ReactNode)
+    | React.ReactNode;
 
   /** Render prop boolean indicating inView state */
-  render?: (RenderPropArgs) => React.ReactNode;
+  render?: (args: LazyImageFullRenderPropArgs) => React.ReactNode;
 }
 
 /** Values that the render props take */
-export interface RenderPropArgs {
+export interface LazyImageFullRenderPropArgs {
   state: ImageState;
   src?: string;
   srcSet?: string;
+  alt?: string;
 }
 
 /** Subset of react-intersection-observer's props */
@@ -65,9 +54,25 @@ export interface ObserverProps {
 
   /** Number between 0 and 1 indicating the the percentage that should be
    * visible before triggering.
-   * @default `0.1`
+   * @default `0.01`
    */
   threshold?: number;
+}
+
+/** The component's state */
+export type LazyImageFullState = {
+  hasBeenInView: boolean;
+  imageState: ImageState;
+};
+
+/** States that the image loading can be in.
+ * Used together with LazyImageFull render props
+ * */
+export enum ImageState {
+  NotAsked = 'NotAsked',
+  Loading = 'Loading',
+  LoadSuccess = 'LoadSuccess',
+  LoadError = 'LoadError'
 }
 
 /**
@@ -109,7 +114,11 @@ export class LazyImageFull extends React.Component<
           imageState: ImageState.Loading
         }));
 
-        loadImage({src: this.props.src, srcSet: this.props.srcSet})
+        loadImage({
+          src: this.props.src,
+          srcSet: this.props.srcSet,
+          alt: this.props.alt
+        })
           .then(this.onLoadSuccess)
           .catch(this.onLoadError);
       }
@@ -132,7 +141,7 @@ export class LazyImageFull extends React.Component<
 
   // Render function
   render() {
-    const {observerProps, src, srcSet, children, render} = this.props;
+    const {observerProps, src, srcSet, alt, children, render} = this.props;
     const {imageState} = this.state;
 
     return (
@@ -144,9 +153,9 @@ export class LazyImageFull extends React.Component<
         triggerOnce
       >
         {typeof render === 'function'
-          ? render({src, srcSet, imageState})
+          ? render({src, srcSet, alt, imageState})
           : typeof children === 'function'
-            ? children({src, srcSet, imageState})
+            ? children({src, srcSet, alt, imageState})
             : null}
       </Observer>
     );
@@ -156,11 +165,14 @@ export class LazyImageFull extends React.Component<
 // Utilities
 
 /** Promise constructor for loading an image */
-const loadImage = ({src, srcSet}) =>
+const loadImage = ({src, srcSet, alt}) =>
   new Promise((resolve, reject) => {
     const image = new Image();
     if (srcSet) {
       image.srcset = srcSet;
+    }
+    if (alt) {
+      image.alt = alt;
     }
     image.src = src;
     image.onload = resolve;

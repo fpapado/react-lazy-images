@@ -440,7 +440,7 @@ The presentation can be derived from those plus, crucially, any specific needs y
 | **render**        | Function of type ({src, alt, srcSet, imageState}) => React.ReactNode |                                           | true (or `children`) | Function to call that renders based on the props and state provided to it by LazyImageFull            |
 | **children**      | Function of type ({src, alt, srcSet, imageState}) => React.ReactNode |                                           | true (or `render`)   | Function to call that renders based on the props and state provided to it by LazyImageFull            |
 
-[You can consult Typescript types in the code](./src/LazyImage.tsx) as a more exact definition.
+[You can consult Typescript types in the code](./src/LazyImage.tsx) for more context.
 
 ## Feedback
 

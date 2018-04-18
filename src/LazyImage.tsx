@@ -4,14 +4,22 @@ import {LazyImageFull, CommonLazyImageProps, ImageState} from './LazyImageFull';
 /**
  * Valid props for LazyImage
  */
+export interface LazyImageRenderPropArgs {
+  src?: string;
+  srcSet?: string;
+  alt?: string;
+}
+
 export interface LazyImageProps extends CommonLazyImageProps {
   /** Component to display once image has loaded */
-  actual: () => React.ReactElement<{}>;
+  actual: (args: LazyImageRenderPropArgs) => React.ReactElement<{}>;
 
   /** Component to display while image has not been requested
    * @default: undefined
    */
-  placeholder?: () => React.ReactElement<{}>;
+  placeholder?: (
+    args: Pick<LazyImageRenderPropArgs, 'alt'>
+  ) => React.ReactElement<{}>;
 
   /** Component to display while the image is loading
    * @default placeholder, if defined
@@ -40,17 +48,17 @@ export const LazyImage: React.StatelessComponent<LazyImageProps> = ({
     {({src, srcSet, imageState}) => {
       switch (imageState) {
         case ImageState.NotAsked:
-          return !!placeholder && placeholder();
+          return !!placeholder && placeholder({alt});
 
         case ImageState.Loading:
           // Only render loading if specified, otherwise placeholder
           return !!loading ? loading() : !!placeholder && placeholder();
 
         case ImageState.LoadSuccess:
-          return actual();
+          return actual({src, alt, srcSet});
 
         case ImageState.LoadError:
-          // Only render error if specified, otherwise actual
+          // Only render error if specified, otherwise actual (broken image)
           return !!error ? error() : actual();
       }
     }}
