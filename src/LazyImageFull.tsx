@@ -79,7 +79,7 @@ export class LazyImageFull extends React.Component<
   LazyImageFullProps,
   LazyImageFullState
 > {
-  displayname: 'LazyImageFull',
+  static displayName = 'LazyImageFull';
 
   constructor(props) {
     super(props);
