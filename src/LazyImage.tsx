@@ -56,3 +56,4 @@ export const LazyImage: React.StatelessComponent<LazyImageProps> = ({
     }}
   </LazyImageFull>
 );
+LazyImage.displayName = 'LazyImage';
