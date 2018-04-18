@@ -2,7 +2,7 @@ import React from 'react';
 import {storiesOf} from '@storybook/react';
 import {action} from '@storybook/addon-actions';
 import {withInfo} from '@storybook/addon-info';
-import {LazyImage} from '../src/LazyImage';
+import {LazyImage} from '../dist/react-lazy-images.es.js';
 
 const PlaceholderImage = () => (
   <img
