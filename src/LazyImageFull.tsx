@@ -11,6 +11,9 @@ export interface CommonLazyImageProps {
   /** The source set of the image to load */
   srcSet?: string;
 
+  /** The alt text description of the image you are loading */
+  alt?: string;
+
   /** Whether to skip checking for viewport and always show the 'actual' component
    * @see https://github.com/fpapado/react-lazy-images/#eager-loading--server-side-rendering-ssr
    */
@@ -35,7 +38,7 @@ export interface LazyImageFullProps extends CommonLazyImageProps {
 
 /** Values that the render props take */
 export interface LazyImageFullRenderPropArgs {
-  state: ImageState;
+  imageState: ImageState;
   src?: string;
   srcSet?: string;
   alt?: string;

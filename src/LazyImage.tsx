@@ -45,21 +45,23 @@ export const LazyImage: React.StatelessComponent<LazyImageProps> = ({
   ...rest
 }) => (
   <LazyImageFull {...rest}>
-    {({src, srcSet, imageState}) => {
+    {({src, srcSet, alt, imageState}) => {
+      // Call the appropriate render callback based on the state
+      // and the props specified, passing on relevant props.
       switch (imageState) {
         case ImageState.NotAsked:
           return !!placeholder && placeholder({alt});
 
         case ImageState.Loading:
           // Only render loading if specified, otherwise placeholder
-          return !!loading ? loading() : !!placeholder && placeholder();
+          return !!loading ? loading() : !!placeholder && placeholder({alt});
 
         case ImageState.LoadSuccess:
           return actual({src, alt, srcSet});
 
         case ImageState.LoadError:
           // Only render error if specified, otherwise actual (broken image)
-          return !!error ? error() : actual();
+          return !!error ? error() : actual({src, alt, srcSet});
       }
     }}
   </LazyImageFull>
