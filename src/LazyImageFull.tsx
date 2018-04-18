@@ -79,6 +79,8 @@ export class LazyImageFull extends React.Component<
   LazyImageFullProps,
   LazyImageFullState
 > {
+  static displayName = 'LazyImageFull';
+
   constructor(props) {
     super(props);
     this.state = {hasBeenInView: false, imageState: ImageState.NotAsked};

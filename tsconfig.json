@@ -1,9 +1,18 @@
 {
   "compilerOptions": {
-    "target": "es2015",
+    "module": "es2015",
+    "target": "es5",
+    "declaration": true,
     "jsx": "react",
+    "allowJs": false,
+    "sourceMap": true,
+    "rootDirs": ["src", "stories"],
+    "outDir": "ts-build",
+    "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
-    "moduleResolution": "node"
-  }
+    "lib": ["es6", "dom"]
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "microbundle"]
 }

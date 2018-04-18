@@ -17,7 +17,7 @@ setOptions({
   addonPanelInRight: true
 });
 
-const req = require.context('../stories', true, /story\.js$/)
+const req = require.context('../stories', true, /story\.tsx?$/)
 
 function loadStories() {
   req.keys().forEach(req)

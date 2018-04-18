@@ -1,11 +1,9 @@
-import * as React from 'react';
+import React from 'react';
 import {storiesOf} from '@storybook/react';
 import {action} from '@storybook/addon-actions';
 import {withInfo} from '@storybook/addon-info';
-import {
-  LazyImage,
-  renderDefaultFallback
-} from '../dist/react-lazy-images.es.js';
+import {LazyImage} from '../src/index';
+import {Container} from './utils';
 
 const PlaceholderImage = () => (
   <img
@@ -23,24 +21,11 @@ const ActualImage = () => (
   />
 );
 
-const Container = ({children}) => (
-  <div className="pa3 near-black bg-washed-yellow">
-    <div
-      className="flex justify-center items-center"
-      style={{minHeight: 'calc(100vh + 100px)'}}
-    >
-      <p className="f3 sans-serif lh-copy measure-narrow">
-        Scroll down to see the photos :)<br />
-        You might want to throttle the network in your dev tools to see the
-        effect.
-      </p>
-    </div>
-    <div className="mw6">{children}</div>
-  </div>
-);
-
 // Component that preloads the image and only swaps once ready
-storiesOf('LazyImage', module)
+//@ts-ignore
+const stories = storiesOf('LazyImage', module);
+
+stories
   .add(
     'Basic use',
     withInfo(
@@ -84,7 +69,8 @@ storiesOf('LazyImage', module)
       </Container>
     ))
   )
-  // With srcSet
+  // Without preloading
+  /*
   .add(
     'Without preloading (no src or srcSet)',
     withInfo(
@@ -98,6 +84,7 @@ storiesOf('LazyImage', module)
       </Container>
     ))
   )
+  */
   // Always load an image (aka "eagerly"; how the browser does it already.
   // Useful if you want to load the actual content without waiting for Javascript.
   .add(
@@ -108,6 +95,7 @@ storiesOf('LazyImage', module)
       <Container>
         <LazyImage
           loadEagerly
+          src="img/porto_buildings_large.jpg"
           placeholder={() => <PlaceholderImage />}
           actual={() => <ActualImage />}
         />
@@ -245,7 +233,6 @@ storiesOf('LazyImage', module)
       return (
         <Container>
           <LazyImage
-            src="https://www.fillmurray.com/g/500/700"
             src="img/porto_buildings_large.jpg"
             placeholder={() => (
               <BgImage bgSrc="img/porto_buildings_lowres.jpg" />
