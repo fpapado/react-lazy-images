@@ -11,6 +11,9 @@ module.exports = (baseConfig, env, config) => {
     use: [
       require.resolve('awesome-typescript-loader'),
       require.resolve('react-docgen-typescript-loader')
+    ],
+    exclude: [
+      path.resolve(__dirname, 'node_modules/'),
     ]
   });
   // config.plugins.push(new TSDocgenPlugin());
