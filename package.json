@@ -1,7 +1,7 @@
 {
   "name": "react-lazy-images",
   "description": "React utilities for lazy image loading",
-  "version": "0.7.0",
+  "version": "0.8.3",
   "source": "src/index.tsx",
   "module": "dist/react-lazy-images.es.js",
   "main": "dist/react-lazy-images.js",
@@ -13,9 +13,9 @@
     "bundle:prod": "./microbundle/dist/cli.js build --external all",
     "bundle:storybook": "./microbundle/dist/cli.js build --compress false --external all",
     "size": "bundlesize",
-    "storybook": "start-storybook -p 8080",
-    "storybook-static": "build-storybook -c .storybook -o .out",
-    "deploy-storybook": "npm run bundle:storybook && storybook-to-ghpages",
+    "storybook": "start-storybook -p 8080 -s ./stories/demo",
+    "build-storybook": "npm run bundle:storybook && build-storybook -c .storybook -s ./stories/demo -o .out",
+    "deploy-storybook": "storybook-to-ghpages --existing-output-dir=.out",
     "test": "npm run build",
     "prepare": "npm t",
     "release": "npm t && git commit -am $npm_package_version && git tag $npm_package_version && git push && git push --tags && npm publish"
