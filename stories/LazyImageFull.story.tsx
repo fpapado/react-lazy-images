@@ -18,15 +18,18 @@ stories
     Anything you can implement with LazyImage, you can implement with LazyImageFull.`
     )(() => (
       <Container>
-        <LazyImageFull src="img/porto_buildings_large.jpg">
-          {({imageState, src}) => (
+        <LazyImageFull
+          src="img/porto_buildings_large.jpg"
+          alt="Buildings with tiled exteriors, lit by the sunset."
+        >
+          {({imageState, src, alt}) => (
             <img
               src={
                 imageState === ImageState.LoadSuccess
                   ? src
                   : 'img/porto_buildings_lowres.jpg'
               }
-              alt="Buildings with tiled exteriors, lit by the sunset."
+              alt={alt}
               className="w-100"
             />
           )}
@@ -40,14 +43,15 @@ stories
       <Container>
         <LazyImageFull
           src="img/porto_buildings_large.jpg"
-          render={({imageState, src}) => (
+          alt="Buildings with tiled exteriors, lit by the sunset."
+          render={({imageState, src, alt}) => (
             <img
               src={
                 imageState === ImageState.LoadSuccess
                   ? src
                   : 'img/porto_buildings_lowres.jpg'
               }
-              alt="Buildings with tiled exteriors, lit by the sunset."
+              alt={alt}
               className="w-100"
             />
           )}

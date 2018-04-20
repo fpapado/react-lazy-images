@@ -5,6 +5,8 @@ import {withInfo} from '@storybook/addon-info';
 import {LazyImage} from '../src/index';
 import {Container} from './utils';
 
+// Helpers to save typing. You can imagine that in
+// some cases, you too will have more specific components.
 const PlaceholderImage = () => (
   <img
     src="img/porto_buildings_lowres.jpg"
@@ -34,8 +36,15 @@ stories
       <Container>
         <LazyImage
           src="img/porto_buildings_large.jpg"
-          placeholder={() => <PlaceholderImage />}
-          actual={() => <ActualImage />}
+          alt="Buildings with tiled exteriors, lit by the sunset."
+          placeholder={({alt}) => (
+            <img
+              src="img/porto_buildings_lowres.jpg"
+              alt={alt}
+              className="w-100"
+            />
+          )}
+          actual={({src, alt}) => <img src={src} alt={alt} className="w-100" />}
         />
       </Container>
     ))
@@ -50,42 +59,22 @@ stories
         <LazyImage
           src="https://www.fillmurray.com/g/300/200"
           srcSet="https://www.fillmurray.com/g/900/600 900w, https://www.fillmurray.com/g/600/400 600w, https://www.fillmurray.com/g/300/200 300w"
-          placeholder={() => (
+          alt="A portrait of Bill Murray."
+          placeholder={({alt}) => (
             <img
               src="https://www.fillmurray.com/g/60/40"
+              alt={alt}
               className="w-100"
-              alt="A portrait of Bill Murray."
             />
           )}
-          actual={() => (
-            <img
-              src="https://www.fillmurray.com/g/300/200"
-              srcSet="https://www.fillmurray.com/g/900/600 900w, https://www.fillmurray.com/g/600/400 600w, https://www.fillmurray.com/g/300/200 300w"
-              className="w-100"
-              alt="A portrait of Bill Murray."
-            />
+          actual={({src, srcSet, alt}) => (
+            <img src={src} srcSet={srcSet} alt={alt} className="w-100" />
           )}
         />
       </Container>
     ))
   )
-  // Without preloading
-  /*
-  .add(
-    'Without preloading (no src or srcSet)',
-    withInfo(
-      'Sometimes, it might be impractical to specify the src with your current setup. For example, it is possible that you are generating the sources for an Image CDN and have a dedicated component for it. In those cases, changing the component might be impractical in the short-term. If you provide no src or srcSet, then the preload-before-swap behaviour is not used. We believe that showing a possibly still-downloading image is better than having lazy-loading at all.'
-    )(() => (
-      <Container>
-        <LazyImage
-          placeholder={() => <PlaceholderImage />}
-          actual={() => <ActualImage />}
-        />
-      </Container>
-    ))
-  )
-  */
-  // Always load an image (aka "eagerly"; how the browser does it already.
+  // Always load an image ("eagerly"; how the browser does it already.
   // Useful if you want to load the actual content without waiting for Javascript.
   .add(
     'Eager loading (Server-Side Rendering)',
@@ -119,19 +108,16 @@ stories
             loadEagerly={i === 0}
             key={key}
             src={`https://www.fillmurray.com/g/${actual}`}
-            placeholder={() => (
+            alt="A portrait of Bill Murray."
+            placeholder={({alt}) => (
               <img
                 src={`https://www.fillmurray.com/g/${placeholder}`}
+                alt={alt}
                 className="w-100"
-                alt="A portrait of Bill Murray."
               />
             )}
-            actual={() => (
-              <img
-                src={`https://www.fillmurray.com/g/${actual}`}
-                className="w-100"
-                alt="A portrait of Bill Murray."
-              />
+            actual={({src, alt}) => (
+              <img src={src} alt={alt} className="w-100" />
             )}
           />
         ))}
@@ -167,7 +153,7 @@ stories
           <LazyImage
             src="https://www.fillmurray.com/notanimage"
             placeholder={() => <div />}
-            actual={() => <img src="https://www.fillmurray.com/notanimage" />}
+            actual={({src}) => <img src={src} />}
             loading={() => (
               <div>
                 <p className="pa3 f5 lh-copy near-white">Loading...</p>
@@ -200,17 +186,16 @@ stories
               <LazyImage
                 key={key}
                 src={`https://www.fillmurray.com/g/${actual}`}
-                placeholder={() => (
+                alt="A portrait of Bill Murray."
+                placeholder={({alt}) => (
                   <img
                     src={`https://www.fillmurray.com/g/${placeholder}`}
+                    alt={alt}
                     className="w-100"
                   />
                 )}
-                actual={() => (
-                  <img
-                    src={`https://www.fillmurray.com/g/${actual}`}
-                    className="w-100"
-                  />
+                actual={({src, alt}) => (
+                  <img src={src} alt={alt} className="w-100" />
                 )}
               />
             </div>
@@ -237,7 +222,7 @@ stories
             placeholder={() => (
               <BgImage bgSrc="img/porto_buildings_lowres.jpg" />
             )}
-            actual={() => <BgImage bgSrc="img/porto_buildings_large.jpg" />}
+            actual={({src}) => <BgImage bgSrc={src} />}
           />
         </Container>
       );
