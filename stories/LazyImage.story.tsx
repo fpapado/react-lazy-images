@@ -36,6 +36,7 @@ stories
       <Container>
         <LazyImage
           src="img/porto_buildings_large.jpg"
+          alt="Buildings with tiled exteriors, lit by the sunset."
           placeholder={({alt}) => (
             <img
               src="img/porto_buildings_lowres.jpg"
