@@ -96,6 +96,8 @@ export class LazyImageFull extends React.Component<
     // Bind methods
     // This would be nicer with arrow functions and class properties,
     // but holding off until they are settled.
+    this.renderInner = this.renderInner.bind(this);
+    this.renderLazy = this.renderLazy.bind(this);
     this.onInView = this.onInView.bind(this);
     this.onLoadSuccess = this.onLoadSuccess.bind(this);
     this.onLoadError = this.onLoadError.bind(this);
@@ -144,8 +146,16 @@ export class LazyImageFull extends React.Component<
 
   // Render function
   render() {
-    const {observerProps, src, srcSet, alt, children, render} = this.props;
-    const {imageState} = this.state;
+    if (this.props.loadEagerly) {
+      // If eager, skip the observer and view changing stuff; resolve the imageState as loaded.
+      return this.renderInner(this.props, {imageState: ImageState.LoadSuccess});
+    } else {
+      return this.renderLazy(this.props, this.state);
+    }
+  }
+
+  renderLazy(props, state) {
+    const {observerProps} = props;
 
     return (
       <Observer
@@ -155,12 +165,23 @@ export class LazyImageFull extends React.Component<
         onChange={this.onInView}
         triggerOnce
       >
+        {this.renderInner(props, state)}
+      </Observer>
+    );
+  }
+
+  renderInner(props, state) {
+    const {src, srcSet, alt, render, children} = props;
+    const {imageState} = state;
+
+    return (
+      <React.Fragment>
         {typeof render === 'function'
           ? render({src, srcSet, alt, imageState})
           : typeof children === 'function'
             ? children({src, srcSet, alt, imageState})
             : null}
-      </Observer>
+      </React.Fragment>
     );
   }
 }
