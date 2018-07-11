@@ -3,9 +3,10 @@
     "module": "es2015",
     "target": "es5",
     "declaration": true,
+    "sourceMap": true,
     "jsx": "react",
     "allowJs": false,
-    "sourceMap": true,
+    "strict": true,
     "rootDirs": ["src", "stories"],
     "outDir": "ts-build",
     "moduleResolution": "node",
@@ -14,5 +15,5 @@
     "lib": ["es6", "dom"]
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist", "microbundle"]
+  "exclude": ["node_modules", "dist"]
 }

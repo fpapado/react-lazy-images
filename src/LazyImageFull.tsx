@@ -1,5 +1,7 @@
-import React from 'react';
-import Observer, {IntersectionObserverProps} from 'react-intersection-observer';
+import React from "react";
+import Observer, {
+  IntersectionObserverProps
+} from "react-intersection-observer";
 
 /**
  * Valid props for LazyImage components
@@ -13,6 +15,9 @@ export interface CommonLazyImageProps {
 
   /** The alt text description of the image you are loading */
   alt?: string;
+
+  /** Sizes descriptor */
+  sizes?: string;
 
   /** Whether to skip checking for viewport and always show the 'actual' component
    * @see https://github.com/fpapado/react-lazy-images/#eager-loading--server-side-rendering-ssr
@@ -42,6 +47,7 @@ export interface LazyImageFullRenderPropArgs {
   src?: string;
   srcSet?: string;
   alt?: string;
+  sizes?: string;
 }
 
 /** Subset of react-intersection-observer's props */
@@ -72,10 +78,10 @@ export type LazyImageFullState = {
  * Used together with LazyImageFull render props
  * */
 export enum ImageState {
-  NotAsked = 'NotAsked',
-  Loading = 'Loading',
-  LoadSuccess = 'LoadSuccess',
-  LoadError = 'LoadError'
+  NotAsked = "NotAsked",
+  Loading = "Loading",
+  LoadSuccess = "LoadSuccess",
+  LoadError = "LoadError"
 }
 
 /**
@@ -87,11 +93,11 @@ export class LazyImageFull extends React.Component<
   LazyImageFullProps,
   LazyImageFullState
 > {
-  static displayName = 'LazyImageFull';
+  static displayName = "LazyImageFull";
 
-  constructor(props) {
+  constructor(props: LazyImageFullProps) {
     super(props);
-    this.state = {hasBeenInView: false, imageState: ImageState.NotAsked};
+    this.state = { hasBeenInView: false, imageState: ImageState.NotAsked };
 
     // Bind methods
     // This would be nicer with arrow functions and class properties,
@@ -104,7 +110,7 @@ export class LazyImageFull extends React.Component<
   }
 
   // Update functions
-  onInView(inView) {
+  onInView(inView: boolean) {
     if (inView === true) {
       // If src is not specified, then there is nothing to preload; skip to Loaded state
       if (!this.props.src) {
@@ -122,7 +128,8 @@ export class LazyImageFull extends React.Component<
         loadImage({
           src: this.props.src,
           srcSet: this.props.srcSet,
-          alt: this.props.alt
+          alt: this.props.alt,
+          sizes: this.props.sizes
         })
           .then(this.onLoadSuccess)
           .catch(this.onLoadError);
@@ -148,14 +155,17 @@ export class LazyImageFull extends React.Component<
   render() {
     if (this.props.loadEagerly) {
       // If eager, skip the observer and view changing stuff; resolve the imageState as loaded.
-      return this.renderInner(this.props, {imageState: ImageState.LoadSuccess});
+      return this.renderInner(this.props, {
+        imageState: ImageState.LoadSuccess
+      });
     } else {
       return this.renderLazy(this.props, this.state);
     }
   }
 
-  renderLazy(props, state) {
-    const {observerProps} = props;
+  // TODO: split out
+  renderLazy(props: LazyImageFullProps, state: { imageState: ImageState }) {
+    const { observerProps } = props;
 
     return (
       <Observer
@@ -170,16 +180,16 @@ export class LazyImageFull extends React.Component<
     );
   }
 
-  renderInner(props, state) {
-    const {src, srcSet, alt, render, children} = props;
-    const {imageState} = state;
+  renderInner(props: LazyImageFullProps, state: { imageState: ImageState }) {
+    const { src, srcSet, alt, sizes, render, children } = props;
+    const { imageState } = state;
 
     return (
       <React.Fragment>
-        {typeof render === 'function'
-          ? render({src, srcSet, alt, imageState})
-          : typeof children === 'function'
-            ? children({src, srcSet, alt, imageState})
+        {typeof render === "function"
+          ? render({ src, srcSet, alt, sizes, imageState })
+          : typeof children === "function"
+            ? children({ src, srcSet, alt, sizes, imageState })
             : null}
       </React.Fragment>
     );
@@ -189,7 +199,13 @@ export class LazyImageFull extends React.Component<
 // Utilities
 
 /** Promise constructor for loading an image */
-const loadImage = ({src, srcSet, alt}) =>
+interface ImageAttrs {
+  src: string;
+  srcSet?: string;
+  alt?: string;
+  sizes?: string;
+}
+const loadImage = ({ src, srcSet, alt, sizes }: ImageAttrs) =>
   new Promise((resolve, reject) => {
     const image = new Image();
     if (srcSet) {
@@ -197,6 +213,9 @@ const loadImage = ({src, srcSet, alt}) =>
     }
     if (alt) {
       image.alt = alt;
+    }
+    if (sizes) {
+      image.sizes = sizes;
     }
     image.src = src;
     image.onload = resolve;
