@@ -18,6 +18,6 @@ import { renderToStaticMarkup } from "react-dom/server";
  * a fallback API as it did in v0.3.0.
  */
 
-export const Fallback = (fallback: React.Component<{}>) => (
+export const Fallback = (fallback: React.ReactElement<{}>) => (
   <noscript>{renderToStaticMarkup(fallback)}</noscript>
 );

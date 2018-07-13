@@ -9,8 +9,9 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "dev": "npm-run-all --parallel bundle:dev storybook",
+    "dev:ts": "tsc --watch --pretty",
     "build": "npm-run-all bundle:prod size",
-    "bundle:dev": "microbundle watch --compress false",
+    "bundle:dev": "microbundle --watch --compress false",
     "bundle:prod": "microbundle build",
     "bundle:storybook": "microbundle build --compress false",
     "size": "bundlesize",
@@ -77,6 +78,7 @@
     "@storybook/react": "4.0.0-alpha.3",
     "@storybook/storybook-deployer": "^2.3.0",
     "@types/react": "^16.4.6",
+    "@types/react-dom": "^16.0.6",
     "awesome-typescript-loader": "^5.2",
     "babel-core": "^6.26.3",
     "bundlesize": "^0.17.0",
