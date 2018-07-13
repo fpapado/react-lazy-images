@@ -82,6 +82,7 @@
     "bundlesize": "^0.17.0",
     "eslint": "^5.1.0",
     "eslint-plugin-jsx-a11y": "^6.1.0",
+    "husky": "^1.0.0-rc.13",
     "lint-staged": "^7.2.0",
     "microbundle": "^0.5.1",
     "npm-run-all": "^4.1.3",
