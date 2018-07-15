@@ -12,6 +12,7 @@ export interface LazyImageRenderPropArgs {
   src?: string;
   srcSet?: string;
   alt?: string;
+  sizes?: string;
 }
 
 export interface LazyImageProps extends CommonLazyImageProps {

@@ -33,16 +33,11 @@ export interface CommonLazyImageProps {
 /** Valid props for LazyImageFull */
 export interface LazyImageFullProps extends CommonLazyImageProps {
   /** Children should be either a function or a node */
-  children?:
-    | ((args: LazyImageFullRenderPropArgs) => React.ReactNode)
-    | React.ReactNode;
-
-  /** Render prop boolean indicating inView state */
-  render?: (args: LazyImageFullRenderPropArgs) => React.ReactNode;
+  children: (args: RenderCallbackArgs) => React.ReactNode;
 }
 
 /** Values that the render props take */
-export interface LazyImageFullRenderPropArgs {
+export interface RenderCallbackArgs {
   imageState: ImageState;
   src?: string;
   srcSet?: string;
@@ -102,8 +97,6 @@ export class LazyImageFull extends React.Component<
     // Bind methods
     // This would be nicer with arrow functions and class properties,
     // but holding off until they are settled.
-    this.renderInner = this.renderInner.bind(this);
-    this.renderLazy = this.renderLazy.bind(this);
     this.onInView = this.onInView.bind(this);
     this.onLoadSuccess = this.onLoadSuccess.bind(this);
     this.onLoadError = this.onLoadError.bind(this);
@@ -114,13 +107,13 @@ export class LazyImageFull extends React.Component<
     if (inView === true) {
       // If src is not specified, then there is nothing to preload; skip to Loaded state
       if (!this.props.src) {
-        this.setState((state, props) => ({
+        this.setState((state, _props) => ({
           ...state,
           imageState: ImageState.LoadSuccess
         }));
       } else {
         // Kick off request for Image and attach listeners for response
-        this.setState((state, props) => ({
+        this.setState((state, _props) => ({
           ...state,
           imageState: ImageState.Loading
         }));
@@ -153,46 +146,24 @@ export class LazyImageFull extends React.Component<
 
   // Render function
   render() {
-    if (this.props.loadEagerly) {
+    const { children, loadEagerly, observerProps, ...cbProps } = this.props;
+
+    if (loadEagerly) {
       // If eager, skip the observer and view changing stuff; resolve the imageState as loaded.
-      return this.renderInner(this.props, {
-        imageState: ImageState.LoadSuccess
-      });
+      return children({ imageState: ImageState.LoadSuccess, ...cbProps });
     } else {
-      return this.renderLazy(this.props, this.state);
+      return (
+        <Observer
+          rootMargin="50px 0px"
+          threshold={0.01}
+          {...observerProps}
+          onChange={this.onInView}
+          triggerOnce
+        >
+          {children({ imageState: this.state.imageState, ...cbProps })}
+        </Observer>
+      );
     }
-  }
-
-  // TODO: split out
-  renderLazy(props: LazyImageFullProps, state: { imageState: ImageState }) {
-    const { observerProps } = props;
-
-    return (
-      <Observer
-        rootMargin="50px 0px"
-        threshold={0.01}
-        {...observerProps}
-        onChange={this.onInView}
-        triggerOnce
-      >
-        {this.renderInner(props, state)}
-      </Observer>
-    );
-  }
-
-  renderInner(props: LazyImageFullProps, state: { imageState: ImageState }) {
-    const { src, srcSet, alt, sizes, render, children } = props;
-    const { imageState } = state;
-
-    return (
-      <React.Fragment>
-        {typeof render === "function"
-          ? render({ src, srcSet, alt, sizes, imageState })
-          : typeof children === "function"
-            ? children({ src, srcSet, alt, sizes, imageState })
-            : null}
-      </React.Fragment>
-    );
   }
 }
 
