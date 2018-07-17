@@ -27,7 +27,7 @@ export interface RenderCallbackArgs {
   imageState: ImageState;
   imageProps: ImageProps;
   /** When not loading eagerly, a ref to bind to the DOM element. This is needed for the intersection calculation to work. */
-  ref?: React.RefObject<{}>;
+  ref?: React.RefObject<any>;
 }
 
 export interface ImageProps {

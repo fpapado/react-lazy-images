@@ -37,8 +37,9 @@ stories
         <LazyImage
           src="img/porto_buildings_large.jpg"
           alt="Buildings with tiled exteriors, lit by the sunset."
-          placeholder={({ imageProps }) => (
+          placeholder={({ imageProps, ref }) => (
             <img
+              ref={ref}
               src="img/porto_buildings_lowres.jpg"
               alt={imageProps.alt}
               className="w-100"
@@ -60,8 +61,9 @@ stories
           src="https://www.fillmurray.com/g/300/200"
           srcSet="https://www.fillmurray.com/g/900/600 900w, https://www.fillmurray.com/g/600/400 600w, https://www.fillmurray.com/g/300/200 300w"
           alt="A portrait of Bill Murray."
-          placeholder={({ imageProps }) => (
+          placeholder={({ imageProps, ref }) => (
             <img
+              ref={ref}
               src="https://www.fillmurray.com/g/60/40"
               alt={imageProps.alt}
               className="w-100"
@@ -107,9 +109,10 @@ stories
             key={key}
             src={`https://www.fillmurray.com/g/${actual}`}
             alt="A portrait of Bill Murray."
-            placeholder={({ imageProps }) => (
+            placeholder={({ imageProps, ref }) => (
               <img
                 src={`https://www.fillmurray.com/g/${placeholder}`}
+                ref={ref}
                 alt={imageProps.alt}
                 className="w-100"
               />
@@ -130,7 +133,7 @@ stories
         <div className="bg-light-silver h5 w-100">
           <LazyImage
             src="img/porto_buildings_large.jpg"
-            placeholder={() => <div />}
+            placeholder={({ ref }) => <div ref={ref} />}
             actual={() => <ActualImage />}
             loading={() => (
               <div>
@@ -150,7 +153,7 @@ stories
         <div className="bg-light-silver h5 w-100">
           <LazyImage
             src="https://www.fillmurray.com/notanimage"
-            placeholder={() => <div />}
+            placeholder={({ ref }) => <div ref={ref} />}
             actual={({ imageProps }) => <img {...imageProps} />}
             loading={() => (
               <div>
@@ -185,9 +188,10 @@ stories
                 key={key}
                 src={`https://www.fillmurray.com/g/${actual}`}
                 alt="A portrait of Bill Murray."
-                placeholder={({ imageProps }) => (
+                placeholder={({ imageProps, ref }) => (
                   <img
                     src={`https://www.fillmurray.com/g/${placeholder}`}
+                    ref={ref}
                     alt={imageProps.alt}
                     className="w-100"
                   />
@@ -207,20 +211,27 @@ stories
     withInfo(
       "You are in control of what gets rendered, so you can set the url of the background image, and swap in a component that uses it on load. It is not much different from the basic use case."
     )(() => {
-      const BgImage = ({ bgSrc }) => (
-        <div
-          className={`$ w5 h5 contain bg-center`}
-          style={{ backgroundImage: `url(${bgSrc})` }}
-        />
-      );
       return (
         <Container>
           <LazyImage
             src="img/porto_buildings_large.jpg"
-            placeholder={() => (
-              <BgImage bgSrc="img/porto_buildings_lowres.jpg" />
+            placeholder={({ ref }) => (
+              <div
+                ref={ref}
+                className={`$ w5 h5 contain bg-center`}
+                style={{
+                  backgroundImage: "url(img/porto_buildings_lowres.jpg)"
+                }}
+              />
             )}
-            actual={({ imageProps }) => <BgImage bgSrc={imageProps.src} />}
+            actual={({ imageProps }) => (
+              <div
+                className={`$ w5 h5 contain bg-center`}
+                style={{
+                  backgroundImage: `url(${imageProps.src})`
+                }}
+              />
+            )}
           />
         </Container>
       );

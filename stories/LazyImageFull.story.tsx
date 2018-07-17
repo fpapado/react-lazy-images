@@ -21,9 +21,10 @@ stories.add(
         src="img/porto_buildings_large.jpg"
         alt="Buildings with tiled exteriors, lit by the sunset."
       >
-        {({ imageState, imageProps }) => (
+        {({ imageState, imageProps, ref }) => (
           <img
             {...imageProps}
+            ref={ref}
             src={
               imageState === ImageState.LoadSuccess
                 ? imageProps.src

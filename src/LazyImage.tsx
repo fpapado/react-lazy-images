@@ -11,8 +11,11 @@ import {
  */
 export interface LazyImageRenderPropArgs {
   imageProps: ImageProps;
+}
+
+export interface RefArg {
   /** When not loading eagerly, a ref to bind to the DOM element. This is needed for the intersection calculation to work. */
-  ref?: React.RefObject<{}>;
+  ref?: React.RefObject<any>;
 }
 
 export interface LazyImageProps extends CommonLazyImageProps {
@@ -22,7 +25,9 @@ export interface LazyImageProps extends CommonLazyImageProps {
   /** Component to display while image has not been requested
    * @default: undefined
    */
-  placeholder?: (args: LazyImageRenderPropArgs) => React.ReactElement<{}>;
+  placeholder: (
+    args: LazyImageRenderPropArgs & RefArg
+  ) => React.ReactElement<{}>;
 
   /** Component to display while the image is loading
    * @default placeholder, if defined
@@ -59,10 +64,10 @@ export const LazyImage: React.StatelessComponent<LazyImageProps> = ({
           // Only render loading if specified, otherwise placeholder
           return !!loading
             ? loading()
-            : !!placeholder && placeholder({ imageProps });
+            : !!placeholder && placeholder({ imageProps, ref });
 
         case ImageState.LoadSuccess:
-          return actual({ imageProps, ref });
+          return actual({ imageProps });
 
         case ImageState.LoadError:
           // Only render error if specified, otherwise actual (broken image)
