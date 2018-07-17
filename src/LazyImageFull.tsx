@@ -14,6 +14,14 @@ export type CommonLazyImageProps = ImageProps & {
    * @see https://github.com/thebuilder/react-intersection-observer#props
    */
   observerProps?: ObserverProps;
+
+  /** Use the Image Decode API;
+   * The call to a new HTML <img> element’s decode() function returns a promise, which,
+   * when fulfilled, ensures that the image can be appended to the DOM without causing
+   * a decoding delay on the next frame.
+   *  @see: https://www.chromestatus.com/feature/5637156160667648
+   */
+  experimentalDecode?: boolean;
 };
 
 /** Valid props for LazyImageFull */
@@ -119,12 +127,15 @@ export class LazyImageFull extends React.Component<
           imageState: ImageState.Loading
         }));
 
-        loadImage({
-          src: this.props.src,
-          srcSet: this.props.srcSet,
-          alt: this.props.alt,
-          sizes: this.props.sizes
-        })
+        loadImage(
+          {
+            src: this.props.src,
+            srcSet: this.props.srcSet,
+            alt: this.props.alt,
+            sizes: this.props.sizes
+          },
+          this.props.experimentalDecode
+        )
           .then(this.onLoadSuccess)
           .catch(this.onLoadError);
       }
@@ -147,7 +158,13 @@ export class LazyImageFull extends React.Component<
 
   // Render function
   render() {
-    const { children, loadEagerly, observerProps, ...imageProps } = this.props;
+    const {
+      children,
+      loadEagerly,
+      observerProps,
+      experimentalDecode,
+      ...imageProps
+    } = this.props;
 
     if (loadEagerly) {
       // If eager, skip the observer and view changing stuff; resolve the imageState as loaded.
@@ -173,7 +190,10 @@ export class LazyImageFull extends React.Component<
 // Utilities
 
 /** Promise constructor for loading an image */
-const loadImage = ({ src, srcSet, alt, sizes }: ImageProps) =>
+const loadImage = (
+  { src, srcSet, alt, sizes }: ImageProps,
+  experimentalDecode = false
+) =>
   new Promise((resolve, reject) => {
     const image = new Image();
     if (srcSet) {
@@ -186,6 +206,18 @@ const loadImage = ({ src, srcSet, alt, sizes }: ImageProps) =>
       image.sizes = sizes;
     }
     image.src = src;
+
+    /** @see: https://www.chromestatus.com/feature/5637156160667648 */
+    if (experimentalDecode && "decode" in image) {
+      image
+        // NOTE: .decode() is not in the TS defs yet
+        //@ts-ignore
+        .decode()
+        .then(() => resolve())
+        .catch((err: any) => reject(err));
+      return;
+    }
+
     image.onload = resolve;
     image.onerror = reject;
   });

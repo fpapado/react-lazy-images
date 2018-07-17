@@ -9,15 +9,14 @@
 - [x] Upgrade microbundle
 - [x] Check --external all consequence
 - [x] Upgrade react-intersection-observer
-- [ ] Pass Ref
-- [ ] Prop getter
-- [ ] Split out renderXYZ components
-- [ ] Refactor props
-- [ ] Props getter
+- [x] Pass Ref
+- [x] Prop collection
+- [x] Split out renderXYZ components
+- [x] Refactor props
 - [x] Elicit feedback and use cases for the public API
-- [ ] Investigate container `<div>`
+- [~] Investigate container `<div>`
 - [ ] Solidify `<noscript>` fallback
-- [ ] experimentalDecoding
+- [x] experimentalDecode
 
 # Investigate
 

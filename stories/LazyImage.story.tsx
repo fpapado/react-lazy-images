@@ -207,6 +207,29 @@ stories
     ))
   )
   .add(
+    "Experimental decode",
+    withInfo(
+      "Decode off-main-thread before appending. Only supported in some browsers, but uses normal API otherwise. Test before using!"
+    )(() => (
+      <Container>
+        <LazyImage
+          src="img/porto_buildings_large.jpg"
+          alt="Buildings with tiled exteriors, lit by the sunset."
+          placeholder={({ imageProps, ref }) => (
+            <img
+              ref={ref}
+              src="img/porto_buildings_lowres.jpg"
+              alt={imageProps.alt}
+              className="w-100"
+            />
+          )}
+          actual={({ imageProps }) => <img {...imageProps} className="w-100" />}
+          experimentalDecode={true}
+        />
+      </Container>
+    ))
+  )
+  .add(
     "Background image",
     withInfo(
       "You are in control of what gets rendered, so you can set the url of the background image, and swap in a component that uses it on load. It is not much different from the basic use case."
