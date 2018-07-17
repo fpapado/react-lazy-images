@@ -63,7 +63,7 @@
   },
   "homepage": "https://github.com/fpapado/react-lazy-images#readme",
   "dependencies": {
-    "react-intersection-observer": "^3.0.3"
+    "react-intersection-observer": "^6.1.0"
   },
   "peerDependencies": {
     "react": "^15 || ^16",
@@ -82,7 +82,7 @@
     "babel-core": "^6.26.3",
     "bundlesize": "^0.17.0",
     "eslint": "^5.1.0",
-    "eslint-plugin-jsx-a11y": "^6.1.0",
+    "eslint-plugin-jsx-a11y": "^6.1.1",
     "husky": "^1.0.0-rc.13",
     "lint-staged": "^7.2.0",
     "microbundle": "^0.5.1",

@@ -8,13 +8,10 @@ declare module "react-intersection-observer" {
   }
 
   export interface IntersectionObserverProps {
-    /** Children should be either a function or a node */
+    /** Children expects a function that recieves an object contain an `inView` boolean and `ref` that should be assigned to the element root. */
     children?:
       | React.ReactNode
-      | ((args: RenderCallbackArgs) => React.ReactNode);
-
-    /** Render prop boolean indicating inView state */
-    render?(inView: boolean): React.ReactNode;
+      | ((fields: RenderCallbackArgs) => React.ReactNode);
 
     /**
      * The `HTMLElement` that is used as the viewport for checking visibility of
@@ -59,9 +56,6 @@ declare module "react-intersection-observer" {
 
     /** Call this function whenever the in view state changes */
     onChange?(inView: boolean | React.FormEvent<HTMLElement>): void;
-
-    /** Get a reference to the the inner DOM node */
-    innerRef?(element?: HTMLElement): void;
   }
 
   export default class IntersectionObserver extends React.Component<
