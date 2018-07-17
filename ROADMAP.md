@@ -7,8 +7,10 @@
 
 - [x] Upgrade devDeps
 - [x] Upgrade microbundle
-- [ ] Check --external all consequence
-- [ ] Upgrade react-intersection-observer
+- [x] Check --external all consequence
+- [x] Upgrade react-intersection-observer
+- [ ] Pass Ref
+- [ ] Prop getter
 - [ ] Split out renderXYZ components
 - [ ] Refactor props
 - [ ] Props getter

@@ -1,7 +1,5 @@
 import React from "react";
-import Observer, {
-  IntersectionObserverProps
-} from "react-intersection-observer";
+import Observer from "react-intersection-observer";
 
 /**
  * Valid props for LazyImage components
@@ -39,10 +37,14 @@ export interface LazyImageFullProps extends CommonLazyImageProps {
 /** Values that the render props take */
 export interface RenderCallbackArgs {
   imageState: ImageState;
-  src?: string;
-  srcSet?: string;
-  alt?: string;
-  sizes?: string;
+  imageProps: {
+    src?: string;
+    srcSet?: string;
+    alt?: string;
+    sizes?: string;
+    /** When not loading eagerly, a ref to bind to the DOM element. This is needed for the intersection calculation to work. */
+    ref?: React.RefObject<{}>;
+  };
 }
 
 /** Subset of react-intersection-observer's props */
@@ -146,11 +148,11 @@ export class LazyImageFull extends React.Component<
 
   // Render function
   render() {
-    const { children, loadEagerly, observerProps, ...cbProps } = this.props;
+    const { children, loadEagerly, observerProps, ...imageProps } = this.props;
 
     if (loadEagerly) {
       // If eager, skip the observer and view changing stuff; resolve the imageState as loaded.
-      return children({ imageState: ImageState.LoadSuccess, ...cbProps });
+      return children({ imageState: ImageState.LoadSuccess, imageProps });
     } else {
       return (
         <Observer
@@ -160,7 +162,9 @@ export class LazyImageFull extends React.Component<
           onChange={this.onInView}
           triggerOnce
         >
-          {children({ imageState: this.state.imageState, ...cbProps })}
+          {({ ref }) =>
+            children({ imageState: this.state.imageState, imageProps })
+          }
         </Observer>
       );
     }

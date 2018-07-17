@@ -12,7 +12,11 @@
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
-    "lib": ["es6", "dom"]
+    "lib": ["es6", "dom"],
+    "baseUrl": "./",
+    "paths": {
+      "react-intersection-observer": ["src/react-intersection-observer.d.ts"]
+    }
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]

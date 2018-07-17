@@ -1,6 +1,6 @@
 import React from "react";
 
-export const Container = ({ children }) => (
+export const Container: React.SFC<{}> = ({ children }) => (
   <div className="pa3 near-black bg-washed-yellow">
     <div
       className="flex justify-center items-center"

@@ -8,7 +8,7 @@
   "umd:main": "dist/react-lazy-images.umd.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "dev": "npm-run-all --parallel bundle:dev storybook",
+    "dev": "npm-run-all bundle:dev storybook",
     "dev:ts": "tsc --watch --pretty",
     "build": "npm-run-all bundle:prod size",
     "bundle:dev": "microbundle --watch --compress false",
