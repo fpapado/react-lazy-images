@@ -4,7 +4,33 @@ import Observer from "react-intersection-observer";
 /**
  * Valid props for LazyImage components
  */
-export interface CommonLazyImageProps {
+export type CommonLazyImageProps = ImageProps & {
+  /** Whether to skip checking for viewport and always show the 'actual' component
+   * @see https://github.com/fpapado/react-lazy-images/#eager-loading--server-side-rendering-ssr
+   */
+  loadEagerly?: boolean;
+
+  /** Subset of props for the IntersectionObserver
+   * @see https://github.com/thebuilder/react-intersection-observer#props
+   */
+  observerProps?: ObserverProps;
+};
+
+/** Valid props for LazyImageFull */
+export interface LazyImageFullProps extends CommonLazyImageProps {
+  /** Children should be either a function or a node */
+  children: (args: RenderCallbackArgs) => React.ReactNode;
+}
+
+/** Values that the render props take */
+export interface RenderCallbackArgs {
+  imageState: ImageState;
+  imageProps: ImageProps;
+  /** When not loading eagerly, a ref to bind to the DOM element. This is needed for the intersection calculation to work. */
+  ref?: React.RefObject<{}>;
+}
+
+export interface ImageProps {
   /** The source of the image to load */
   src: string;
 
@@ -16,35 +42,6 @@ export interface CommonLazyImageProps {
 
   /** Sizes descriptor */
   sizes?: string;
-
-  /** Whether to skip checking for viewport and always show the 'actual' component
-   * @see https://github.com/fpapado/react-lazy-images/#eager-loading--server-side-rendering-ssr
-   */
-  loadEagerly?: boolean;
-
-  /** Subset of props for the IntersectionObserver
-   * @see https://github.com/thebuilder/react-intersection-observer#props
-   */
-  observerProps?: ObserverProps;
-}
-
-/** Valid props for LazyImageFull */
-export interface LazyImageFullProps extends CommonLazyImageProps {
-  /** Children should be either a function or a node */
-  children: (args: RenderCallbackArgs) => React.ReactNode;
-}
-
-/** Values that the render props take */
-export interface RenderCallbackArgs {
-  imageState: ImageState;
-  imageProps: {
-    src?: string;
-    srcSet?: string;
-    alt?: string;
-    sizes?: string;
-    /** When not loading eagerly, a ref to bind to the DOM element. This is needed for the intersection calculation to work. */
-    ref?: React.RefObject<{}>;
-  };
 }
 
 /** Subset of react-intersection-observer's props */
@@ -163,7 +160,7 @@ export class LazyImageFull extends React.Component<
           triggerOnce
         >
           {({ ref }) =>
-            children({ imageState: this.state.imageState, imageProps })
+            children({ imageState: this.state.imageState, imageProps, ref })
           }
         </Observer>
       );
