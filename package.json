@@ -11,14 +11,13 @@
     "dev": "npm-run-all bundle:dev storybook",
     "dev:ts": "tsc --watch --pretty",
     "build": "npm-run-all bundle:prod size",
-    "bundle:dev": "microbundle --watch --compress false",
+    "bundle:dev": "microbundle watch",
     "bundle:prod": "microbundle build",
-    "bundle:storybook": "microbundle build --compress false",
-    "size": "bundlesize",
     "storybook": "start-storybook -p 8080 -s ./stories/demo",
-    "build-storybook": "npm run bundle:storybook && build-storybook -c .storybook -s ./stories/demo -o .out",
-    "deploy-storybook": "storybook-to-ghpages --existing-output-dir=.out",
+    "storybook:build": "npm run bundle:prod && build-storybook -c .storybook -s ./stories/demo -o .out",
+    "storybook:deploy": "storybook-to-ghpages --existing-output-dir=.out",
     "test": "npm run build",
+    "size": "bundlesize",
     "release": "npm t && git commit -am $npm_package_version && git tag $npm_package_version && git push && git push --tags && npm publish"
   },
   "bundlesize": [

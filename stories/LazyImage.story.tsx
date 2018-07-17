@@ -37,16 +37,14 @@ stories
         <LazyImage
           src="img/porto_buildings_large.jpg"
           alt="Buildings with tiled exteriors, lit by the sunset."
-          placeholder={({ alt }) => (
+          placeholder={({ imageProps }) => (
             <img
               src="img/porto_buildings_lowres.jpg"
-              alt={alt}
+              alt={imageProps.alt}
               className="w-100"
             />
           )}
-          actual={({ src, alt }) => (
-            <img src={src} alt={alt} className="w-100" />
-          )}
+          actual={({ imageProps }) => <img {...imageProps} className="w-100" />}
         />
       </Container>
     ))
@@ -62,16 +60,14 @@ stories
           src="https://www.fillmurray.com/g/300/200"
           srcSet="https://www.fillmurray.com/g/900/600 900w, https://www.fillmurray.com/g/600/400 600w, https://www.fillmurray.com/g/300/200 300w"
           alt="A portrait of Bill Murray."
-          placeholder={({ alt }) => (
+          placeholder={({ imageProps }) => (
             <img
               src="https://www.fillmurray.com/g/60/40"
-              alt={alt}
+              alt={imageProps.alt}
               className="w-100"
             />
           )}
-          actual={({ src, srcSet, alt }) => (
-            <img src={src} srcSet={srcSet} alt={alt} className="w-100" />
-          )}
+          actual={({ imageProps }) => <img {...imageProps} className="w-100" />}
         />
       </Container>
     ))
@@ -111,15 +107,15 @@ stories
             key={key}
             src={`https://www.fillmurray.com/g/${actual}`}
             alt="A portrait of Bill Murray."
-            placeholder={({ alt }) => (
+            placeholder={({ imageProps }) => (
               <img
                 src={`https://www.fillmurray.com/g/${placeholder}`}
-                alt={alt}
+                alt={imageProps.alt}
                 className="w-100"
               />
             )}
-            actual={({ src, alt }) => (
-              <img src={src} alt={alt} className="w-100" />
+            actual={({ imageProps }) => (
+              <img {...imageProps} className="w-100" />
             )}
           />
         ))}
@@ -155,7 +151,7 @@ stories
           <LazyImage
             src="https://www.fillmurray.com/notanimage"
             placeholder={() => <div />}
-            actual={({ src }) => <img src={src} />}
+            actual={({ imageProps }) => <img {...imageProps} />}
             loading={() => (
               <div>
                 <p className="pa3 f5 lh-copy near-white">Loading...</p>
@@ -189,15 +185,15 @@ stories
                 key={key}
                 src={`https://www.fillmurray.com/g/${actual}`}
                 alt="A portrait of Bill Murray."
-                placeholder={({ alt }) => (
+                placeholder={({ imageProps }) => (
                   <img
                     src={`https://www.fillmurray.com/g/${placeholder}`}
-                    alt={alt}
+                    alt={imageProps.alt}
                     className="w-100"
                   />
                 )}
-                actual={({ src, alt }) => (
-                  <img src={src} alt={alt} className="w-100" />
+                actual={({ imageProps }) => (
+                  <img {...imageProps} className="w-100" />
                 )}
               />
             </div>
@@ -224,7 +220,7 @@ stories
             placeholder={() => (
               <BgImage bgSrc="img/porto_buildings_lowres.jpg" />
             )}
-            actual={({ src }) => <BgImage bgSrc={src} />}
+            actual={({ imageProps }) => <BgImage bgSrc={imageProps.src} />}
           />
         </Container>
       );
