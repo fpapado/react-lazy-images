@@ -89,9 +89,11 @@ export class LazyImageFull extends React.Component<
 > {
   static displayName = "LazyImageFull";
 
+  initialState = { hasBeenInView: false, imageState: ImageState.NotAsked };
+
   constructor(props: LazyImageFullProps) {
     super(props);
-    this.state = { hasBeenInView: false, imageState: ImageState.NotAsked };
+    this.state = this.initialState;
 
     // Bind methods
     // This would be nicer with arrow functions and class properties,
@@ -130,14 +132,14 @@ export class LazyImageFull extends React.Component<
   }
 
   onLoadSuccess() {
-    this.setState((state, props) => ({
+    this.setState((state, _props) => ({
       ...state,
       imageState: ImageState.LoadSuccess
     }));
   }
 
   onLoadError() {
-    this.setState((state, props) => ({
+    this.setState((state, _props) => ({
       ...state,
       imageState: ImageState.LoadError
     }));
@@ -171,13 +173,7 @@ export class LazyImageFull extends React.Component<
 // Utilities
 
 /** Promise constructor for loading an image */
-interface ImageAttrs {
-  src: string;
-  srcSet?: string;
-  alt?: string;
-  sizes?: string;
-}
-const loadImage = ({ src, srcSet, alt, sizes }: ImageAttrs) =>
+const loadImage = ({ src, srcSet, alt, sizes }: ImageProps) =>
   new Promise((resolve, reject) => {
     const image = new Image();
     if (srcSet) {
