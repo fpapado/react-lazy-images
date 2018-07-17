@@ -1,10 +1,10 @@
-import React from 'react';
+import React from "react";
 
-export const Container = ({children}) => (
+export const Container: React.SFC<{}> = ({ children }) => (
   <div className="pa3 near-black bg-washed-yellow">
     <div
       className="flex justify-center items-center"
-      style={{minHeight: 'calc(100vh + 100px)'}}
+      style={{ minHeight: "calc(100vh + 100px)" }}
     >
       <p className="f3 sans-serif lh-copy measure-narrow">
         Scroll down to see the photos :)<br />
@@ -15,4 +15,3 @@ export const Container = ({children}) => (
     <div className="mw6">{children}</div>
   </div>
 );
-

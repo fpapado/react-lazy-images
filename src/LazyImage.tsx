@@ -1,13 +1,21 @@
-import React from 'react';
-import {LazyImageFull, CommonLazyImageProps, ImageState} from './LazyImageFull';
+import React from "react";
+import {
+  LazyImageFull,
+  CommonLazyImageProps,
+  ImageState,
+  ImageProps
+} from "./LazyImageFull";
 
 /**
  * Valid props for LazyImage
  */
 export interface LazyImageRenderPropArgs {
-  src?: string;
-  srcSet?: string;
-  alt?: string;
+  imageProps: ImageProps;
+}
+
+export interface RefArg {
+  /** When not loading eagerly, a ref to bind to the DOM element. This is needed for the intersection calculation to work. */
+  ref?: React.RefObject<any>;
 }
 
 export interface LazyImageProps extends CommonLazyImageProps {
@@ -17,8 +25,8 @@ export interface LazyImageProps extends CommonLazyImageProps {
   /** Component to display while image has not been requested
    * @default: undefined
    */
-  placeholder?: (
-    args: Pick<LazyImageRenderPropArgs, 'alt'>
+  placeholder: (
+    args: LazyImageRenderPropArgs & RefArg
   ) => React.ReactElement<{}>;
 
   /** Component to display while the image is loading
@@ -45,26 +53,28 @@ export const LazyImage: React.StatelessComponent<LazyImageProps> = ({
   ...rest
 }) => (
   <LazyImageFull {...rest}>
-    {({src, srcSet, alt, imageState}) => {
+    {({ imageState, imageProps, ref }) => {
       // Call the appropriate render callback based on the state
       // and the props specified, passing on relevant props.
       switch (imageState) {
         case ImageState.NotAsked:
-          return !!placeholder && placeholder({alt});
+          return !!placeholder && placeholder({ imageProps, ref });
 
         case ImageState.Loading:
           // Only render loading if specified, otherwise placeholder
-          return !!loading ? loading() : !!placeholder && placeholder({alt});
+          return !!loading
+            ? loading()
+            : !!placeholder && placeholder({ imageProps, ref });
 
         case ImageState.LoadSuccess:
-          return actual({src, alt, srcSet});
+          return actual({ imageProps });
 
         case ImageState.LoadError:
           // Only render error if specified, otherwise actual (broken image)
-          return !!error ? error() : actual({src, alt, srcSet});
+          return !!error ? error() : actual({ imageProps });
       }
     }}
   </LazyImageFull>
 );
 
-LazyImage.displayName = 'LazyImage';
+LazyImage.displayName = "LazyImage";

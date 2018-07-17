@@ -1,5 +1,5 @@
-import React from 'react';
-import {renderToStaticMarkup} from 'react-dom/server';
+import React from "react";
+import { renderToStaticMarkup } from "react-dom/server";
 
 /** Display this if JS is disabled
  * @see https://github.com/facebook/react/issues/11423 for why
@@ -18,6 +18,6 @@ import {renderToStaticMarkup} from 'react-dom/server';
  * a fallback API as it did in v0.3.0.
  */
 
-export const Fallback = (fallback: React.Component<{}>) => (
+export const Fallback = (fallback: React.ReactElement<{}>) => (
   <noscript>{renderToStaticMarkup(fallback)}</noscript>
 );

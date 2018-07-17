@@ -1,19 +1,10 @@
-import React from 'react';
-import Observer, {IntersectionObserverProps} from 'react-intersection-observer';
+import React from "react";
+import Observer from "react-intersection-observer";
 
 /**
  * Valid props for LazyImage components
  */
-export interface CommonLazyImageProps {
-  /** The source of the image to load */
-  src: string;
-
-  /** The source set of the image to load */
-  srcSet?: string;
-
-  /** The alt text description of the image you are loading */
-  alt?: string;
-
+export type CommonLazyImageProps = ImageProps & {
   /** Whether to skip checking for viewport and always show the 'actual' component
    * @see https://github.com/fpapado/react-lazy-images/#eager-loading--server-side-rendering-ssr
    */
@@ -23,25 +14,42 @@ export interface CommonLazyImageProps {
    * @see https://github.com/thebuilder/react-intersection-observer#props
    */
   observerProps?: ObserverProps;
-}
+
+  /** Use the Image Decode API;
+   * The call to a new HTML <img> element’s decode() function returns a promise, which,
+   * when fulfilled, ensures that the image can be appended to the DOM without causing
+   * a decoding delay on the next frame.
+   *  @see: https://www.chromestatus.com/feature/5637156160667648
+   */
+  experimentalDecode?: boolean;
+};
 
 /** Valid props for LazyImageFull */
 export interface LazyImageFullProps extends CommonLazyImageProps {
   /** Children should be either a function or a node */
-  children?:
-    | ((args: LazyImageFullRenderPropArgs) => React.ReactNode)
-    | React.ReactNode;
-
-  /** Render prop boolean indicating inView state */
-  render?: (args: LazyImageFullRenderPropArgs) => React.ReactNode;
+  children: (args: RenderCallbackArgs) => React.ReactNode;
 }
 
 /** Values that the render props take */
-export interface LazyImageFullRenderPropArgs {
+export interface RenderCallbackArgs {
   imageState: ImageState;
-  src?: string;
+  imageProps: ImageProps;
+  /** When not loading eagerly, a ref to bind to the DOM element. This is needed for the intersection calculation to work. */
+  ref?: React.RefObject<any>;
+}
+
+export interface ImageProps {
+  /** The source of the image to load */
+  src: string;
+
+  /** The source set of the image to load */
   srcSet?: string;
+
+  /** The alt text description of the image you are loading */
   alt?: string;
+
+  /** Sizes descriptor */
+  sizes?: string;
 }
 
 /** Subset of react-intersection-observer's props */
@@ -72,10 +80,10 @@ export type LazyImageFullState = {
  * Used together with LazyImageFull render props
  * */
 export enum ImageState {
-  NotAsked = 'NotAsked',
-  Loading = 'Loading',
-  LoadSuccess = 'LoadSuccess',
-  LoadError = 'LoadError'
+  NotAsked = "NotAsked",
+  Loading = "Loading",
+  LoadSuccess = "LoadSuccess",
+  LoadError = "LoadError"
 }
 
 /**
@@ -87,43 +95,47 @@ export class LazyImageFull extends React.Component<
   LazyImageFullProps,
   LazyImageFullState
 > {
-  static displayName = 'LazyImageFull';
+  static displayName = "LazyImageFull";
 
-  constructor(props) {
+  initialState = { hasBeenInView: false, imageState: ImageState.NotAsked };
+
+  constructor(props: LazyImageFullProps) {
     super(props);
-    this.state = {hasBeenInView: false, imageState: ImageState.NotAsked};
+    this.state = this.initialState;
 
     // Bind methods
     // This would be nicer with arrow functions and class properties,
     // but holding off until they are settled.
-    this.renderInner = this.renderInner.bind(this);
-    this.renderLazy = this.renderLazy.bind(this);
     this.onInView = this.onInView.bind(this);
     this.onLoadSuccess = this.onLoadSuccess.bind(this);
     this.onLoadError = this.onLoadError.bind(this);
   }
 
   // Update functions
-  onInView(inView) {
+  onInView(inView: boolean) {
     if (inView === true) {
       // If src is not specified, then there is nothing to preload; skip to Loaded state
       if (!this.props.src) {
-        this.setState((state, props) => ({
+        this.setState((state, _props) => ({
           ...state,
           imageState: ImageState.LoadSuccess
         }));
       } else {
         // Kick off request for Image and attach listeners for response
-        this.setState((state, props) => ({
+        this.setState((state, _props) => ({
           ...state,
           imageState: ImageState.Loading
         }));
 
-        loadImage({
-          src: this.props.src,
-          srcSet: this.props.srcSet,
-          alt: this.props.alt
-        })
+        loadImage(
+          {
+            src: this.props.src,
+            srcSet: this.props.srcSet,
+            alt: this.props.alt,
+            sizes: this.props.sizes
+          },
+          this.props.experimentalDecode
+        )
           .then(this.onLoadSuccess)
           .catch(this.onLoadError);
       }
@@ -131,14 +143,14 @@ export class LazyImageFull extends React.Component<
   }
 
   onLoadSuccess() {
-    this.setState((state, props) => ({
+    this.setState((state, _props) => ({
       ...state,
       imageState: ImageState.LoadSuccess
     }));
   }
 
   onLoadError() {
-    this.setState((state, props) => ({
+    this.setState((state, _props) => ({
       ...state,
       imageState: ImageState.LoadError
     }));
@@ -146,50 +158,42 @@ export class LazyImageFull extends React.Component<
 
   // Render function
   render() {
-    if (this.props.loadEagerly) {
+    const {
+      children,
+      loadEagerly,
+      observerProps,
+      experimentalDecode,
+      ...imageProps
+    } = this.props;
+
+    if (loadEagerly) {
       // If eager, skip the observer and view changing stuff; resolve the imageState as loaded.
-      return this.renderInner(this.props, {imageState: ImageState.LoadSuccess});
+      return children({ imageState: ImageState.LoadSuccess, imageProps });
     } else {
-      return this.renderLazy(this.props, this.state);
+      return (
+        <Observer
+          rootMargin="50px 0px"
+          threshold={0.01}
+          {...observerProps}
+          onChange={this.onInView}
+          triggerOnce
+        >
+          {({ ref }) =>
+            children({ imageState: this.state.imageState, imageProps, ref })
+          }
+        </Observer>
+      );
     }
-  }
-
-  renderLazy(props, state) {
-    const {observerProps} = props;
-
-    return (
-      <Observer
-        rootMargin="50px 0px"
-        threshold={0.01}
-        {...observerProps}
-        onChange={this.onInView}
-        triggerOnce
-      >
-        {this.renderInner(props, state)}
-      </Observer>
-    );
-  }
-
-  renderInner(props, state) {
-    const {src, srcSet, alt, render, children} = props;
-    const {imageState} = state;
-
-    return (
-      <React.Fragment>
-        {typeof render === 'function'
-          ? render({src, srcSet, alt, imageState})
-          : typeof children === 'function'
-            ? children({src, srcSet, alt, imageState})
-            : null}
-      </React.Fragment>
-    );
   }
 }
 
 // Utilities
 
 /** Promise constructor for loading an image */
-const loadImage = ({src, srcSet, alt}) =>
+const loadImage = (
+  { src, srcSet, alt, sizes }: ImageProps,
+  experimentalDecode = false
+) =>
   new Promise((resolve, reject) => {
     const image = new Image();
     if (srcSet) {
@@ -198,7 +202,22 @@ const loadImage = ({src, srcSet, alt}) =>
     if (alt) {
       image.alt = alt;
     }
+    if (sizes) {
+      image.sizes = sizes;
+    }
     image.src = src;
+
+    /** @see: https://www.chromestatus.com/feature/5637156160667648 */
+    if (experimentalDecode && "decode" in image) {
+      image
+        // NOTE: .decode() is not in the TS defs yet
+        //@ts-ignore
+        .decode()
+        .then(() => resolve())
+        .catch((err: any) => reject(err));
+      return;
+    }
+
     image.onload = resolve;
     image.onerror = reject;
   });

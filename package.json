@@ -1,24 +1,23 @@
 {
   "name": "react-lazy-images",
   "description": "React utilities for lazy image loading",
-  "version": "0.9.1",
+  "version": "1.0.0-rc.2",
   "source": "src/index.tsx",
   "module": "dist/react-lazy-images.es.js",
   "main": "dist/react-lazy-images.js",
   "umd:main": "dist/react-lazy-images.umd.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "dev": "npm-run-all --parallel bundle:dev storybook",
+    "dev": "npm-run-all bundle:prod storybook",
+    "dev:ts": "tsc --watch --pretty",
     "build": "npm-run-all bundle:prod size",
-    "bundle:dev": "./microbundle/dist/cli.js watch --compress false --external all",
-    "bundle:prod": "./microbundle/dist/cli.js build --external all",
-    "bundle:storybook": "./microbundle/dist/cli.js build --compress false --external all",
-    "size": "bundlesize",
+    "bundle:prod": "microbundle build",
+    "bundle:watch": "microbundle watch",
     "storybook": "start-storybook -p 8080 -s ./stories/demo",
-    "build-storybook": "npm run bundle:storybook && build-storybook -c .storybook -s ./stories/demo -o .out",
-    "deploy-storybook": "storybook-to-ghpages --existing-output-dir=.out",
+    "storybook:build": "npm run bundle:prod && build-storybook -c .storybook -s ./stories/demo -o .out",
+    "storybook:deploy": "storybook-to-ghpages --existing-output-dir=.out",
     "test": "npm run build",
-    "prepare": "npm t",
+    "size": "bundlesize",
     "release": "npm t && git commit -am $npm_package_version && git tag $npm_package_version && git push && git push --tags && npm publish"
   },
   "bundlesize": [
@@ -27,6 +26,21 @@
       "maxSize": "3kb"
     }
   ],
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{js,ts,tsx}": [
+      "eslint",
+      "git add"
+    ],
+    "*.{js,ts,tsx,json,css,md}": [
+      "prettier --write",
+      "git add"
+    ]
+  },
   "files": [
     "src",
     "dist"
@@ -48,34 +62,42 @@
     "url": "https://github.com/fpapado/react-lazy-images/issues"
   },
   "homepage": "https://github.com/fpapado/react-lazy-images#readme",
-  "devDependencies": {
-    "@storybook/addon-actions": "4.0.0-alpha.3",
-    "@storybook/addon-info": "4.0.0-alpha.3",
-    "@storybook/addon-options": "4.0.0-alpha.3",
-    "@storybook/addons": "4.0.0-alpha.3",
-    "@storybook/react": "4.0.0-alpha.3",
-    "@storybook/storybook-deployer": "^2.3.0",
-    "@types/react": "^16.0.41",
-    "awesome-typescript-loader": "^5.0",
-    "babel-core": "^6.26.0",
-    "bundlesize": "^0.17.0",
-    "gzip-size": "^4.1.0",
-    "microbundle": "^0.4.4",
-    "npm-run-all": "^4.1.2",
-    "prettier": "^1.11.1",
-    "react": "^16.2.0",
-    "react-docgen-typescript": "^1.2.6",
-    "react-docgen-typescript-loader": "^2.0.3",
-    "react-docgen-typescript-webpack-plugin": "^1.1.0",
-    "react-dom": "^16.2.0",
-    "tachyons": "^4.9.1",
-    "typescript": "^2.7.2"
+  "dependencies": {
+    "react-intersection-observer": "^6.1.0"
   },
   "peerDependencies": {
     "react": "^15 || ^16",
     "react-dom": "^15 || ^16"
   },
-  "dependencies": {
-    "react-intersection-observer": "^3.0.3"
+  "devDependencies": {
+    "@storybook/addon-actions": "4.0.0-alpha.14",
+    "@storybook/addon-info": "4.0.0-alpha.14",
+    "@storybook/addon-options": "4.0.0-alpha.14",
+    "@storybook/addons": "4.0.0-alpha.14",
+    "@storybook/react": "4.0.0-alpha.14",
+    "@storybook/storybook-deployer": "^2.3.0",
+    "@types/react": "^16.4.6",
+    "@types/react-dom": "^16.0.6",
+    "@types/storybook__addon-actions": "^3.0.3",
+    "@types/storybook__addon-info": "^3.2.3",
+    "@types/storybook__react": "^3.0.8",
+    "awesome-typescript-loader": "^5.2",
+    "babel-core": "^6.26.3",
+    "bundlesize": "^0.17.0",
+    "eslint": "^5.1.0",
+    "eslint-plugin-jsx-a11y": "^6.1.1",
+    "husky": "^1.0.0-rc.13",
+    "lint-staged": "^7.2.0",
+    "microbundle": "^0.5.1",
+    "npm-run-all": "^4.1.3",
+    "prettier": "^1.13.7",
+    "react": "^16.4.1",
+    "react-docgen-typescript": "^1.6.2",
+    "react-docgen-typescript-loader": "^2.1.1",
+    "react-docgen-typescript-webpack-plugin": "^1.1.0",
+    "react-dom": "^16.4.1",
+    "tachyons": "^4.10.0",
+    "typescript": "^2.9.2",
+    "typescript-eslint-parser": "^16.0.1"
   }
 }

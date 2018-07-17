@@ -12,33 +12,33 @@
 
 ## Table of Contents
 
-* [Features](#features)
-* [Install](#install)
-* [Motivation](#motivation)
-* [Usage](#usage)
-* [Examples](#examples)
-* [API Reference](#api-reference)
-* [Feedback](#feedback)
-* [Roadmap](#roadmap)
-* [Contributing](#contributing)
-* [Thanks](#thanks-and-inspiration)
-* [License](#license)
+- [Features](#features)
+- [Install](#install)
+- [Motivation](#motivation)
+- [Usage](#usage)
+- [Examples](#examples)
+- [API Reference](#api-reference)
+- [Feedback](#feedback)
+- [Roadmap](#roadmap)
+- [Contributing](#contributing)
+- [Thanks](#thanks-and-inspiration)
+- [License](#license)
 
 ## Features
 
-* Composable pieces, preloading images and handling failures.
-* Full presentational control for the caller (render props).
-* Modern, performant implementation, using [IntersectionObserver](https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API) and providing [polyfill information](#polyfill-intersection-observer).
-* [Eager loading / Server-side rendering support](#eager-loading--server-side-rendering-ssr).
-* Works with horizontal scrolling, supports background images.
-* [Fallbacks for SEO / when Javascript is disabled](#fallback-without-javascript).
-* Easy to understand source code. You should be able to fork and do your thing if desired.
-* Ample documentation to help you understand the problem, in addition to the solutions.
+- Composable pieces, preloading images and handling failures.
+- Full presentational control for the caller (render props).
+- Modern, performant implementation, using [IntersectionObserver](https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API) and providing [polyfill information](#polyfill-intersection-observer).
+- [Eager loading / Server-side rendering support](#eager-loading--server-side-rendering-ssr).
+- Works with horizontal scrolling, supports background images.
+- [Fallbacks for SEO / when Javascript is disabled](#fallback-without-javascript).
+- Easy to understand source code. You should be able to fork and do your thing if desired.
+- Ample documentation to help you understand the problem, in addition to the solutions.
 
 What it does not do by itself:
 
-* Polyfill `IntersectionObserver`. Adding polyfills is something you should do consciously at the application level. See [Polyfilling IntersectionObserver](#polyfill-intersectionobserver) for how to do this.
-* Dictate the kind of placeholders displayed. There are many ways to do it; you can use a simple box with a background color, a low-resolution image, some gradient, etc.
+- Polyfill `IntersectionObserver`. Adding polyfills is something you should do consciously at the application level. See [Polyfilling IntersectionObserver](#polyfill-intersectionobserver) for how to do this.
+- Dictate the kind of placeholders displayed. There are many ways to do it; you can use a simple box with a background color, a low-resolution image, some gradient, etc.
   In other words, this library focuses on loading the images once in view and supporting **loading patterns** around that.
   The presentational patterns are yours to decide!
   Fear not though, [we cover both patterns in the examples section](#examples).
@@ -78,9 +78,9 @@ This can have adverse effects for users, especially on mobile or metered connect
 
 This brings us to the basic premise of any Lazy Image Loading library:
 
-* Have a way to observe the visibility of the DOM elements
-* Prevent the browser from loading images directly
-* Once an image is in view, instruct the browser to load it and place it in the element
+- Have a way to observe the visibility of the DOM elements
+- Prevent the browser from loading images directly
+- Once an image is in view, instruct the browser to load it and place it in the element
 
 In vanilla JS, this means "hiding" the actual `src` in a `data-src` attribute, and using classes to indicate state, e.g. `.isLazyLoaded .lazyLoad`.
 On initialisation, a script queries for these classes and attributes, keeps track of visibily, and swaps `data-src` with an actual `src`, kicking off the browser request process.
@@ -107,12 +107,14 @@ import { LazyImage } from "react-lazy-images";
 <LazyImage
   src="/img/porto_buildings_large.jpg"
   alt="Buildings with tiled exteriors, lit by the sunset."
-  placeholder={({ alt }) => (
-    <img src="/img/porto_buildings_lowres.jpg" alt={alt} />
+  placeholder={({ imageProps, ref }) => (
+    <img ref={ref} src="/img/porto_buildings_lowres.jpg" alt={imageProps.alt} />
   )}
-  actual={({ src, alt, srcSet }) => <img src={src} alt={alt} />}
+  actual={({ imageProps }) => <img {...imageProps} />}
 />;
 ```
+
+:warning: It is important that you pass on the ref in placeholder, otherwise the detection of the element intersecting is impossible. :warning:
 
 Note that while you can set the rendered components to be anything you want, you most likely want to use the same `src`, `srcSet` and `alt` attributes in an `<img>` eventually.
 To keep this consistent, and reduce repetition, the render callbacks pass those attributes back to you.
@@ -123,9 +125,9 @@ Additionally, make sure you understand [how to polyfill IntersectionObserver](#p
 
 From then on:
 
-* If you want to learn more about the API and the problem space, read the rest of this section.
-* If you need more fine-grained rendering, [read about `LazyImageFull`](#more-control-with-lazyimagefull).
-* If you want to list the props, see the [API reference](#api-reference).
+- If you want to learn more about the API and the problem space, read the rest of this section.
+- If you need more fine-grained rendering, [read about `LazyImageFull`](#more-control-with-lazyimagefull).
+- If you want to list the props, see the [API reference](#api-reference).
 
 ### Customising what is displayed
 
@@ -137,16 +139,15 @@ Thus, whether you want to display a simple `<img>`, your own `<Image>`, or even 
 <LazyImage
   src="/img/porto_buildings_large.jpg"
   alt="Buildings with tiled exteriors, lit by the sunset."
-
   // This is rendered first, notice how the src is different
   placeholder={
-    ({alt}) =>
-      <img src="/img/porto_buildings_lowres.jpg" alt={alt} />
+    ({imageProps, ref}) =>
+      <img ref={ref} src="/img/porto_buildings_lowres.jpg" alt={imageProps.alt} />
   }
   // This is rendered once in view; we use the src and alt above for consistency
   actual={
-    ({src, alt}) =>
-      <img src={src} alt={alt} />
+    ({imageProps}) =>
+      <img {...imageProps} />
   }
 />
 
@@ -155,15 +156,15 @@ Thus, whether you want to display a simple `<img>`, your own `<Image>`, or even 
   src="/img/porto_buildings_large.jpg"
   alt="Buildings with tiled exteriors, lit by the sunset."
   placeholder={
-    ({alt}) =>
-      <div className={'LazyImage-Placeholder'}">
-        <img src="/img/porto_buildings_lowres.jpg" alt={alt} />
+    ({imageProps, ref}) =>
+      <div ref={ref} className={'LazyImage-Placeholder'}>
+        <img src="/img/porto_buildings_lowres.jpg" alt={imageProps.alt} />
       </div>
   }
   actual={
-    ({src, alt}) =>
+    ({imageProps}) =>
       <div className={'LazyImage-Actual'}>
-        <img src={src} alt={alt} />
+        <img {...imageProps} />
       </div>
   }
 />
@@ -178,36 +179,28 @@ One use case would be doing animations with CSS transitions, where re-rendering 
 In those cases, consider `LazyImageFull`:
 
 ```jsx
-import {LazyImageFull, ImageState} from 'react-lazy-images';
+import { LazyImageFull, ImageState } from "react-lazy-images";
 
 // Function as child
 // `src`, `alt` and `srcSet` are passed back to the render callback for convenience/consistency
-<LazyImageFull src='/img/porto_buildings_large.jpg'>
-  {({src, alt, srcSet, imageState}) =>
+<LazyImageFull src="/img/porto_buildings_large.jpg">
+  {({ imageProps, imageState, ref }) => (
     <img
-      src={imageState === ImageState.LoadSuccess ? src : '/img/porto_buildings_lowres.jpg'}
-      alt={alt}
-      style={{opacity: ImageState.LoadSuccess ? '1' : '0.5'}}
+      {...imageProps}
+      ref={ref}
+      src={
+        imageState === ImageState.LoadSuccess
+          ? imageProps.src
+          : "/img/porto_buildings_lowres.jpg"
+      }
+      style={{ opacity: ImageState.LoadSuccess ? "1" : "0.5" }}
     />
-  }
-</LazyImageFull>
-
-// render prop
-<LazyImageFull
-  src='/img/porto_buildings_large.jpg'
-  render={({src, alt, srcSet, imageState}) =>
-    <img
-      src={imageState === ImageState.LoadSuccess ? src : '/img/porto_buildings_lowres.jpg'}
-      alt={alt}
-      style={{opacity: ImageState.LoadSuccess ? '1' : '0.5'}}
-    />
-  }
-/>
+  )}
+</LazyImageFull>;
 ```
 
 This component takes a function as a child, which accepts `{src, srcSet, imageState}`.
 The various image states are imported as `{ImageState}`, and you can conditionally render based on them.
-You can also pass this function as a `render` prop.
 
 This technique can give you more fine-grained rendering if needed, but can potentially be more verbose.
 Any of the presentational patterns presented that are possible with `LazyImage` are also possible with `LazyImageFull`.
@@ -230,15 +223,15 @@ This behaviour is provided with the `src` prop:
   src="/img/porto_buildings_large.jpg"
   alt="Buildings with tiled exteriors, lit by the sunset."
   placeholder={
-    ({alt}) =>
-      <div className={`LazyImage-Placeholder`}">
-        <img src="/img/porto_buildings_lowres.jpg" alt={alt} />
+    ({imageProps, ref}) =>
+      <div ref={ref} className={`LazyImage-Placeholder`}">
+        <img src="/img/porto_buildings_lowres.jpg" alt={imageProps.alt} />
       </div>
   }
   actual={
-    ({src, alt}) =>
+    ({imageProps}) =>
       <div className={`LazyImage-Actual`}>
-        <img src={src} alt={alt} />
+        <img {...imageProps} />
       </div>
   }
 />
@@ -255,7 +248,8 @@ You can choose what to display on Loading and Error using the render props `load
   <LazyImage
     src="/image/brokenimagenotherewhoops.jpg"
     alt="Buildings with tiled exteriors, lit by the sunset."
-    actual={({ src, alt }) => <img src={src} alt={alt} />}
+    actual={({ imageProps }) => <img {...imageProps} />}
+    placeholder={({ ref }) => <div ref={ref} />}
     loading={() => (
       <div>
         <p className="pa3 f5 lh-copy near-white">Loading...</p>
@@ -286,10 +280,10 @@ This behaviour is available by using a `loadEagerly` prop:
   loadEagerly
   src="/img/porto_buildings_large.jpg"
   alt="Buildings with tiled exteriors, lit by the sunset."
-  placeholder={({ alt }) => (
-    <img src="/img/porto_buildings_lowres.jpg" alt={alt} />
+  placeholder={({ imageProps, ref }) => (
+    <img ref={ref} src="/img/porto_buildings_lowres.jpg" alt={imageProps.alt} />
   )}
-  actual={({ src, alt }) => <img src={src} alt={alt} />}
+  actual={({ imageProps }) => <img {...imageProps} />}
 />
 ```
 
@@ -416,29 +410,32 @@ The presentation can be derived from those plus, crucially, any specific needs y
 
 **`<LazyImage />`** accepts the following props:
 
-| Name              | Type                                                                       | Default                                   | Required | Description                                                                                           |
-| ----------------- | -------------------------------------------------------------------------- | ----------------------------------------- | -------- | ----------------------------------------------------------------------------------------------------- |
-| **src**           | String                                                                     |                                           | true     | The source of the image to load                                                                       |
-| **alt**           | String                                                                     |                                           | false    | The alt text description of the image you are loading                                                 |
-| **srcSet**        | String                                                                     |                                           | false    | If your images use srcset, you can pass the `srcSet` prop to provide that information for preloading. |
-| **actual**        | Function (render callback) of type ({src, alt, srcSet}) => React.ReactNode |                                           | true     | Component to display once image has loaded                                                            |
-| **placeholder**   | Function (render callback) of type ({alt}) => React.ReactNode              | undefined                                 | false    | Component to display while no request for the actual image has been made                              |
-| **loading**       | Function (render callback) of type () => React.ReactNode                   | placeholder                               | false    | Component to display while the image is loading                                                       |
-| **error**         | Function (render callback) of type () => React.ReactNode                   | actual (broken image)                     | false    | Component to display if the image loading has failed (render prop)                                    |
-| **loadEagerly**   | Boolean                                                                    | false                                     | false    | Whether to skip checking for viewport and always show the 'actual' component                          |
-| **observerProps** | {threshold: number, rootMargin: string}                                    | {threshold: 0.01, rootMargin: "50px 0px"} | false    | Subset of props for the IntersectionObserver                                                          |
+| Name                   | Type                                                                      | Default                                   | Required | Description                                                                                           |
+| ---------------------- | ------------------------------------------------------------------------- | ----------------------------------------- | -------- | ----------------------------------------------------------------------------------------------------- |
+| **src**                | String                                                                    |                                           | true     | The source of the image to load                                                                       |
+| **alt**                | String                                                                    |                                           | false    | The alt text description of the image you are loading                                                 |
+| **srcSet**             | String                                                                    |                                           | false    | If your images use srcset, you can pass the `srcSet` prop to provide that information for preloading. |
+| **sizes**              | String                                                                    |                                           | false    | If your images use srcset, the sizes attribute helps the browser decide which source to load.         |
+| **actual**             | Function (render callback) of type ({imageProps}) => React.ReactNode      |                                           | true     | Component to display once image has loaded                                                            |
+| **placeholder**        | Function (render callback) of type ({imageProps, ref}) => React.ReactNode | undefined                                 | true     | Component to display while no request for the actual image has been made                              |
+| **loading**            | Function (render callback) of type () => React.ReactNode                  | placeholder                               | false    | Component to display while the image is loading                                                       |
+| **error**              | Function (render callback) of type () => React.ReactNode                  | actual (broken image)                     | false    | Component to display if the image loading has failed (render prop)                                    |
+| **loadEagerly**        | Boolean                                                                   | false                                     | false    | Whether to skip checking for viewport and always show the 'actual' component                          |
+| **observerProps**      | {threshold: number, rootMargin: string}                                   | {threshold: 0.01, rootMargin: "50px 0px"} | false    | Subset of props for the IntersectionObserver                                                          |
+| **experimentalDecode** | Boolean                                                                   | false                                     | false    | Decode the image off-main-thread using the Image Decode API. Test before using!                       |
 
 **`<LazyImageFull />`** accepts the following props:
 
-| Name              | Type                                                                 | Default                                   | Required             | Description                                                                                           |
-| ----------------- | -------------------------------------------------------------------- | ----------------------------------------- | -------------------- | ----------------------------------------------------------------------------------------------------- |
-| **src**           | String                                                               |                                           | true                 | The source of the image to load                                                                       |
-| **alt**           | String                                                               |                                           | false                | The alt text description of the image you are loading                                                 |
-| **srcSet**        | String                                                               |                                           | false                | If your images use srcset, you can pass the `srcSet` prop to provide that information for preloading. |
-| **loadEagerly**   | Boolean                                                              | false                                     | false                | Whether to skip checking for viewport and always show the 'actual' component                          |
-| **observerProps** | {threshold: number, rootMargin: string}                              | {threshold: 0.01, rootMargin: "50px 0px"} | false                | Subset of props for the IntersectionObserver                                                          |
-| **render**        | Function of type ({src, alt, srcSet, imageState}) => React.ReactNode |                                           | true (or `children`) | Function to call that renders based on the props and state provided to it by LazyImageFull            |
-| **children**      | Function of type ({src, alt, srcSet, imageState}) => React.ReactNode |                                           | true (or `render`)   | Function to call that renders based on the props and state provided to it by LazyImageFull            |
+| Name                   | Type                                                                | Default                                   | Required | Description                                                                                           |
+| ---------------------- | ------------------------------------------------------------------- | ----------------------------------------- | -------- | ----------------------------------------------------------------------------------------------------- |
+| **src**                | String                                                              |                                           | true     | The source of the image to load                                                                       |
+| **alt**                | String                                                              |                                           | false    | The alt text description of the image you are loading                                                 |
+| **srcSet**             | String                                                              |                                           | false    | If your images use srcset, you can pass the `srcSet` prop to provide that information for preloading. |
+| **sizes**              | String                                                              |                                           | false    | If your images use srcset, the sizes attribute helps the browser decide which source to load.         |
+| **loadEagerly**        | Boolean                                                             | false                                     | false    | Whether to skip checking for viewport and always show the 'actual' component                          |
+| **observerProps**      | {threshold: number, rootMargin: string}                             | {threshold: 0.01, rootMargin: "50px 0px"} | false    | Subset of props for the IntersectionObserver                                                          |
+| **children**           | Function of type ({imageProps, imageState, ref}) => React.ReactNode |                                           | true     | Function to call that renders based on the props and state provided to it by LazyImageFull            |
+| **experimentalDecode** | Boolean                                                             | false                                     | false    | Decode the image off-main-thread using the Image Decode API. Test before using!                       |
 
 [You can consult Typescript types in the code](./src/LazyImage.tsx) for more context.
 
@@ -458,16 +455,16 @@ I would love to have contributions on this! Are there more patterns that we can 
 
 Here are some resources whose ideas resonate with me and have informed this library.
 
-* Jeremy Wagner's writing on [Lazy Loading Images and Video](https://developers.google.com/web/fundamentals/performance/lazy-loading-guidance/images-and-video/) is a good reference for the problem and solutions space.
+- Jeremy Wagner's writing on [Lazy Loading Images and Video](https://developers.google.com/web/fundamentals/performance/lazy-loading-guidance/images-and-video/) is a good reference for the problem and solutions space.
 
-* The library backing this one, [react-intersection-observer](https://github.com/thebuilder/react-intersection-observer).
+- The library backing this one, [react-intersection-observer](https://github.com/thebuilder/react-intersection-observer).
   Further thanks for demonstrating Storybook as documentation for lazy-loading.
 
-* [José M. Pérez has a good resource on lazy loading](https://jmperezperez.com/high-performance-lazy-loading/)
+- [José M. Pérez has a good resource on lazy loading](https://jmperezperez.com/high-performance-lazy-loading/)
 
-* [Paul Lewis' implementation of lazy image loading](https://github.com/GoogleChromeLabs/sample-media-pwa/blob/master/src/client/scripts/helpers/lazy-load-images.js) has the concept of pre-loading images before swapping.
+- [Paul Lewis' implementation of lazy image loading](https://github.com/GoogleChromeLabs/sample-media-pwa/blob/master/src/client/scripts/helpers/lazy-load-images.js) has the concept of pre-loading images before swapping.
 
-* [Dave Rupert has a good guide on intrinsic image placeholders](https://daverupert.com/2015/12/intrinsic-placeholders-with-picture/)
+- [Dave Rupert has a good guide on intrinsic image placeholders](https://daverupert.com/2015/12/intrinsic-placeholders-with-picture/)
 
 ## License
 
