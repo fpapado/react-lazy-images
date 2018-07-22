@@ -3,7 +3,9 @@ import { storiesOf } from "@storybook/react";
 import { action } from "@storybook/addon-actions";
 import { withInfo } from "@storybook/addon-info";
 import { LazyImage } from "../src/index";
-import { Container } from "./utils";
+import { Container, Divider } from "./utils";
+import { LazyImageOpinionated } from "./OpinionatedComponents";
+import "./styles.css";
 
 // Helpers to save typing. You can imagine that in
 // some cases, you too will have more specific components.
@@ -22,6 +24,11 @@ const ActualImage = () => (
     className="w-100"
   />
 );
+
+// Utils for scrolling
+const scrollToRef = (ref: React.RefObject<any>) =>
+  ref.current.scrollIntoView({ behavior: "smooth" });
+const endRef: React.RefObject<any> = React.createRef();
 
 // Component that preloads the image and only swaps once ready
 //@ts-ignore
@@ -257,6 +264,50 @@ stories
             )}
           />
         </Container>
+      );
+    })
+  )
+  .add(
+    "Delayed loading",
+    withInfo("TODO")(() => {
+      return (
+        <div className="mw6">
+          <Divider>
+            <h1>react-lazy-images Debounce test</h1>
+            <p>NOTE: not yet implemented</p>
+            <p>
+              The desired behaviour is to not to start loading the images before
+              them being in the viewport for X amount of time. Press the button
+              to scroll alll the way to the end of the page. Only the final
+              image should be loaded.
+            </p>
+            <p>
+              Open your devTools network monitor and check the "Img" tab. Only
+              the last image should load.
+            </p>
+            <p>
+              (Note that smooth scrolling should be working in your browser for
+              the test to be realistic. If not, you can scroll manually. Instant
+              scrolling does not trigger the IntersectionObserver afaict).
+            </p>
+            <button onClick={() => scrollToRef(endRef)}>
+              Click here to scroll to the end
+            </button>
+          </Divider>
+
+          <LazyImageOpinionated
+            src="https://endangered.photo/1200/800 "
+            alt=""
+          />
+
+          <Divider />
+
+          <h2 ref={endRef}>Only things below here should be loaded</h2>
+          <LazyImageOpinionated
+            src="https://endangered.photo/300/200 "
+            alt=""
+          />
+        </div>
       );
     })
   );

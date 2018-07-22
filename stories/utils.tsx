@@ -15,3 +15,7 @@ export const Container: React.SFC<{}> = ({ children }) => (
     <div className="mw6">{children}</div>
   </div>
 );
+
+export const Divider: React.SFC<{}> = ({ children }) => (
+  <div style={{ minHeight: "calc(100vh + 100px)" }}>{children}</div>
+);
