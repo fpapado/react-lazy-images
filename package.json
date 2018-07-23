@@ -63,7 +63,8 @@
   },
   "homepage": "https://github.com/fpapado/react-lazy-images#readme",
   "dependencies": {
-    "react-intersection-observer": "^6.1.0"
+    "react-intersection-observer": "^6.1.0",
+    "unionize": "^2.1.2"
   },
   "peerDependencies": {
     "react": "^15 || ^16",

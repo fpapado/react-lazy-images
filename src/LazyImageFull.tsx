@@ -1,5 +1,6 @@
 import React from "react";
 import Observer from "react-intersection-observer";
+import { unionize, ofType, UnionOf } from "unionize";
 
 /**
  * Valid props for LazyImage components
@@ -70,21 +71,41 @@ export interface ObserverProps {
   threshold?: number;
 }
 
-/** The component's state */
-export type LazyImageFullState = {
-  hasBeenInView: boolean;
-  imageState: ImageState;
-};
-
 /** States that the image loading can be in.
  * Used together with LazyImageFull render props
+ * External representation of the internal state
  * */
 export enum ImageState {
   NotAsked = "NotAsked",
+  Buffering = "Buffering",
   Loading = "Loading",
   LoadSuccess = "LoadSuccess",
   LoadError = "LoadError"
 }
+
+/** The component's state */
+const LazyImageFullState = unionize({
+  NotAsked: {},
+  Buffering: ofType<Promise<{}>>(),
+  // Could try to make it Promise<HTMLImageElement>, but we don't use the element anyway
+  Loading: ofType<Promise<{}>>(),
+  LoadSuccess: {},
+  // LoadSuccessPreload: ofType<HTMLImageElement>(),
+  // LoadSuccessNoPreload: {},
+  LoadError: ofType<{ msg: string }>()
+});
+
+type LazyImageFullState = UnionOf<typeof LazyImageFullState>;
+
+const Action = unionize({
+  ViewChanged: ofType<{ inView: boolean }>(),
+  BufferingSuccess: {},
+  // MAYBE? Load: {},
+  LoadSuccess: {},
+  LoadError: ofType<{ msg: string }>()
+});
+
+type Action = UnionOf<typeof Action>;
 
 /**
  * Component that preloads the image once it is in the viewport,
@@ -97,7 +118,7 @@ export class LazyImageFull extends React.Component<
 > {
   static displayName = "LazyImageFull";
 
-  initialState = { hasBeenInView: false, imageState: ImageState.NotAsked };
+  initialState = LazyImageFullState.NotAsked();
 
   constructor(props: LazyImageFullProps) {
     super(props);
@@ -106,54 +127,78 @@ export class LazyImageFull extends React.Component<
     // Bind methods
     // This would be nicer with arrow functions and class properties,
     // but holding off until they are settled.
-    this.onInView = this.onInView.bind(this);
-    this.onLoadSuccess = this.onLoadSuccess.bind(this);
-    this.onLoadError = this.onLoadError.bind(this);
+    this.reducer = update.bind(this);
+    this.update = this.update.bind(this);
+    this.reducer = this.reducer.bind(this);
   }
 
-  // Update functions
-  onInView(inView: boolean) {
-    if (inView === true) {
-      // If src is not specified, then there is nothing to preload; skip to Loaded state
-      if (!this.props.src) {
-        this.setState((state, _props) => ({
-          ...state,
-          imageState: ImageState.LoadSuccess
-        }));
-      } else {
-        // Kick off request for Image and attach listeners for response
-        this.setState((state, _props) => ({
-          ...state,
-          imageState: ImageState.Loading
-        }));
-
-        loadImage(
-          {
-            src: this.props.src,
-            srcSet: this.props.srcSet,
-            alt: this.props.alt,
-            sizes: this.props.sizes
-          },
-          this.props.experimentalDecode
-        )
-          .then(this.onLoadSuccess)
-          .catch(this.onLoadError);
-      }
-    }
+  update(action: Action) {
+    this.setState(this.reducer(action));
   }
 
-  onLoadSuccess() {
-    this.setState((state, _props) => ({
-      ...state,
-      imageState: ImageState.LoadSuccess
-    }));
-  }
+  // Emit the next state based on actions
+  reducer(action: Action) {
+    return function(
+      prevState: LazyImageFullState,
+      props: LazyImageFullProps
+    ): LazyImageFullState {
+      return Action.match(action, {
+        ViewChanged: ({ inView }) => {
+          if (inView === true) {
+            // If src is not specified, then there is nothing to preload; skip to Loaded state
+            if (!props.src) {
+              return LazyImageFullState.LoadSuccess(); // Error wtf
+            } else {
+              // If in view, start Buffering if NotAsked, otherwise leave untouched
+              LazyImageFullState.match(prevState, {
+                NotAsked: () => {
+                  const bufferingPromise = Promise.resolve({})
+                    .then(this.update(Action.BufferingSuccess()))
+                    .catch(
+                      this.update(
+                        Action.LoadError({ msg: "Buffering failed somehow" })
+                      )
+                    ); // TODO: think more about this
 
-  onLoadError() {
-    this.setState((state, _props) => ({
-      ...state,
-      imageState: ImageState.LoadError
-    }));
+                  return LazyImageFullState.Buffering(bufferingPromise);
+                },
+                default: prevState
+              });
+            }
+          } else {
+            // If out of view, cancel the Buffering, otherwise leave untouched
+            LazyImageFullState.match(prevState, {
+              Buffering: bufferingPromise => {
+                // TODO: cancel promise with the token
+                cancelPromise(bufferingPromise);
+                return LazyImageFullState.NotAsked();
+              },
+              default: prevState
+            });
+          }
+        },
+        BufferingSuccess: () => {
+          const { src, srcSet, alt, sizes, experimentalDecode } = props;
+          // Buffering has ended/succeeded, kick off request for image
+          // Kick off request for Image and attach listeners for response
+          const loadingPromise = loadImage(
+            {
+              src,
+              srcSet,
+              alt,
+              sizes
+            },
+            experimentalDecode
+          )
+            .then(this.update(Action.LoadSuccess({})))
+            .catch(this.update(Action.LoadError({ msg: "Failed to load" }))); // TODO: think more about this
+
+          return LazyImageFullState.Loading(loadingPromise);
+        },
+        LoadSuccess: () => LazyImageFullState.LoadSuccess(),
+        LoadError: e => LazyImageFullState.LoadError(e)
+      });
+    };
   }
 
   // Render function
@@ -168,18 +213,25 @@ export class LazyImageFull extends React.Component<
 
     if (loadEagerly) {
       // If eager, skip the observer and view changing stuff; resolve the imageState as loaded.
-      return children({ imageState: ImageState.LoadSuccess, imageProps });
+      return children({
+        imageState: LazyImageFullState.LoadSuccess().tag as ImageState,
+        imageProps
+      });
     } else {
       return (
         <Observer
           rootMargin="50px 0px"
+          // TODO: reconsider threshold
           threshold={0.01}
           {...observerProps}
-          onChange={this.onInView}
-          triggerOnce
+          onChange={inView => this.update(Action.ViewChanged({ inView }))}
         >
           {({ ref }) =>
-            children({ imageState: this.state.imageState, imageProps, ref })
+            children({
+              imageState: this.state.tag as ImageState,
+              imageProps,
+              ref
+            })
           }
         </Observer>
       );
@@ -208,15 +260,14 @@ const loadImage = (
     image.src = src;
 
     /** @see: https://www.chromestatus.com/feature/5637156160667648 */
-    if (experimentalDecode && "decode" in image) {
-      image
-        // NOTE: .decode() is not in the TS defs yet
-        //@ts-ignore
-        .decode()
-        .then(() => resolve())
-        .catch((err: any) => reject(err));
-      return;
-    }
+    // if (experimentalDecode && "decode" in image) {
+    //   return image
+    //     // NOTE: .decode() is not in the TS defs yet
+    //     //@ts-ignore
+    //     .decode()
+    //     .then((image: HTMLImageElement) => resolve(image))
+    //     .catch((err: any) => reject(err));
+    // }
 
     image.onload = resolve;
     image.onerror = reject;
