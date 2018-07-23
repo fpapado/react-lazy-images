@@ -86,9 +86,9 @@ export enum ImageState {
 /** The component's state */
 const LazyImageFullState = unionize({
   NotAsked: {},
-  Buffering: ofType<Promise<{}>>(),
+  Buffering: ofType<CancelablePromise>(),
   // Could try to make it Promise<HTMLImageElement>, but we don't use the element anyway
-  Loading: ofType<Promise<{}>>(),
+  Loading: ofType<Promise<void>>(),
   LoadSuccess: {},
   // LoadSuccessPreload: ofType<HTMLImageElement>(),
   // LoadSuccessNoPreload: {},
@@ -127,78 +127,81 @@ export class LazyImageFull extends React.Component<
     // Bind methods
     // This would be nicer with arrow functions and class properties,
     // but holding off until they are settled.
-    this.reducer = update.bind(this);
     this.update = this.update.bind(this);
     this.reducer = this.reducer.bind(this);
   }
 
   update(action: Action) {
-    this.setState(this.reducer(action));
+    this.setState((prevState: LazyImageFullState, props) =>
+      this.reducer(action, prevState, props)
+    );
   }
 
   // Emit the next state based on actions
-  reducer(action: Action) {
-    return function(
-      prevState: LazyImageFullState,
-      props: LazyImageFullProps
-    ): LazyImageFullState {
-      return Action.match(action, {
-        ViewChanged: ({ inView }) => {
-          if (inView === true) {
-            // If src is not specified, then there is nothing to preload; skip to Loaded state
-            if (!props.src) {
-              return LazyImageFullState.LoadSuccess(); // Error wtf
-            } else {
-              // If in view, start Buffering if NotAsked, otherwise leave untouched
-              LazyImageFullState.match(prevState, {
-                NotAsked: () => {
-                  const bufferingPromise = Promise.resolve({})
-                    .then(this.update(Action.BufferingSuccess()))
-                    .catch(
-                      this.update(
-                        Action.LoadError({ msg: "Buffering failed somehow" })
-                      )
-                    ); // TODO: think more about this
-
-                  return LazyImageFullState.Buffering(bufferingPromise);
-                },
-                default: prevState
-              });
-            }
+  reducer(
+    action: Action,
+    prevState: LazyImageFullState,
+    props: LazyImageFullProps
+  ) {
+    return Action.match(action, {
+      ViewChanged: ({ inView }) => {
+        if (inView === true) {
+          // If src is not specified, then there is nothing to preload; skip to Loaded state
+          if (!props.src) {
+            return LazyImageFullState.LoadSuccess(); // Error wtf
           } else {
-            // If out of view, cancel the Buffering, otherwise leave untouched
+            // If in view, start Buffering if NotAsked, otherwise leave untouched
             LazyImageFullState.match(prevState, {
-              Buffering: bufferingPromise => {
-                // TODO: cancel promise with the token
-                cancelPromise(bufferingPromise);
-                return LazyImageFullState.NotAsked();
+              NotAsked: () => {
+                // Make cancelable buffering Promise
+                const bufferingPromise = makeCancelable(delayedPromise(1000));
+
+                // Kick off promise chain
+                bufferingPromise.promise
+                  .then(() => this.update(Action.BufferingSuccess()))
+                  .catch(reason =>
+                    console.log("isCancelled", reason.isCancelled)
+                  ); // TODO: think more about this
+
+                return LazyImageFullState.Buffering(bufferingPromise);
               },
-              default: prevState
+              default: () => prevState
             });
           }
-        },
-        BufferingSuccess: () => {
-          const { src, srcSet, alt, sizes, experimentalDecode } = props;
-          // Buffering has ended/succeeded, kick off request for image
-          // Kick off request for Image and attach listeners for response
-          const loadingPromise = loadImage(
-            {
-              src,
-              srcSet,
-              alt,
-              sizes
+        } else {
+          // If out of view, cancel the Buffering, otherwise leave untouched
+          LazyImageFullState.match(prevState, {
+            Buffering: bufferingPromise => {
+              bufferingPromise.cancel();
+              return LazyImageFullState.NotAsked();
             },
-            experimentalDecode
-          )
-            .then(this.update(Action.LoadSuccess({})))
-            .catch(this.update(Action.LoadError({ msg: "Failed to load" }))); // TODO: think more about this
+            default: () => prevState
+          });
+        }
+      },
+      BufferingSuccess: () => {
+        const { src, srcSet, alt, sizes, experimentalDecode } = props;
+        // Buffering has ended/succeeded, kick off request for image
+        // Kick off request for Image and attach listeners for response
+        const loadingPromise = loadImage(
+          {
+            src,
+            srcSet,
+            alt,
+            sizes
+          },
+          experimentalDecode
+        )
+          .then(_res => this.update(Action.LoadSuccess({})))
+          .catch(_e =>
+            this.update(Action.LoadError({ msg: "Failed to load" }))
+          ); // TODO: think more about this
 
-          return LazyImageFullState.Loading(loadingPromise);
-        },
-        LoadSuccess: () => LazyImageFullState.LoadSuccess(),
-        LoadError: e => LazyImageFullState.LoadError(e)
-      });
-    };
+        return LazyImageFullState.Loading(loadingPromise);
+      },
+      LoadSuccess: () => LazyImageFullState.LoadSuccess(),
+      LoadError: e => LazyImageFullState.LoadError(e)
+    });
   }
 
   // Render function
@@ -272,3 +275,33 @@ const loadImage = (
     image.onload = resolve;
     image.onerror = reject;
   });
+
+/** Promise that resolves after a specified number of ms */
+const delayedPromise = (ms: number) =>
+  new Promise(resolve => setTimeout(resolve, ms));
+
+interface CancelablePromise {
+  promise: Promise<{}>;
+  cancel: () => void;
+}
+
+const makeCancelable = (promise: Promise<any>): CancelablePromise => {
+  let hasCanceled_ = false;
+
+  const wrappedPromise = new Promise((resolve, reject) => {
+    promise.then(
+      (val: any) => (hasCanceled_ ? reject({ isCanceled: true }) : resolve(val))
+    );
+    promise.catch(
+      (error: any) =>
+        hasCanceled_ ? reject({ isCanceled: true }) : reject(error)
+    );
+  });
+
+  return {
+    promise: wrappedPromise,
+    cancel() {
+      hasCanceled_ = true;
+    }
+  };
+};
