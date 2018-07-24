@@ -21,7 +21,7 @@ export const LazyImageOpinionated: React.SFC<IOpinionated> = ({ src, alt }) => (
     <LazyImage
       src={src}
       alt={alt}
-      placeholder={({ ref }) => <div ref={ref} />}
+      placeholder={({ ref }) => <div ref={ref} className="intrinsic-item" />}
       actual={({ imageProps }) => (
         <img {...imageProps} className="intrinsic-item animated fadeIn" />
       )}
@@ -42,7 +42,7 @@ export const LazyImageHoCWithPlaceholderSrc: React.SFC<
     <LazyImage
       src={src}
       alt={alt}
-      placeholder={({ ref }) => <div ref={ref} />}
+      placeholder={({ ref }) => <div ref={ref} className="intrinsic-item" />}
       actual={({ imageProps }) => (
         <img {...imageProps} className="intrinsic-item animated fadeIn" />
       )}
