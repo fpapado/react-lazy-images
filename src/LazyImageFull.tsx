@@ -298,6 +298,7 @@ export class LazyImageFull extends React.Component<
       loadEagerly,
       observerProps,
       experimentalDecode,
+      debounceDurationMs,
       ...imageProps
     } = this.props;
 
