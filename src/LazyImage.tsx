@@ -72,6 +72,11 @@ export const LazyImage: React.StatelessComponent<LazyImageProps> = ({
         case ImageState.LoadError:
           // Only render error if specified, otherwise actual (broken image)
           return !!error ? error() : actual({ imageProps });
+
+        case ImageState.Buffering:
+          return !!loading
+            ? loading()
+            : !!placeholder && placeholder({ imageProps, ref });
       }
     }}
   </LazyImageFull>

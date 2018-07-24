@@ -86,9 +86,9 @@ export enum ImageState {
 /** The component's state */
 const LazyImageFullState = unionize({
   NotAsked: {},
-  Buffering: ofType<CancelablePromise>(),
+  Buffering: {},
   // Could try to make it Promise<HTMLImageElement>, but we don't use the element anyway
-  Loading: ofType<Promise<void>>(),
+  Loading: {},
   LoadSuccess: {},
   // LoadSuccessPreload: ofType<HTMLImageElement>(),
   // LoadSuccessNoPreload: {},
@@ -118,6 +118,16 @@ export class LazyImageFull extends React.Component<
 > {
   static displayName = "LazyImageFull";
 
+  // A central place to store promises.
+  // A bit silly, but passing promsises directly in the state
+  // was giving me weird timing issues. This way we can keep
+  // the promises in check, and pick them up from the respective methods.
+  // FUTURE: Could pass the relevant key in Buffering and Loading, so
+  // that at least we know where they are.
+  promiseCache: {
+    [key: string]: CancelablePromise | Promise<void>;
+  } = {};
+
   initialState = LazyImageFullState.NotAsked();
 
   constructor(props: LazyImageFullProps) {
@@ -132,9 +142,14 @@ export class LazyImageFull extends React.Component<
   }
 
   update(action: Action) {
-    this.setState((prevState: LazyImageFullState, props) =>
-      this.reducer(action, prevState, props)
-    );
+    console.log("Setting state");
+    this.setState((prevState: LazyImageFullState, props) => {
+      const nextState = this.reducer(action, prevState, props);
+
+      console.log(JSON.stringify({ action, prevState, nextState }));
+
+      return nextState;
+    });
   }
 
   // Emit the next state based on actions
@@ -142,7 +157,7 @@ export class LazyImageFull extends React.Component<
     action: Action,
     prevState: LazyImageFullState,
     props: LazyImageFullProps
-  ) {
+  ): LazyImageFullState {
     return Action.match(action, {
       ViewChanged: ({ inView }) => {
         if (inView === true) {
@@ -151,37 +166,41 @@ export class LazyImageFull extends React.Component<
             return LazyImageFullState.LoadSuccess(); // Error wtf
           } else {
             // If in view, start Buffering if NotAsked, otherwise leave untouched
-            LazyImageFullState.match(prevState, {
+            return LazyImageFullState.match(prevState, {
               NotAsked: () => {
                 // Make cancelable buffering Promise
-                const bufferingPromise = makeCancelable(delayedPromise(1000));
+                const bufferingPromise = makeCancelable(delayedPromise(2000));
 
                 // Kick off promise chain
                 bufferingPromise.promise
                   .then(() => this.update(Action.BufferingSuccess()))
-                  .catch(reason =>
-                    console.log("isCancelled", reason.isCancelled)
-                  ); // TODO: think more about this
+                  .catch(
+                    _reason => {}
+                    //console.log({ isCanceled: _reason.isCanceled })
+                  );
 
-                return LazyImageFullState.Buffering(bufferingPromise);
+                this.promiseCache["buffering"] = bufferingPromise;
+
+                return LazyImageFullState.Buffering();
               },
               default: () => prevState
             });
           }
         } else {
           // If out of view, cancel the Buffering, otherwise leave untouched
-          LazyImageFullState.match(prevState, {
-            Buffering: bufferingPromise => {
-              bufferingPromise.cancel();
+          return LazyImageFullState.match(prevState, {
+            Buffering: () => {
+              // We know this exists if we are in a Buffering state
+              (this.promiseCache["buffering"] as CancelablePromise).cancel();
               return LazyImageFullState.NotAsked();
             },
             default: () => prevState
           });
         }
       },
+      // Buffering has ended/succeeded, kick off request for image
       BufferingSuccess: () => {
         const { src, srcSet, alt, sizes, experimentalDecode } = props;
-        // Buffering has ended/succeeded, kick off request for image
         // Kick off request for Image and attach listeners for response
         const loadingPromise = loadImage(
           {
@@ -197,7 +216,9 @@ export class LazyImageFull extends React.Component<
             this.update(Action.LoadError({ msg: "Failed to load" }))
           ); // TODO: think more about this
 
-        return LazyImageFullState.Loading(loadingPromise);
+        this.promiseCache["loadingPromise"] = loadingPromise;
+
+        return LazyImageFullState.Loading();
       },
       LoadSuccess: () => LazyImageFullState.LoadSuccess(),
       LoadError: e => LazyImageFullState.LoadError(e)
