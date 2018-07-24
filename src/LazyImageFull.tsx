@@ -6,6 +6,9 @@ import { unionize, ofType, UnionOf } from "unionize";
  * Valid props for LazyImage components
  */
 export type CommonLazyImageProps = ImageProps & {
+  // NOTE: if you add props here, remember to destructure them out of being
+  // passed to the children, in the render() callback.
+
   /** Whether to skip checking for viewport and always show the 'actual' component
    * @see https://github.com/fpapado/react-lazy-images/#eager-loading--server-side-rendering-ssr
    */
@@ -293,12 +296,14 @@ export class LazyImageFull extends React.Component<
 
   // Render function
   render() {
+    // This destructuring is silly
     const {
       children,
       loadEagerly,
       observerProps,
       experimentalDecode,
       debounceDurationMs,
+      debugActions,
       ...imageProps
     } = this.props;
 

@@ -25,6 +25,8 @@ export const LazyImageOpinionated: React.SFC<IOpinionated> = ({ src, alt }) => (
       actual={({ imageProps }) => (
         <img {...imageProps} className="intrinsic-item animated fadeIn" />
       )}
+      debounceDurationMs={1000}
+      debugActions={true}
     />
   </div>
 );
@@ -46,6 +48,7 @@ export const LazyImageHoCWithPlaceholderSrc: React.SFC<
       actual={({ imageProps }) => (
         <img {...imageProps} className="intrinsic-item animated fadeIn" />
       )}
+      debounceDurationMs={1000}
     />
   </div>
 );

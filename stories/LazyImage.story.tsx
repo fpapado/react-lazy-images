@@ -296,17 +296,14 @@ stories
           </Divider>
 
           <LazyImageOpinionated
-            src="https://endangered.photo/1200/800 "
+            src="https://endangered.photo/1200/800"
             alt=""
           />
 
           <Divider />
 
           <h2 ref={endRef}>Only things below here should be loaded</h2>
-          <LazyImageOpinionated
-            src="https://endangered.photo/300/200 "
-            alt=""
-          />
+          <LazyImageOpinionated src="https://endangered.photo/300/200" alt="" />
         </div>
       );
     })
