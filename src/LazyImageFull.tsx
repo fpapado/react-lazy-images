@@ -193,11 +193,12 @@ export class LazyImageFull extends React.Component<
 
                 return LazyImageFullState.Buffering();
               },
+              // Do nothing in other states
               default: () => prevState
             });
           }
         } else {
-          // If out of view, cancel the Buffering, otherwise leave untouched
+          // If out of view, cancel if Buffering, otherwise leave untouched
           return LazyImageFullState.match(prevState, {
             Buffering: () => {
               // Side-effect; cancel the promise in the cache
@@ -205,6 +206,7 @@ export class LazyImageFull extends React.Component<
               (this.promiseCache["buffering"] as CancelablePromise).cancel();
               return LazyImageFullState.NotAsked();
             },
+            // Do nothing in other states
             default: () => prevState
           });
         }
@@ -224,8 +226,9 @@ export class LazyImageFull extends React.Component<
         )
           .then(_res => this.update(Action.LoadSuccess({})))
           .catch(_e =>
+            // TODO: think more about the error here
             this.update(Action.LoadError({ msg: "Failed to load" }))
-          ); // TODO: think more about this
+          );
 
         this.promiseCache["loadingPromise"] = loadingPromise;
 
@@ -251,6 +254,7 @@ export class LazyImageFull extends React.Component<
     if (loadEagerly) {
       // If eager, skip the observer and view changing stuff; resolve the imageState as loaded.
       return children({
+        // We know that the state tags and the enum match up
         imageState: LazyImageFullState.LoadSuccess().tag as ImageState,
         imageProps
       });
@@ -265,6 +269,7 @@ export class LazyImageFull extends React.Component<
         >
           {({ ref }) =>
             children({
+              // We know that the state tags and the enum match up
               imageState: this.state.tag as ImageState,
               imageProps,
               ref
@@ -276,7 +281,7 @@ export class LazyImageFull extends React.Component<
   }
 }
 
-// Utilities
+///// Utilities /////
 
 /** Promise constructor for loading an image */
 const loadImage = (
@@ -301,6 +306,7 @@ const loadImage = (
       return (
         image
           // NOTE: .decode() is not in the TS defs yet
+          // TODO: consider writing the .decode() definition and sending a PR
           //@ts-ignore
           .decode()
           .then((image: HTMLImageElement) => resolve(image))
