@@ -72,8 +72,8 @@ export interface ObserverProps {
 }
 
 /** States that the image loading can be in.
- * Used together with LazyImageFull render props
- * External representation of the internal state
+ * Used together with LazyImageFull render props.
+ * External representation of the internal state.
  * */
 export enum ImageState {
   NotAsked = "NotAsked",
@@ -87,20 +87,23 @@ export enum ImageState {
 const LazyImageFullState = unionize({
   NotAsked: {},
   Buffering: {},
-  // Could try to make it Promise<HTMLImageElement>, but we don't use the element anyway
+  // Could try to make it Promise<HTMLImageElement>,
+  // but we don't use the element anyway, and we cache promises
   Loading: {},
   LoadSuccess: {},
-  // LoadSuccessPreload: ofType<HTMLImageElement>(),
-  // LoadSuccessNoPreload: {},
   LoadError: ofType<{ msg: string }>()
 });
 
 type LazyImageFullState = UnionOf<typeof LazyImageFullState>;
 
+/** Actions that change the component's state.
+ * These are not unlike Actions in Redux or, the ones I'm inspired by,
+ * Commands in Elm.
+ */
 const Action = unionize({
   ViewChanged: ofType<{ inView: boolean }>(),
-  BufferingSuccess: {},
-  // MAYBE? Load: {},
+  BufferingEnded: {},
+  // MAYBE: Load: {},
   LoadSuccess: {},
   LoadError: ofType<{ msg: string }>()
 });
@@ -118,12 +121,13 @@ export class LazyImageFull extends React.Component<
 > {
   static displayName = "LazyImageFull";
 
-  // A central place to store promises.
-  // A bit silly, but passing promsises directly in the state
-  // was giving me weird timing issues. This way we can keep
-  // the promises in check, and pick them up from the respective methods.
-  // FUTURE: Could pass the relevant key in Buffering and Loading, so
-  // that at least we know where they are.
+  /** A central place to store promises.
+   * A bit silly, but passing promsises directly in the state
+   * was giving me weird timing issues. This way we can keep
+   * the promises in check, and pick them up from the respective methods.
+   * FUTURE: Could pass the relevant key in Buffering and Loading, so
+   * that at least we know where they are from a single source.
+   */
   promiseCache: {
     [key: string]: CancelablePromise | Promise<void>;
   } = {};
@@ -152,7 +156,12 @@ export class LazyImageFull extends React.Component<
     });
   }
 
-  // Emit the next state based on actions
+  /** Emit the next state based on actions
+   * FUTURE: Instead of kicking off the promise chain directly,
+   * could return a second argument, giving [nextState, cmd], like Elm.
+   * Then, the update function would be in charge of calling the cmd, in
+   * the react setState callback.
+   */
   reducer(
     action: Action,
     prevState: LazyImageFullState,
@@ -173,12 +182,13 @@ export class LazyImageFull extends React.Component<
 
                 // Kick off promise chain
                 bufferingPromise.promise
-                  .then(() => this.update(Action.BufferingSuccess()))
+                  .then(() => this.update(Action.BufferingEnded()))
                   .catch(
                     _reason => {}
                     //console.log({ isCanceled: _reason.isCanceled })
                   );
 
+                // Side-effect; set the promise in the cache
                 this.promiseCache["buffering"] = bufferingPromise;
 
                 return LazyImageFullState.Buffering();
@@ -190,6 +200,7 @@ export class LazyImageFull extends React.Component<
           // If out of view, cancel the Buffering, otherwise leave untouched
           return LazyImageFullState.match(prevState, {
             Buffering: () => {
+              // Side-effect; cancel the promise in the cache
               // We know this exists if we are in a Buffering state
               (this.promiseCache["buffering"] as CancelablePromise).cancel();
               return LazyImageFullState.NotAsked();
@@ -199,7 +210,7 @@ export class LazyImageFull extends React.Component<
         }
       },
       // Buffering has ended/succeeded, kick off request for image
-      BufferingSuccess: () => {
+      BufferingEnded: () => {
         const { src, srcSet, alt, sizes, experimentalDecode } = props;
         // Kick off request for Image and attach listeners for response
         const loadingPromise = loadImage(
@@ -220,7 +231,9 @@ export class LazyImageFull extends React.Component<
 
         return LazyImageFullState.Loading();
       },
+      // Loading the image succeeded, simple
       LoadSuccess: () => LazyImageFullState.LoadSuccess(),
+      // Loading the image failed, simple
       LoadError: e => LazyImageFullState.LoadError(e)
     });
   }
@@ -284,14 +297,16 @@ const loadImage = (
     image.src = src;
 
     /** @see: https://www.chromestatus.com/feature/5637156160667648 */
-    // if (experimentalDecode && "decode" in image) {
-    //   return image
-    //     // NOTE: .decode() is not in the TS defs yet
-    //     //@ts-ignore
-    //     .decode()
-    //     .then((image: HTMLImageElement) => resolve(image))
-    //     .catch((err: any) => reject(err));
-    // }
+    if (experimentalDecode && "decode" in image) {
+      return (
+        image
+          // NOTE: .decode() is not in the TS defs yet
+          //@ts-ignore
+          .decode()
+          .then((image: HTMLImageElement) => resolve(image))
+          .catch((err: any) => reject(err))
+      );
+    }
 
     image.onload = resolve;
     image.onerror = reject;
@@ -306,6 +321,13 @@ interface CancelablePromise {
   cancel: () => void;
 }
 
+/** Make a Promise "cancelable".
+ *
+ * Rejects with {isCanceled: true} if canceled.
+ *
+ * The way this works is by wrapping it with internal hasCanceled_ state
+ * and checking it before resolving.
+ */
 const makeCancelable = (promise: Promise<any>): CancelablePromise => {
   let hasCanceled_ = false;
 
