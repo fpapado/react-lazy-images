@@ -10,7 +10,8 @@
   "scripts": {
     "dev": "npm-run-all bundle:prod storybook",
     "dev:ts": "tsc --watch --pretty",
-    "build": "npm-run-all bundle:prod size",
+    "clean": "rimraf dist/",
+    "build": "npm-run-all clean bundle:prod size",
     "bundle:prod": "microbundle build",
     "bundle:watch": "microbundle watch",
     "storybook": "start-storybook -p 8080 -s ./stories/demo",
