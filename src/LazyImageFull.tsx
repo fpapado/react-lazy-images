@@ -110,7 +110,7 @@ type LazyImageFullState = UnionOf<typeof LazyImageFullState>;
 
 /** Actions that change the component's state.
  * These are not unlike Actions in Redux or, the ones I'm inspired by,
- * Commands in Elm.
+ * Msg in Elm.
  */
 const Action = unionize({
   ViewChanged: ofType<{ inView: boolean }>(),
@@ -123,6 +123,7 @@ const Action = unionize({
 type Action = UnionOf<typeof Action>;
 
 /** Commands (Cmd) describe side-effects as functions that take the instance */
+// FUTURE: These should be tied to giving back a Msg / asynchronoulsy giving a Msg with conditions
 type Cmd = (instance: LazyImageFull) => void;
 
 /** The output from a reducer is the next state and maybe a command */
@@ -131,7 +132,7 @@ type ReducerResult = {
   cmd?: Cmd;
 };
 
-///// Commands, things that update the state /////
+///// Commands, things that perform side-effects /////
 /** Get a command that sets a buffering Promise */
 const getBufferingCmd = (durationMs: number): Cmd => instance => {
   // Make cancelable buffering Promise
