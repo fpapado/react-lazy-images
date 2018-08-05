@@ -132,6 +132,48 @@ stories
       </Container>
     ))
   )
+  .add(
+    "Delayed loading",
+    withInfo(
+      "By specifying `debounceDurationMs`, you can prevent an image from loading, unless it has been in the viewport for a set amount of time."
+    )(() => {
+      return (
+        <div className="mw6">
+          <Divider>
+            <h1>react-lazy-images Debounce test</h1>
+            <p>
+              The desired behaviour is to not to start loading the images before
+              them being in the viewport for X amount of time. Press the button
+              to scroll alll the way to the end of the page. Only the final
+              image should be loaded.
+            </p>
+            <p>
+              Open your devTools network monitor and check the "Img" tab. Only
+              the last image should load.
+            </p>
+            <p>
+              (Note that smooth scrolling should be working in your browser for
+              the test to be realistic. If not, you can scroll manually. Instant
+              scrolling does not trigger the IntersectionObserver afaict).
+            </p>
+            <button onClick={() => scrollToRef(endRef)}>
+              Click here to scroll to the end
+            </button>
+          </Divider>
+
+          <LazyImageOpinionated
+            src="https://endangered.photo/1200/800"
+            alt=""
+          />
+
+          <Divider />
+
+          <h2 ref={endRef}>Only things below here should be loaded</h2>
+          <LazyImageOpinionated src="https://endangered.photo/300/200" alt="" />
+        </div>
+      );
+    })
+  )
   // Loading state as render prop
   .add(
     "Loading state",
@@ -264,48 +306,6 @@ stories
             )}
           />
         </Container>
-      );
-    })
-  )
-  .add(
-    "Delayed loading",
-    withInfo(
-      "By specifying `debounceDurationMs`, you can prevent an image from loading, unless it has been in the viewport for a set amount of time."
-    )(() => {
-      return (
-        <div className="mw6">
-          <Divider>
-            <h1>react-lazy-images Debounce test</h1>
-            <p>
-              The desired behaviour is to not to start loading the images before
-              them being in the viewport for X amount of time. Press the button
-              to scroll alll the way to the end of the page. Only the final
-              image should be loaded.
-            </p>
-            <p>
-              Open your devTools network monitor and check the "Img" tab. Only
-              the last image should load.
-            </p>
-            <p>
-              (Note that smooth scrolling should be working in your browser for
-              the test to be realistic. If not, you can scroll manually. Instant
-              scrolling does not trigger the IntersectionObserver afaict).
-            </p>
-            <button onClick={() => scrollToRef(endRef)}>
-              Click here to scroll to the end
-            </button>
-          </Divider>
-
-          <LazyImageOpinionated
-            src="https://endangered.photo/1200/800"
-            alt=""
-          />
-
-          <Divider />
-
-          <h2 ref={endRef}>Only things below here should be loaded</h2>
-          <LazyImageOpinionated src="https://endangered.photo/300/200" alt="" />
-        </div>
       );
     })
   );
