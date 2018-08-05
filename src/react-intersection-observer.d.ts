@@ -55,7 +55,7 @@ declare module "react-intersection-observer" {
     triggerOnce?: boolean;
 
     /** Call this function whenever the in view state changes */
-    onChange?(inView: boolean | React.FormEvent<HTMLElement>): void;
+    onChange?(inView: boolean): void;
   }
 
   export default class IntersectionObserver extends React.Component<

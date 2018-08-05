@@ -1,0 +1,92 @@
+.bg-near-white {
+  background-color: #f4f4f4;
+}
+
+.lh-copy {
+  line-height: 1.5;
+}
+
+.sans-serif {
+  font-family: sans-serif;
+}
+
+.intrinsic {
+  display: block;
+
+  position: relative;
+  height: 0;
+  width: 100%;
+}
+
+.intrinsic--square {
+  padding-top: 100%;
+}
+
+.intrinsic--4x3 {
+  padding-top: 75%;
+}
+
+.intrinsic--3x2 {
+  padding-top: 66.6%;
+}
+
+.intrinsic-item {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.img {
+  max-width: 100%;
+}
+
+.relative {
+  position: relative;
+}
+
+.z-0 {
+  z-index: 0;
+}
+
+.z-1 {
+  z-index: 1;
+}
+
+.z-2 {
+  z-index: 2;
+}
+
+/* Animations */
+.animated {
+  -webkit-animation-duration: 0.4s;
+  animation-duration: 0.4s;
+  -webkit-animation-fill-mode: both;
+  animation-fill-mode: both;
+}
+
+@-webkit-keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.fadeIn {
+  -webkit-animation-name: fadeIn;
+  animation-name: fadeIn;
+}

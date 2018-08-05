@@ -30,6 +30,7 @@
 - Full presentational control for the caller (render props).
 - Modern, performant implementation, using [IntersectionObserver](https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API) and providing [polyfill information](#polyfill-intersection-observer).
 - [Eager loading / Server-side rendering support](#eager-loading--server-side-rendering-ssr).
+- [Debounce / Delay](#debounce--delay); can wait for an image to be in the viewport for a set time, before loading.
 - Works with horizontal scrolling, supports background images.
 - [Fallbacks for SEO / when Javascript is disabled](#fallback-without-javascript).
 - Easy to understand source code. You should be able to fork and do your thing if desired.
@@ -292,6 +293,25 @@ Think about the cases where it is beneficial to do this, and apply it with inten
 Examples might be eager-loading hero images, preloading the first few elements in a list and so on.
 [Some of these use cases are provided as examples](#examples).
 
+### Debounce / Delay
+
+In cases where you have a long list of images that the user might scroll through, then loading intermediate images can waste bandwidth and processing time.
+This is undesired.
+The way to handle it is with a **minimum duration** that the image has to stay within the viewport, before making the request.
+This is specified using the `debounceDurationMs` prop:
+
+```jsx
+<LazyImage
+  src="/img/porto_buildings_large.jpg"
+  alt="Buildings with tiled exteriors, lit by the sunset."
+  debounceDurationMs={1000}
+  placeholder={({ imageProps, ref }) => (
+    <img ref={ref} src="/img/porto_buildings_lowres.jpg" alt={imageProps.alt} />
+  )}
+  actual={({ imageProps }) => <img {...imageProps} />}
+/>
+```
+
 ### Fallback without Javascript
 
 If Javascript is disabled altogether by the user, then they will be stuck with the placeholder (and any images loaded eagerly).
@@ -410,19 +430,20 @@ The presentation can be derived from those plus, crucially, any specific needs y
 
 **`<LazyImage />`** accepts the following props:
 
-| Name                   | Type                                                                      | Default                                   | Required | Description                                                                                           |
-| ---------------------- | ------------------------------------------------------------------------- | ----------------------------------------- | -------- | ----------------------------------------------------------------------------------------------------- |
-| **src**                | String                                                                    |                                           | true     | The source of the image to load                                                                       |
-| **alt**                | String                                                                    |                                           | false    | The alt text description of the image you are loading                                                 |
-| **srcSet**             | String                                                                    |                                           | false    | If your images use srcset, you can pass the `srcSet` prop to provide that information for preloading. |
-| **sizes**              | String                                                                    |                                           | false    | If your images use srcset, the sizes attribute helps the browser decide which source to load.         |
-| **actual**             | Function (render callback) of type ({imageProps}) => React.ReactNode      |                                           | true     | Component to display once image has loaded                                                            |
-| **placeholder**        | Function (render callback) of type ({imageProps, ref}) => React.ReactNode | undefined                                 | true     | Component to display while no request for the actual image has been made                              |
-| **loading**            | Function (render callback) of type () => React.ReactNode                  | placeholder                               | false    | Component to display while the image is loading                                                       |
-| **error**              | Function (render callback) of type () => React.ReactNode                  | actual (broken image)                     | false    | Component to display if the image loading has failed (render prop)                                    |
-| **loadEagerly**        | Boolean                                                                   | false                                     | false    | Whether to skip checking for viewport and always show the 'actual' component                          |
-| **observerProps**      | {threshold: number, rootMargin: string}                                   | {threshold: 0.01, rootMargin: "50px 0px"} | false    | Subset of props for the IntersectionObserver                                                          |
-| **experimentalDecode** | Boolean                                                                   | false                                     | false    | Decode the image off-main-thread using the Image Decode API. Test before using!                       |
+| Name                   | Type                                                                      | Default                                   | Required | Description                                                                                                                                                                |
+| ---------------------- | ------------------------------------------------------------------------- | ----------------------------------------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **src**                | String                                                                    |                                           | true     | The source of the image to load                                                                                                                                            |
+| **alt**                | String                                                                    |                                           | false    | The alt text description of the image you are loading                                                                                                                      |
+| **srcSet**             | String                                                                    |                                           | false    | If your images use srcset, you can pass the `srcSet` prop to provide that information for preloading.                                                                      |
+| **sizes**              | String                                                                    |                                           | false    | If your images use srcset, the sizes attribute helps the browser decide which source to load.                                                                              |
+| **actual**             | Function (render callback) of type ({imageProps}) => React.ReactNode      |                                           | true     | Component to display once image has loaded                                                                                                                                 |
+| **placeholder**        | Function (render callback) of type ({imageProps, ref}) => React.ReactNode | undefined                                 | true     | Component to display while no request for the actual image has been made                                                                                                   |
+| **loading**            | Function (render callback) of type () => React.ReactNode                  | placeholder                               | false    | Component to display while the image is loading                                                                                                                            |
+| **error**              | Function (render callback) of type () => React.ReactNode                  | actual (broken image)                     | false    | Component to display if the image loading has failed (render prop)                                                                                                         |
+| **debounceDurationMs** | Number                                                                    | N/A                                       | false    | The minimum duration that the image has to be in the viewport before starting to load, in ms. This can help avoid loading images while the user scrolls quickly past them. |
+| **loadEagerly**        | Boolean                                                                   | false                                     | false    | Whether to skip checking for viewport and always show the 'actual' component                                                                                               |
+| **observerProps**      | {threshold: number, rootMargin: string}                                   | {threshold: 0.01, rootMargin: "50px 0px"} | false    | Subset of props for the IntersectionObserver                                                                                                                               |
+| **experimentalDecode** | Boolean                                                                   | false                                     | false    | Decode the image off-main-thread using the Image Decode API. Test before using!                                                                                            |
 
 **`<LazyImageFull />`** accepts the following props:
 
@@ -432,6 +453,7 @@ The presentation can be derived from those plus, crucially, any specific needs y
 | **alt**                | String                                                              |                                           | false    | The alt text description of the image you are loading                                                 |
 | **srcSet**             | String                                                              |                                           | false    | If your images use srcset, you can pass the `srcSet` prop to provide that information for preloading. |
 | **sizes**              | String                                                              |                                           | false    | If your images use srcset, the sizes attribute helps the browser decide which source to load.         |
+| **debounceDurationMs** | Number                                                              | N/A                                       | false    | The minimum duration that the image has to be in the viewport before starting to load, in ms.         |
 | **loadEagerly**        | Boolean                                                             | false                                     | false    | Whether to skip checking for viewport and always show the 'actual' component                          |
 | **observerProps**      | {threshold: number, rootMargin: string}                             | {threshold: 0.01, rootMargin: "50px 0px"} | false    | Subset of props for the IntersectionObserver                                                          |
 | **children**           | Function of type ({imageProps, imageState, ref}) => React.ReactNode |                                           | true     | Function to call that renders based on the props and state provided to it by LazyImageFull            |

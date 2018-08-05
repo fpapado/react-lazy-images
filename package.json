@@ -1,7 +1,7 @@
 {
   "name": "react-lazy-images",
   "description": "React utilities for lazy image loading",
-  "version": "1.0.1",
+  "version": "1.1.0-rc.3",
   "source": "src/index.tsx",
   "module": "dist/react-lazy-images.es.js",
   "main": "dist/react-lazy-images.js",
@@ -10,9 +10,11 @@
   "scripts": {
     "dev": "npm-run-all bundle:prod storybook",
     "dev:ts": "tsc --watch --pretty",
-    "build": "npm-run-all bundle:prod size",
+    "clean": "rimraf dist/",
+    "build": "npm-run-all clean bundle:prod copy-defs size",
     "bundle:prod": "microbundle build",
     "bundle:watch": "microbundle watch",
+    "copy-defs": "tsc && cp -r ts-build/*.d.ts dist/",
     "storybook": "start-storybook -p 8080 -s ./stories/demo",
     "storybook:build": "npm run bundle:prod && build-storybook -c .storybook -s ./stories/demo -o .out",
     "storybook:deploy": "storybook-to-ghpages --existing-output-dir=.out",
@@ -63,7 +65,8 @@
   },
   "homepage": "https://github.com/fpapado/react-lazy-images#readme",
   "dependencies": {
-    "react-intersection-observer": "^6.1.0"
+    "react-intersection-observer": "^6.1.0",
+    "unionize": "^2.1.2"
   },
   "peerDependencies": {
     "react": "^15 || ^16",
@@ -88,7 +91,7 @@
     "eslint-plugin-jsx-a11y": "^6.1.1",
     "husky": "^1.0.0-rc.13",
     "lint-staged": "^7.2.0",
-    "microbundle": "^0.5.1",
+    "microbundle": "0.5.1",
     "npm-run-all": "^4.1.3",
     "prettier": "^1.13.7",
     "react": "^16.4.1",
@@ -97,7 +100,7 @@
     "react-docgen-typescript-webpack-plugin": "^1.1.0",
     "react-dom": "^16.4.1",
     "tachyons": "^4.10.0",
-    "typescript": "^2.9.2",
-    "typescript-eslint-parser": "^16.0.1"
+    "typescript": "^3.0.1",
+    "typescript-eslint-parser": "^17.0.1"
   }
 }

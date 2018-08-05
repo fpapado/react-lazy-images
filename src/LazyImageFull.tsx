@@ -1,10 +1,14 @@
 import React from "react";
 import Observer from "react-intersection-observer";
+import { unionize, ofType, UnionOf } from "unionize";
 
 /**
  * Valid props for LazyImage components
  */
 export type CommonLazyImageProps = ImageProps & {
+  // NOTE: if you add props here, remember to destructure them out of being
+  // passed to the children, in the render() callback.
+
   /** Whether to skip checking for viewport and always show the 'actual' component
    * @see https://github.com/fpapado/react-lazy-images/#eager-loading--server-side-rendering-ssr
    */
@@ -22,6 +26,15 @@ export type CommonLazyImageProps = ImageProps & {
    *  @see: https://www.chromestatus.com/feature/5637156160667648
    */
   experimentalDecode?: boolean;
+
+  /** Whether to log out internal state transitions for the component */
+  debugActions?: boolean;
+
+  /** Delay a certain duration before starting to load, in ms.
+   * This can help avoid loading images while the user scrolls quickly past them.
+   * TODO: naming things.
+   */
+  debounceDurationMs?: number;
 };
 
 /** Valid props for LazyImageFull */
@@ -70,14 +83,9 @@ export interface ObserverProps {
   threshold?: number;
 }
 
-/** The component's state */
-export type LazyImageFullState = {
-  hasBeenInView: boolean;
-  imageState: ImageState;
-};
-
 /** States that the image loading can be in.
- * Used together with LazyImageFull render props
+ * Used together with LazyImageFull render props.
+ * External representation of the internal state.
  * */
 export enum ImageState {
   NotAsked = "NotAsked",
@@ -85,6 +93,94 @@ export enum ImageState {
   LoadSuccess = "LoadSuccess",
   LoadError = "LoadError"
 }
+
+/** The component's state */
+const LazyImageFullState = unionize({
+  NotAsked: {},
+  Buffering: {},
+  // Could try to make it Promise<HTMLImageElement>,
+  // but we don't use the element anyway, and we cache promises
+  Loading: {},
+  LoadSuccess: {},
+  LoadError: ofType<{ msg: string }>()
+});
+
+type LazyImageFullState = UnionOf<typeof LazyImageFullState>;
+
+/** Actions that change the component's state.
+ * These are not unlike Actions in Redux or, the ones I'm inspired by,
+ * Msg in Elm.
+ */
+const Action = unionize({
+  ViewChanged: ofType<{ inView: boolean }>(),
+  BufferingEnded: {},
+  // MAYBE: Load: {},
+  LoadSuccess: {},
+  LoadError: ofType<{ msg: string }>()
+});
+
+type Action = UnionOf<typeof Action>;
+
+/** Commands (Cmd) describe side-effects as functions that take the instance */
+// FUTURE: These should be tied to giving back a Msg / asynchronoulsy giving a Msg with conditions
+type Cmd = (instance: LazyImageFull) => void;
+
+/** The output from a reducer is the next state and maybe a command */
+type ReducerResult = {
+  nextState: LazyImageFullState;
+  cmd?: Cmd;
+};
+
+///// Commands, things that perform side-effects /////
+/** Get a command that sets a buffering Promise */
+const getBufferingCmd = (durationMs: number): Cmd => instance => {
+  // Make cancelable buffering Promise
+  const bufferingPromise = makeCancelable(delayedPromise(durationMs));
+
+  // Kick off promise chain
+  bufferingPromise.promise
+    .then(() => instance.update(Action.BufferingEnded()))
+    .catch(
+      _reason => {}
+      //console.log({ isCanceled: _reason.isCanceled })
+    );
+
+  // Side-effect; set the promise in the cache
+  instance.promiseCache.buffering = bufferingPromise;
+};
+
+/** Get a command that sets an image loading Promise */
+const getLoadingCmd = (
+  imageProps: ImageProps,
+  experimentalDecode?: boolean
+): Cmd => instance => {
+  // Make cancelable loading Promise
+  const loadingPromise = makeCancelable(
+    loadImage(imageProps, experimentalDecode)
+  );
+
+  // Kick off request for Image and attach listeners for response
+  loadingPromise.promise
+    .then(_res => instance.update(Action.LoadSuccess({})))
+    .catch(e => {
+      // If the Loading Promise was canceled, it means we have stopped
+      // loading due to unmount, rather than an error.
+      if (!e.isCanceled) {
+        // TODO: think more about the error here
+        instance.update(Action.LoadError({ msg: "Failed to load" }));
+      }
+    });
+
+  // Side-effect; set the promise in the cache
+  instance.promiseCache.loading = loadingPromise;
+};
+
+/** Command that cancels the buffering Promise */
+const cancelBufferingCmd: Cmd = instance => {
+  // Side-effect; cancel the promise in the cache
+  // We know this exists if we are in a Buffering state
+  instance.promiseCache.buffering.cancel();
+};
 
 /**
  * Component that preloads the image once it is in the viewport,
@@ -97,89 +193,162 @@ export class LazyImageFull extends React.Component<
 > {
   static displayName = "LazyImageFull";
 
-  initialState = { hasBeenInView: false, imageState: ImageState.NotAsked };
+  /** A central place to store promises.
+   * A bit silly, but passing promsises directly in the state
+   * was giving me weird timing issues. This way we can keep
+   * the promises in check, and pick them up from the respective methods.
+   * FUTURE: Could pass the relevant key in Buffering and Loading, so
+   * that at least we know where they are from a single source.
+   */
+  promiseCache: {
+    [key: string]: CancelablePromise;
+  } = {};
+
+  initialState = LazyImageFullState.NotAsked();
+
+  /** Emit the next state based on actions.
+   *  This is the core of the component!
+   */
+  static reducer(
+    action: Action,
+    prevState: LazyImageFullState,
+    props: LazyImageFullProps
+  ): ReducerResult {
+    return Action.match(action, {
+      ViewChanged: ({ inView }) => {
+        if (inView === true) {
+          // If src is not specified, then there is nothing to preload; skip to Loaded state
+          if (!props.src) {
+            return { nextState: LazyImageFullState.LoadSuccess() }; // Error wtf
+          } else {
+            // If in view, only load something if NotAsked, otherwise leave untouched
+            return LazyImageFullState.match(prevState, {
+              NotAsked: () => {
+                // If debounce is specified, then start buffering
+                if (!!props.debounceDurationMs) {
+                  return {
+                    nextState: LazyImageFullState.Buffering(),
+                    cmd: getBufferingCmd(props.debounceDurationMs)
+                  };
+                } else {
+                  // If no debounce is specified, then start loading immediately
+                  return {
+                    nextState: LazyImageFullState.Loading(),
+                    cmd: getLoadingCmd(props, props.experimentalDecode)
+                  };
+                }
+              },
+              // Do nothing in other states
+              default: () => ({ nextState: prevState })
+            });
+          }
+        } else {
+          // If out of view, cancel if Buffering, otherwise leave untouched
+          return LazyImageFullState.match(prevState, {
+            Buffering: () => ({
+              nextState: LazyImageFullState.NotAsked(),
+              cmd: cancelBufferingCmd
+            }),
+            // Do nothing in other states
+            default: () => ({ nextState: prevState })
+          });
+        }
+      },
+      // Buffering has ended/succeeded, kick off request for image
+      BufferingEnded: () => ({
+        nextState: LazyImageFullState.Loading(),
+        cmd: getLoadingCmd(props, props.experimentalDecode)
+      }),
+      // Loading the image succeeded, simple
+      LoadSuccess: () => ({ nextState: LazyImageFullState.LoadSuccess() }),
+      // Loading the image failed, simple
+      LoadError: e => ({ nextState: LazyImageFullState.LoadError(e) })
+    });
+  }
 
   constructor(props: LazyImageFullProps) {
     super(props);
     this.state = this.initialState;
 
     // Bind methods
-    // This would be nicer with arrow functions and class properties,
-    // but holding off until they are settled.
-    this.onInView = this.onInView.bind(this);
-    this.onLoadSuccess = this.onLoadSuccess.bind(this);
-    this.onLoadError = this.onLoadError.bind(this);
+    this.update = this.update.bind(this);
   }
 
-  // Update functions
-  onInView(inView: boolean) {
-    if (inView === true) {
-      // If src is not specified, then there is nothing to preload; skip to Loaded state
-      if (!this.props.src) {
-        this.setState((state, _props) => ({
-          ...state,
-          imageState: ImageState.LoadSuccess
-        }));
-      } else {
-        // Kick off request for Image and attach listeners for response
-        this.setState((state, _props) => ({
-          ...state,
-          imageState: ImageState.Loading
-        }));
+  update(action: Action) {
+    // Get the next state and any effects
+    const { nextState, cmd } = LazyImageFull.reducer(
+      action,
+      this.state,
+      this.props
+    );
 
-        loadImage(
-          {
-            src: this.props.src,
-            srcSet: this.props.srcSet,
-            alt: this.props.alt,
-            sizes: this.props.sizes
-          },
-          this.props.experimentalDecode
-        )
-          .then(this.onLoadSuccess)
-          .catch(this.onLoadError);
+    // Debugging
+    if (this.props.debugActions) {
+      if (process.env.NODE_ENV === "production") {
+        console.warn(
+          'You are running LazyImage with debugActions="true" in production. This might have performance implications.'
+        );
       }
+      console.log({ action, prevState: this.state, nextState });
     }
+
+    // Actually set the state, and kick off any effects after that
+    this.setState(nextState, () => cmd && cmd(this));
   }
 
-  onLoadSuccess() {
-    this.setState((state, _props) => ({
-      ...state,
-      imageState: ImageState.LoadSuccess
-    }));
-  }
-
-  onLoadError() {
-    this.setState((state, _props) => ({
-      ...state,
-      imageState: ImageState.LoadError
-    }));
+  componentWillUnmount() {
+    // Clear the Promise Cache
+    if (this.promiseCache.loading) {
+      // NOTE: This does not cancel the request, only the callback.
+      // We weould need fetch() and an AbortHandler for that.
+      this.promiseCache.loading.cancel();
+    }
+    if (this.promiseCache.buffering) {
+      this.promiseCache.buffering.cancel();
+    }
+    this.promiseCache = {};
   }
 
   // Render function
   render() {
+    // This destructuring is silly
     const {
       children,
       loadEagerly,
       observerProps,
       experimentalDecode,
+      debounceDurationMs,
+      debugActions,
       ...imageProps
     } = this.props;
 
     if (loadEagerly) {
       // If eager, skip the observer and view changing stuff; resolve the imageState as loaded.
-      return children({ imageState: ImageState.LoadSuccess, imageProps });
+      return children({
+        // We know that the state tags and the enum match up
+        imageState: LazyImageFullState.LoadSuccess().tag as ImageState,
+        imageProps
+      });
     } else {
       return (
         <Observer
           rootMargin="50px 0px"
+          // TODO: reconsider threshold
           threshold={0.01}
           {...observerProps}
-          onChange={this.onInView}
-          triggerOnce
+          onChange={inView => this.update(Action.ViewChanged({ inView }))}
         >
           {({ ref }) =>
-            children({ imageState: this.state.imageState, imageProps, ref })
+            children({
+              // We know that the state tags and the enum match up, apart
+              // from Buffering not being exposed
+              imageState:
+                this.state.tag === "Buffering"
+                  ? ImageState.Loading
+                  : (this.state.tag as ImageState),
+              imageProps,
+              ref
+            })
           }
         </Observer>
       );
@@ -187,7 +356,7 @@ export class LazyImageFull extends React.Component<
   }
 }
 
-// Utilities
+///// Utilities /////
 
 /** Promise constructor for loading an image */
 const loadImage = (
@@ -209,15 +378,54 @@ const loadImage = (
 
     /** @see: https://www.chromestatus.com/feature/5637156160667648 */
     if (experimentalDecode && "decode" in image) {
-      image
-        // NOTE: .decode() is not in the TS defs yet
-        //@ts-ignore
-        .decode()
-        .then(() => resolve())
-        .catch((err: any) => reject(err));
-      return;
+      return (
+        image
+          // NOTE: .decode() is not in the TS defs yet
+          // TODO: consider writing the .decode() definition and sending a PR
+          //@ts-ignore
+          .decode()
+          .then((image: HTMLImageElement) => resolve(image))
+          .catch((err: any) => reject(err))
+      );
     }
 
     image.onload = resolve;
     image.onerror = reject;
   });
+
+/** Promise that resolves after a specified number of ms */
+const delayedPromise = (ms: number) =>
+  new Promise(resolve => setTimeout(resolve, ms));
+
+interface CancelablePromise {
+  promise: Promise<{}>;
+  cancel: () => void;
+}
+
+/** Make a Promise "cancelable".
+ *
+ * Rejects with {isCanceled: true} if canceled.
+ *
+ * The way this works is by wrapping it with internal hasCanceled_ state
+ * and checking it before resolving.
+ */
+const makeCancelable = (promise: Promise<any>): CancelablePromise => {
+  let hasCanceled_ = false;
+
+  const wrappedPromise = new Promise((resolve, reject) => {
+    promise.then(
+      (val: any) => (hasCanceled_ ? reject({ isCanceled: true }) : resolve(val))
+    );
+    promise.catch(
+      (error: any) =>
+        hasCanceled_ ? reject({ isCanceled: true }) : reject(error)
+    );
+  });
+
+  return {
+    promise: wrappedPromise,
+    cancel() {
+      hasCanceled_ = true;
+    }
+  };
+};

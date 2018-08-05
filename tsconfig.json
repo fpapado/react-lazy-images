@@ -1,23 +1,6 @@
 {
+  "extends": "./tsconfig_base.json",
   "compilerOptions": {
-    "module": "es2015",
-    "target": "es5",
-    "declaration": true,
-    "sourceMap": true,
-    "jsx": "react",
-    "allowJs": false,
-    "strict": true,
-    "rootDirs": ["src", "stories"],
-    "outDir": "ts-build",
-    "moduleResolution": "node",
-    "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true,
-    "lib": ["es6", "dom"],
-    "baseUrl": "./",
-    "paths": {
-      "react-intersection-observer": ["src/react-intersection-observer.d.ts"]
-    }
-  },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist"]
+    "declaration": false
+  }
 }
