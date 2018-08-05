@@ -101,6 +101,6 @@
     "react-dom": "^16.4.1",
     "tachyons": "^4.10.0",
     "typescript": "^3.0.1",
-    "typescript-eslint-parser": "^16.0.1"
+    "typescript-eslint-parser": "^17.0.1"
   }
 }

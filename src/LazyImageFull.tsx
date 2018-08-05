@@ -89,7 +89,6 @@ export interface ObserverProps {
  * */
 export enum ImageState {
   NotAsked = "NotAsked",
-  Buffering = "Buffering",
   Loading = "Loading",
   LoadSuccess = "LoadSuccess",
   LoadError = "LoadError"
@@ -319,8 +318,12 @@ export class LazyImageFull extends React.Component<
         >
           {({ ref }) =>
             children({
-              // We know that the state tags and the enum match up
-              imageState: this.state.tag as ImageState,
+              // We know that the state tags and the enum match up, apart
+              // from Buffering not being exposed
+              imageState:
+                this.state.tag === "Buffering"
+                  ? ImageState.Loading
+                  : (this.state.tag as ImageState),
               imageProps,
               ref
             })
