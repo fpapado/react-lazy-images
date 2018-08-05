@@ -30,6 +30,7 @@
 - Full presentational control for the caller (render props).
 - Modern, performant implementation, using [IntersectionObserver](https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API) and providing [polyfill information](#polyfill-intersection-observer).
 - [Eager loading / Server-side rendering support](#eager-loading--server-side-rendering-ssr).
+- [Delay / debounce](#debounce-delay), can wait for an image to be in the viewport for a set time, before loading.
 - Works with horizontal scrolling, supports background images.
 - [Fallbacks for SEO / when Javascript is disabled](#fallback-without-javascript).
 - Easy to understand source code. You should be able to fork and do your thing if desired.
