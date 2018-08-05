@@ -269,12 +269,13 @@ stories
   )
   .add(
     "Delayed loading",
-    withInfo("TODO")(() => {
+    withInfo(
+      "By specifying `debounceDurationMs`, you can prevent an image from loading, unless it has been in the viewport for a set amount of time."
+    )(() => {
       return (
         <div className="mw6">
           <Divider>
             <h1>react-lazy-images Debounce test</h1>
-            <p>NOTE: not yet implemented</p>
             <p>
               The desired behaviour is to not to start loading the images before
               them being in the viewport for X amount of time. Press the button
