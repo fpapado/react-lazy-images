@@ -99,7 +99,7 @@
     "react-docgen-typescript-webpack-plugin": "^1.1.0",
     "react-dom": "^16.4.1",
     "tachyons": "^4.10.0",
-    "typescript": "2.9.2",
+    "typescript": "^3.0.1",
     "typescript-eslint-parser": "^16.0.1"
   }
 }
