@@ -146,7 +146,7 @@ const getBufferingCmd = (durationMs: number): Cmd => instance => {
     );
 
   // Side-effect; set the promise in the cache
-  instance.promiseCache["buffering"] = bufferingPromise;
+  instance.promiseCache.buffering = bufferingPromise;
 };
 
 /** Get a command that sets an image loading Promise */
@@ -154,23 +154,32 @@ const getLoadingCmd = (
   imageProps: ImageProps,
   experimentalDecode?: boolean
 ): Cmd => instance => {
+  // Make cancelable loading Promise
+  const loadingPromise = makeCancelable(
+    loadImage(imageProps, experimentalDecode)
+  );
+
   // Kick off request for Image and attach listeners for response
-  const loadingPromise = loadImage(imageProps, experimentalDecode)
+  loadingPromise.promise
     .then(_res => instance.update(Action.LoadSuccess({})))
-    .catch(_e =>
-      // TODO: think more about the error here
-      instance.update(Action.LoadError({ msg: "Failed to load" }))
-    );
+    .catch(e => {
+      // If the Loading Promise was canceled, it means we have stopped
+      // loading due to unmount, rather than an error.
+      if (!e.isCanceled) {
+        // TODO: think more about the error here
+        instance.update(Action.LoadError({ msg: "Failed to load" }));
+      }
+    });
 
   // Side-effect; set the promise in the cache
-  instance.promiseCache["loading"] = loadingPromise;
+  instance.promiseCache.loading = loadingPromise;
 };
 
 /** Command that cancels the buffering Promise */
 const cancelBufferingCmd: Cmd = instance => {
   // Side-effect; cancel the promise in the cache
   // We know this exists if we are in a Buffering state
-  (instance.promiseCache["buffering"] as CancelablePromise).cancel();
+  instance.promiseCache.buffering.cancel();
 };
 
 /**
@@ -192,7 +201,7 @@ export class LazyImageFull extends React.Component<
    * that at least we know where they are from a single source.
    */
   promiseCache: {
-    [key: string]: CancelablePromise | Promise<void>;
+    [key: string]: CancelablePromise;
   } = {};
 
   initialState = LazyImageFullState.NotAsked();
@@ -285,6 +294,19 @@ export class LazyImageFull extends React.Component<
 
     // Actually set the state, and kick off any effects after that
     this.setState(nextState, () => cmd && cmd(this));
+  }
+
+  componentWillUnmount() {
+    // Clear the Promise Cache
+    if (this.promiseCache.loading) {
+      // NOTE: This does not cancel the request, only the callback.
+      // We weould need fetch() and an AbortHandler for that.
+      this.promiseCache.loading.cancel();
+    }
+    if (this.promiseCache.buffering) {
+      this.promiseCache.buffering.cancel();
+    }
+    this.promiseCache = {};
   }
 
   // Render function
