@@ -395,7 +395,7 @@ And import it at your app's entry point:
 import "intersection-observer";
 ```
 
-[Polyfill.io is an alternative method of distributing the polyfill](polyfill.io) if you wish.
+[Polyfill.io is an alternative method of distributing the polyfill](https://polyfill.io) if you wish.
 
 #### About the polyfill
 
