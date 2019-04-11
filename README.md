@@ -209,6 +209,15 @@ Any of the presentational patterns presented that are possible with `LazyImage` 
 
 In fact, if you check [`src/LazyImage.tsx`](./src/LazyImage.tsx), you will see that `LazyImage` is implemented in terms of `LazyImageFull`!
 
+### Load ahead and threshold
+
+There are two optional props on both `LazyImageFull` and `LazyImage`, which gice you more control as to when your Images are requested.
+
+`rootMargin`: Margin around the window. This can have values similar to the CSS margin property, e.g. "10px 20px 30px 40px" (top, right, bottom, left)
+This can provide control if you want to request your image a certain number of pixels ahead of where the user is scrolling.
+
+`threshold`: Number between 0 and 1 indicating the percentage that should be visible before a request is sent.
+
 ### Load before swap
 
 A common optimisation to the loading strategy is to preload the image before swapping it for the placeholder.
