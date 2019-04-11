@@ -35,6 +35,17 @@ export type CommonLazyImageProps = ImageProps & {
    * TODO: naming things.
    */
   debounceDurationMs?: number;
+
+  /** Set the margins for intersection observer:
+   * Allows preloading of content, works similarly to CSS margin
+   */
+  rootMargin?: string;
+
+  /** Set the threshold for intersection observer:
+   * Number between 0 and 1 indicating the percentage that should be visible before triggering.
+   *Can also be an array of numbers, to create multiple trigger points
+   */
+  threshold?: number | number[];
 };
 
 /** Valid props for LazyImageFull */
@@ -330,11 +341,12 @@ export class LazyImageFull extends React.Component<
         imageProps
       });
     } else {
+      const { rootMargin = "50px 0px", threshold = 0.01 } = this.props;
       return (
         <Observer
-          rootMargin="50px 0px"
+          rootMargin={rootMargin}
           // TODO: reconsider threshold
-          threshold={0.01}
+          threshold={threshold}
           {...observerProps}
           onChange={inView => this.update(Action.ViewChanged({ inView }))}
         >
