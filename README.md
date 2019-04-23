@@ -211,12 +211,29 @@ In fact, if you check [`src/LazyImage.tsx`](./src/LazyImage.tsx), you will see t
 
 ### Load ahead and threshold
 
-There are two optional props on both `LazyImageFull` and `LazyImage`, which gice you more control as to when your Images are requested.
+Further control over the Intersection Observer can be provided through the `observerProps` prop object:
 
-`rootMargin`: Margin around the window. This can have values similar to the CSS margin property, e.g. "10px 20px 30px 40px" (top, right, bottom, left)
+```jsx
+import { LazyImage } from "react-lazy-images";
+
+<LazyImage
+  src="/img/porto_buildings_large.jpg"
+  alt="Buildings with tiled exteriors, lit by the sunset."
+  placeholder={/* the usual */}
+  actual={/* the usual */}
+  observerProps={{
+    rootMargin: "100px 0",
+    threshold: 0.3
+  }}
+/>;
+```
+
+`rootMargin`: Margin around the window. This can have values similar to the CSS margin property, e.g. `"10px 20px 30px 40px"` (top, right, bottom, left) (defaulted to `"50px 0px"`)
 This can provide control if you want to request your image a certain number of pixels ahead of where the user is scrolling.
 
-`threshold`: Number between 0 and 1 indicating the percentage that should be visible before a request is sent.
+`threshold`: Number between 0 and 1 indicating the percentage that should be visible before a request is sent. (defaulted to `0.01`)
+
+(See https://github.com/thebuilder/react-intersection-observer#api)
 
 ### Load before swap
 
