@@ -332,7 +332,7 @@ export class LazyImageFull extends React.Component<
     } else {
       return (
         <Observer
-          rootMargin={"50px 0px"}
+          rootMargin="50px 0px"
           // TODO: reconsider threshold
           threshold={0.01}
           {...observerProps}
