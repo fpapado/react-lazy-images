@@ -209,6 +209,32 @@ Any of the presentational patterns presented that are possible with `LazyImage` 
 
 In fact, if you check [`src/LazyImage.tsx`](./src/LazyImage.tsx), you will see that `LazyImage` is implemented in terms of `LazyImageFull`!
 
+### Load ahead and threshold
+
+Further control over the Intersection Observer can be provided through the `observerProps` prop object:
+
+```jsx
+import { LazyImage } from "react-lazy-images";
+
+<LazyImage
+  src="/img/porto_buildings_large.jpg"
+  alt="Buildings with tiled exteriors, lit by the sunset."
+  placeholder={/* the usual */}
+  actual={/* the usual */}
+  observerProps={{
+    rootMargin: "100px 0",
+    threshold: 0.3
+  }}
+/>;
+```
+
+`rootMargin`: Margin around the window. This can have values similar to the CSS margin property, e.g. `"10px 20px 30px 40px"` (top, right, bottom, left) (defaulted to `"50px 0px"`)
+This can provide control if you want to request your image a certain number of pixels ahead of where the user is scrolling.
+
+`threshold`: Number between 0 and 1 indicating the percentage that should be visible before a request is sent. (defaulted to `0.01`)
+
+(See https://github.com/thebuilder/react-intersection-observer#api)
+
 ### Load before swap
 
 A common optimisation to the loading strategy is to preload the image before swapping it for the placeholder.
