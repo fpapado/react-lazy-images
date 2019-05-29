@@ -251,7 +251,7 @@ This behaviour is provided with the `src` prop:
   alt="Buildings with tiled exteriors, lit by the sunset."
   placeholder={
     ({imageProps, ref}) =>
-      <div ref={ref} className={`LazyImage-Placeholder`}">
+      <div ref={ref} className={`LazyImage-Placeholder`}>
         <img src="/img/porto_buildings_lowres.jpg" alt={imageProps.alt} />
       </div>
   }
