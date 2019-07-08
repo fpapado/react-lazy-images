@@ -81,6 +81,15 @@ export interface ObserverProps {
    * @default `0.01`
    */
   threshold?: number;
+
+  /**
+   * Only trigger this method once
+   * @default `false`
+   */
+  triggerOnce?: boolean;
+
+  /** Call this function whenever the in view state changes */
+  onChange?(inView: boolean): void;
 }
 
 /** States that the image loading can be in.
@@ -272,6 +281,7 @@ export class LazyImageFull extends React.Component<
 
     // Bind methods
     this.update = this.update.bind(this);
+    this.onChange = this.onChange.bind(this);
   }
 
   update(action: Action) {
@@ -309,6 +319,14 @@ export class LazyImageFull extends React.Component<
     this.promiseCache = {};
   }
 
+  onChange(inView :boolean) {
+    this.update(Action.ViewChanged({ inView }))
+
+    if (this.props.observerProps && this.props.observerProps.onChange) {
+      this.props.observerProps.onChange(inView)
+    }
+  }
+
   // Render function
   render() {
     // This destructuring is silly
@@ -336,7 +354,7 @@ export class LazyImageFull extends React.Component<
           // TODO: reconsider threshold
           threshold={0.01}
           {...observerProps}
-          onChange={inView => this.update(Action.ViewChanged({ inView }))}
+          onChange={this.onChange}
         >
           {({ ref }) =>
             children({
