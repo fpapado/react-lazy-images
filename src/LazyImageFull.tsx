@@ -390,7 +390,7 @@ const loadImage = (
     }
 
     image.onload = resolve;
-    image.onerror = reject;
+    image.onerror = event => reject(new Error(`Failed to load: ${src}`));
   });
 
 /** Promise that resolves after a specified number of ms */
