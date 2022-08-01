@@ -45,7 +45,7 @@ export interface LazyImageProps extends CommonLazyImageProps {
  * and then swaps it in. Has predefined rendering logic, but the
  * specifics are up to the caller.
  */
-export const LazyImage: React.StatelessComponent<LazyImageProps> = ({
+export const LazyImage: React.FC<LazyImageProps> = ({
   actual,
   placeholder,
   loading,
