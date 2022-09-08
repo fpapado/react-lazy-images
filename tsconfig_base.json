@@ -13,10 +13,7 @@
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "lib": ["es6", "dom"],
-    "baseUrl": "./",
-    "paths": {
-      "react-intersection-observer": ["src/react-intersection-observer.d.ts"]
-    }
+    "baseUrl": "./"
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]
