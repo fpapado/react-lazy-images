@@ -1,5 +1,5 @@
 import React from "react";
-import Observer from "react-intersection-observer";
+import { InView } from "react-intersection-observer";
 import { unionize, ofType, UnionOf } from "unionize";
 
 /**
@@ -48,7 +48,7 @@ export interface RenderCallbackArgs {
   imageState: ImageState;
   imageProps: ImageProps;
   /** When not loading eagerly, a ref to bind to the DOM element. This is needed for the intersection calculation to work. */
-  ref?: React.RefObject<any>;
+  ref?: React.RefObject<any> | ((node?: Element | null) => void);
 }
 
 export interface ImageProps {
@@ -194,7 +194,7 @@ export class LazyImageFull extends React.Component<
   static displayName = "LazyImageFull";
 
   /** A central place to store promises.
-   * A bit silly, but passing promsises directly in the state
+   * A bit silly, but passing promises directly in the state
    * was giving me weird timing issues. This way we can keep
    * the promises in check, and pick them up from the respective methods.
    * FUTURE: Could pass the relevant key in Buffering and Loading, so
@@ -300,7 +300,7 @@ export class LazyImageFull extends React.Component<
     // Clear the Promise Cache
     if (this.promiseCache.loading) {
       // NOTE: This does not cancel the request, only the callback.
-      // We weould need fetch() and an AbortHandler for that.
+      // We we would need fetch() and an AbortHandler for that.
       this.promiseCache.loading.cancel();
     }
     if (this.promiseCache.buffering) {
@@ -331,14 +331,16 @@ export class LazyImageFull extends React.Component<
       });
     } else {
       return (
-        <Observer
+        <InView
           rootMargin="50px 0px"
           // TODO: reconsider threshold
           threshold={0.01}
           {...observerProps}
-          onChange={inView => this.update(Action.ViewChanged({ inView }))}
+          onChange={(inView: boolean) =>
+            this.update(Action.ViewChanged({ inView }))
+          }
         >
-          {({ ref }) =>
+          {({ ref }: RenderProps) =>
             children({
               // We know that the state tags and the enum match up, apart
               // from Buffering not being exposed
@@ -350,10 +352,16 @@ export class LazyImageFull extends React.Component<
               ref
             })
           }
-        </Observer>
+        </InView>
       );
     }
   }
+}
+
+interface RenderProps {
+  inView: boolean;
+  entry: IntersectionObserverEntry | undefined;
+  ref: React.RefObject<any> | ((node?: Element | null) => void);
 }
 
 ///// Utilities /////
@@ -384,7 +392,7 @@ const loadImage = (
           // TODO: consider writing the .decode() definition and sending a PR
           //@ts-ignore
           .decode()
-          .then((image: HTMLImageElement) => resolve(image))
+          .then(() => resolve(image))
           .catch((err: any) => reject(err))
       );
     }
@@ -398,7 +406,7 @@ const delayedPromise = (ms: number) =>
   new Promise(resolve => setTimeout(resolve, ms));
 
 interface CancelablePromise {
-  promise: Promise<{}>;
+  promise: Promise<any>;
   cancel: () => void;
 }
 
@@ -412,7 +420,7 @@ interface CancelablePromise {
 const makeCancelable = (promise: Promise<any>): CancelablePromise => {
   let hasCanceled_ = false;
 
-  const wrappedPromise = new Promise((resolve, reject) => {
+  const wrappedPromise: Promise<any> = new Promise((resolve, reject) => {
     promise.then(
       (val: any) => (hasCanceled_ ? reject({ isCanceled: true }) : resolve(val))
     );
