@@ -1,5 +1,9 @@
 # React Lazy Images
 
+**Note**: This is a fork of https://github.com/fpapado/react-lazy-images 
+
+The entire purpose of this fork is to allow us to publish changes that have been merged to the main repo, but which have not been released. 
+
 > Components and utilities for lazy image loading in React.
 
 [![npm](https://img.shields.io/npm/v/react-lazy-images.svg)](https://www.npmjs.com/package/react-lazy-images)
